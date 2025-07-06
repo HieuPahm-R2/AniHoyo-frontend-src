@@ -1,7 +1,7 @@
 import { FaStar } from "react-icons/fa";
 import { IoIosPlayCircle } from "react-icons/io";
 import { NavLink } from "react-router-dom";
-import "./clientHeader.scss"
+import "./Header.scss"
 
 const ClientHeader = () => {
   const navigation = [

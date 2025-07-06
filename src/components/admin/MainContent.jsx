@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, Outlet } from "react-router-dom";
 import { Layout, Drawer, Affix } from "antd";
 import HeaderAdmin from "./Header";
 import FooterAdmin from "./Footer";
@@ -7,12 +7,12 @@ import SideNav from "./SideNav";
 
 const { Header: AntHeader, Content, Sider } = Layout;
 
-const MainContent = () => {
+const MainContent = (props) => {
     const [visible, setVisible] = useState(false);
     const [sidenavColor, setSideNavColor] = useState("#1890ff");
+    const [fixed, setFixed] = useState(false);
 
     const openDrawer = () => setVisible(!visible);
-   
     const handleSidenavColor = (color) => setSideNavColor(color);
     const handleFixedNavbar = (type) => setFixed(type);
 
@@ -29,7 +29,6 @@ return (
         placement={"right"}
         closable={false}
         onClose={() => setVisible(false)}
-        visible={visible}
         key={"right"}
         width={250}
         className={`drawer-sidebar`}
@@ -82,12 +81,13 @@ return (
               name={pathname}
               subName={pathname}
               handleSidenavColor={handleSidenavColor}
-              handleSidenavType={handleSidenavType}
               handleFixedNavbar={handleFixedNavbar}
             />
           </AntHeader>
         )}
-        <Content className="content-ant">{children}</Content>
+        <Content className="content-ant">
+          <Outlet />
+        </Content>
         <FooterAdmin />
       </Layout>
     </Layout>

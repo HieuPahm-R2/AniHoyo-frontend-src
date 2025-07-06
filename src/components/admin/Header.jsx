@@ -15,14 +15,14 @@ import {
   Typography,
   Switch,
 } from "antd";
-
+import styled from "styled-components";
 import {
   SearchOutlined,
   StarOutlined,
   TwitterOutlined,
   FacebookFilled,
 } from "@ant-design/icons";
-
+import avtar from "../../assets/images/team-2.jpg";
 import { NavLink, Link } from "react-router-dom";
 
 const ButtonContainer = styled.div`
@@ -242,7 +242,6 @@ const HeaderAdmin = (props) => {
     
     const [visible, setVisible] = useState(false);
 
-
     const showDrawer = () => setVisible(true);
     const hideDrawer = () => setVisible(false);
     useEffect(() => window.scrollTo(0, 0));
@@ -298,8 +297,7 @@ const HeaderAdmin = (props) => {
             mask={true}
             width={360}
             onClose={hideDrawer}
-            placement={placement}
-            visible={visible}
+            placement={"right"}
           >
             <div layout="vertical">
               <div className="header-top">
