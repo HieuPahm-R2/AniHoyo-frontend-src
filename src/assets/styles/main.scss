@@ -9,6 +9,16 @@ body {
   font-family: open sans, Helvetica, Arial, sans-serif;
 }
 
+html, body {
+  background: #18191a !important;
+  min-height: 100vh;
+}
+
+#root, .ant-layout, .layout-default, .layout-signin, .layout-sign-up {
+  background: transparent !important;
+  min-height: 100vh;
+}
+
 .ant-layout.ant-layout-has-sider {
   flex-direction: row;
 }
@@ -1807,6 +1817,36 @@ body {
 
 .layout-default.ant-layout.layout-sign-up {
   padding: 11px;
+  background: #18191a !important;
+
+  .sign-up-header {
+    background: linear-gradient(rgba(24,25,26,0.85),rgba(24,25,26,0.85)), url("../images/signup-intro2.jpg") no-repeat center;
+    background-size: cover;
+  }
+
+  .card-signup {
+    background: #23272f;
+
+    h5,
+    .ant-input,
+    .ant-checkbox-wrapper,
+    .ant-btn,
+    .text-muted,
+    .text-dark {
+      color: #fff !important;
+    }
+
+    .ant-input {
+      color: #fff;
+      background: #181a1a00;
+      border-color: #333;
+    }
+
+    .ant-btn-primary {
+      background: #005cfd;
+      border: none;
+    }
+  }
 }
 
 .header-col.header-nav li:after {
@@ -1814,15 +1854,15 @@ body {
 }
 
 .sign-up-header {
-  height: 550px;
+  height: 600px;
   margin-top: -62.8px;
   padding-top: 137.8px;
   border-radius: 12px;
   box-shadow: 0 20px 27px rgb(0 0 0 / 5%);
   background-size: cover;
-  background-position: 50%;
+  background-position: 40%;
   text-align: center;
-  background: url("../images/bg-signup.jpg") no-repeat center top;
+  background: url("../images/signup-intro2.jpg") no-repeat center;
 }
 
 .header-col {
@@ -1856,6 +1896,7 @@ body {
     padding: 0 16px;
     border-radius: 34px;
     line-height: 33px;
+    background-color: #fff;
   }
 }
 
@@ -2033,7 +2074,7 @@ body {
   &.layout-signin header.ant-layout-header {
     display: flex;
     position: relative;
-    background-color: #fff;
+    background-color: #ffffffa2;
     color: #141414;
     box-shadow: 0 20px 27px rgb(0 0 0 / 5%);
     flex-direction: row;
@@ -3107,4 +3148,45 @@ button.ant-btn.ant-btn-dashed.ant-full-box svg {
 
 section.ant-layout.ant-layout-has-sider.layout-dashboard.layout-profile .header-control span.ant-input-affix-wrapper.header-search .anticon-search svg path {
   fill: #8c8c8c;
+}
+
+.layout-default.layout-signin {
+  background: #3998e63f !important;
+}
+
+.layout-signin .signin {
+  background: transparent;
+}
+
+.layout-signin .ant-col {
+  background: transparent;
+}
+
+.layout-signin .ant-form,
+.layout-signin .ant-input,
+.layout-signin .ant-switch,
+.layout-signin .ant-btn,
+.layout-signin .text-muted,
+.layout-signin .text-dark,
+.layout-signin .ant-typography {
+  color: #fff !important;
+}
+
+.layout-signin .ant-input {
+  background: #23272f;
+  border-color: #333;
+}
+
+.layout-signin .ant-btn-primary {
+  background: #005cfd;
+  border: none;
+}
+
+.layout-signin .ant-form-item-label > label {
+  color: #fff !important;
+}
+
+.layout-signin .sign-img img {
+  border-radius: 12px;
+  box-shadow: 0 8px 26px -4px hsla(0,0%,8%,0.15);
 }
