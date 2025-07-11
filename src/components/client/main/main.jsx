@@ -1,16 +1,12 @@
 import ClientHeader from "../header/clientHeader";
-import "./mainStyles.scss";
+
 import { Col, Divider, Pagination, Rate, Row, Tabs } from "antd";
 import { FilterTwoTone, ReloadOutlined } from "@ant-design/icons";
 import { IoIosPlayCircle } from "react-icons/io";
 import { FaStar } from "react-icons/fa";
 const MainContent = () => {
   return (
-    <div className="god-overrall">
-      <div className="header-content">
-        <ClientHeader />
-      </div>
-      <div className="content-container">
+     <div className="content-container">
         <div className="content-row">
           <p className="content-tag">Recently Updated</p>
           <Row gutter={[20, 20]}>
@@ -80,7 +76,6 @@ const MainContent = () => {
           </Row>
         </div>
       </div>
-    </div>
   );
 };
 export default MainContent;

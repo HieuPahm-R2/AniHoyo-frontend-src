@@ -27,7 +27,8 @@ const ClientHeader = () => {
     },
   ]
   return(
-     <header className='header-container'>
+     <div className="header-content">
+      <header className='header-container'>
        <img src="/summer2025.jpg" className="bg-film" alt="" />
         <nav>
           <div className='logo_ul'>
@@ -112,6 +113,7 @@ const ClientHeader = () => {
           </section>
         </div>
       </header>
+     </div>
   );
 };
 export default ClientHeader;

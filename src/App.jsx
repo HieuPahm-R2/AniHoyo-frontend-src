@@ -1,12 +1,11 @@
-import { useState } from "react";
-import MainContent from "./components/client/main/main";
-
+import { RouterProvider } from "react-router-dom";
+import router from "./components/routes/index.jsx";
 
 function App() {
   return (
-    <main>
-      <MainContent/>
-    </main>
+   <>
+      <RouterProvider router={router} /> 
+    </>
   );
 }
 

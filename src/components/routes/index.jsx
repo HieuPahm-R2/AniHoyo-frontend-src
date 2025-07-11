@@ -7,38 +7,47 @@ import RegisterPage from "../../pages/common/Register";
 import AdminHome from "../../pages/admin/AdminHomepage";
 import UserManage from "../../pages/admin/UserManage";
 import ProductManage from "../../pages/admin/ProductManage";
-import MainContent from "../admin/MainContent";
+import MadContent from "../admin/MadContent";
+import MainContent from "../client/main/main";
 import "../../assets/styles/main.scss"
 import "../../assets/styles/responsive.scss"
+import Layout from "../layout/client/layout";
+import Error404 from "../errors/404-page";
 const router = createBrowserRouter([
     {
       path: "/",
-      element: <App/>,
+      element: <Layout/>,
+      errorElement: <Error404 />,
       children: [
+         {
+            index: true,
+            element: <MainContent/>
+        },
         {
-            path: ":explore/:id",
+            path: "detail-film",
             element: <DetailsPage/>
         },
          {
-            path: ":explore",
+            path: "social-community",
             element: <SocialForum/>
         },
       ]
     },
     {
       path: "/admin",
-      element: <MainContent/>,
+      element: <MadContent/>,
+      errorElement: <Error404 />,
       children: [
         {
             index: true,
             element: <AdminHome/>
         },
         {
-            path: "user",
+            path: "table-users",
             element: <UserManage/>
         },
          {
-            path: "film-movie",
+            path: "table-films",
             element: <ProductManage/>
         },
       ]

@@ -7,7 +7,7 @@ import SideNav from "./SideNav";
 
 const { Header: AntHeader, Content, Sider } = Layout;
 
-const MainContent = (props) => {
+const MadContent = (props) => {
     const [visible, setVisible] = useState(false);
     const [sidenavColor, setSideNavColor] = useState("#1890ff");
     const [fixed, setFixed] = useState(false);
@@ -94,4 +94,4 @@ return (
   )
 }
 
-export default MainContent
+export default MadContent
