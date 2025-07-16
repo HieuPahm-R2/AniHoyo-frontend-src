@@ -114,7 +114,7 @@ const tables = [
             <span
               className="icon"
               style={{
-                background: page === "admin table-users" ? color : "",
+                background: page === "admintable-users" ? color : "",
               }}
             >
               {tables}
@@ -152,7 +152,7 @@ const tables = [
           </NavLink>
         </Menu.Item>
         <Menu.Item key="7">
-          <NavLink to="/sign-in">
+          <NavLink to="/login">
             <span className="icon">{signin}</span>
             <span className="label">Sign In</span>
           </NavLink>

@@ -10,7 +10,7 @@ body {
 }
 
 html, body {
-  background: #18191a !important;
+  background: #9ab8d6 !important;
   min-height: 100vh;
 }
 
@@ -1146,13 +1146,6 @@ span.blue {
   border-radius: 10px;
 }
 
-.uploadfile {
-  margin-top: 15px;
-
-  .ant-upload.ant-upload-select {
-    display: block;
-  }
-}
 
 .ant-timeline-item-tail {
   left: 7px;
@@ -1521,11 +1514,6 @@ ul.ant-menu.ant-menu-root.ant-menu-inline.ant-menu-light.left-nav li svg path {
 
 .percent-progress .ant-progress-bg {
   height: 3px !important;
-}
-
-.uploadfile {
-  padding-left: 24px;
-  padding-right: 24px;
 }
 
 .ant-card.tablespace .ant-card-body {
@@ -3115,9 +3103,6 @@ aside.ant-layout-sider.ant-layout-sider-light.sider-primary.ant-layout-sider-pri
   box-shadow: none;
 }
 
-.uploadfile.pb-15 {
-  padding-bottom: 16px;
-}
 
 .ant-row.ant-form-item.aligin-center .ant-form-item-control-input-content {
   display: flex;
@@ -3125,9 +3110,6 @@ aside.ant-layout-sider.ant-layout-sider-light.sider-primary.ant-layout-sider-pri
   color: rgba(0, 0, 0, 0.65);
 }
 
-.uploadfile.shadow-none .ant-upload.ant-upload-select.ant-upload-select-text .ant-btn.ant-full-box {
-  box-shadow: none;
-}
 
 .ant-btn-dashed {
   color: rgba(0, 0, 0, 0.65);

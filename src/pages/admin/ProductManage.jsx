@@ -12,31 +12,28 @@ import {
   Typography,
 } from "antd";
 
-import { ToTopOutlined } from "@ant-design/icons";
+import { PlusOutlined, ReloadOutlined, ToTopOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 import ava1 from "../../assets/images/logo-shopify.svg";
 import ava2 from "../../assets/images/logo-atlassian.svg";
 import ava3 from "../../assets/images/logo-slack.svg";
 import pencil from "../../assets/images/pencil.svg";
+import { useState } from "react";
+import ModalCreate from "../../components/admin/ModalCreate";
 const ProductManage = () => {
   const { Title } = Typography;
-  const formProps = {
-  name: "file",
-  action: "https://www.mocky.io/v2/5cc8019d300000980a055e76",
-  headers: {
-    authorization: "authorization-text",
-  },
-  onChange(info) {
-    if (info.file.status !== "uploading") {
-      console.log(info.file, info.fileList);
-    }
-    if (info.file.status === "done") {
-      message.success(`${info.file.name} file uploaded successfully`);
-    } else if (info.file.status === "error") {
-      message.error(`${info.file.name} file upload failed.`);
-    }
-  },
-};
+
+  const [openModalCreate, setOpenModalCreate] = useState(false);
+  const [openModalUpdate, setOpenModalUpdate] = useState(false);
+  const [openViewDetail, setOpenViewDetail] = useState(false);
+  const [dataDetail, setDataDetail] = useState(null);
+  const [dataUpdate, setDataUpdate] = useState(null);
+
+  const [current, setCurrent] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
+  const [total, setTotal] = useState(0);
+  const [listFilms, setListFilms] = useState([]);
+
   // project table start
   const project = [
   {
@@ -53,6 +50,10 @@ const ProductManage = () => {
     dataIndex: "address",
   },
   {
+    title: "Time Updated",
+    dataIndex: "updateTime",
+  },
+  {
     title: "COMPLETION",
     dataIndex: "completion",
   },
@@ -60,7 +61,6 @@ const ProductManage = () => {
   const dataproject = [
   {
     key: "1",
-
     name: (
       <>
         <Avatar.Group>
@@ -172,16 +172,21 @@ const ProductManage = () => {
   <Row gutter={[24, 0]}>
           <Col xs="24" xl={24}>
             <Card
-              bordered={false}
               className="criclebox tablespace mb-24"
               title="Projects Table"
               extra={
                 <>
-                  <Radio.Group defaultValue="all">
-                    <Radio.Button value="all">All</Radio.Button>
-                    <Radio.Button value="online">ONLINE</Radio.Button>
-                    <Radio.Button value="store">STORES</Radio.Button>
-                  </Radio.Group>
+                  <span style={{ display: 'flex', gap: 15 }}>
+                    <Button
+                        onClick={() => {
+                            setOpenModalCreate(true);
+                        }}
+                        icon={<PlusOutlined />}
+                        type="primary">Thêm mới</Button>
+                    <Button type='dashed'>
+                        <ReloadOutlined /> Làm mới
+                    </Button>
+                </span>
                 </>
               }
             >
@@ -189,23 +194,20 @@ const ProductManage = () => {
                 <Table
                   columns={project}
                   dataSource={dataproject}
-                  pagination={false}
+                  pagination={{
+                    current: current,
+                    pageSize: pageSize,
+                    total: total,
+                    showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`,
+                    showSizeChanger: true
+                  }}
                   className="ant-border-space"
                 />
               </div>
-              <div className="uploadfile pb-15 shadow-none">
-                <Upload {...formProps}>
-                  <Button
-                    type="dashed"
-                    className="ant-full-box"
-                    icon={<ToTopOutlined />}
-                  >
-                    Click to Upload
-                  </Button>
-                </Upload>
-              </div>
             </Card>
           </Col>
+          <ModalCreate openModalCreate={openModalCreate}
+              setOpenModalCreate={setOpenModalCreate}/>
         </Row>
   )
 }
