@@ -8,83 +8,110 @@ import {
   message,
   Progress,
   Button,
-  Avatar,
   Typography,
+  Image 
 } from "antd";
-
+import moment from "moment";
 import { PlusOutlined, ReloadOutlined, ToTopOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
-import ava1 from "../../assets/images/logo-shopify.svg";
-import ava2 from "../../assets/images/logo-atlassian.svg";
-import ava3 from "../../assets/images/logo-slack.svg";
 import pencil from "../../assets/images/pencil.svg";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ModalCreate from "../../components/admin/ModalCreate";
+import { fetchDataFilmsAPI } from "../../services/api-handle";
+import { FORMAT_DATE_DISPLAY } from "../../services/constant-date";
 const ProductManage = () => {
   const { Title } = Typography;
 
   const [openModalCreate, setOpenModalCreate] = useState(false);
   const [openModalUpdate, setOpenModalUpdate] = useState(false);
   const [openViewDetail, setOpenViewDetail] = useState(false);
-  const [dataDetail, setDataDetail] = useState(null);
+  
   const [dataUpdate, setDataUpdate] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [dataFilm, setDataFilm] = useState([]);
 
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(5);
   const [total, setTotal] = useState(0);
-  const [listFilms, setListFilms] = useState([]);
+ 
 
+  useEffect(() => {
+    refetchData()
+  }, [])
+  const refetchData = async () => {
+        setIsLoading(true);
+        // add filter (later)
+        //.....
+        const res = await fetchDataFilmsAPI();
+        if (res && res.data) {
+            setDataFilm(res.data);
+            
+        }
+        setIsLoading(false);
+    }
   // project table start
   const project = [
   {
-    title: "FILMS/MOVIE",
+    title: "Film/Movie Name",
     dataIndex: "name",
     width: "32%",
   },
   {
-    title: "EPISODES",
-    dataIndex: "episode",
+    title: "Studio Production",
+    dataIndex: "studio",
   },
   {
-    title: "STATUS",
-    dataIndex: "address",
+    title: "Release Year",
+    dataIndex: "releaseYear",
   },
   {
-    title: "Time Updated",
-    dataIndex: "updateTime",
+    title: "Updated Time",
+    dataIndex: "uploadDate",
+    sorter: true,
+    render: (text, record, index) => {
+      return (
+          <>{moment(record.updated).format(FORMAT_DATE_DISPLAY)}</>
+           )
+        }
   },
   {
     title: "COMPLETION",
     dataIndex: "completion",
   },
 ];
-  const dataproject = [
-  {
-    key: "1",
+  // Tạo dataproject động từ dataFilm, đảm bảo dataFilm luôn là mảng
+  const dataproject = Array.isArray(dataFilm) ? dataFilm.map((film, idx) => ({
+    // key: film.id || idx,
     name: (
       <>
-        <Avatar.Group>
-          <Avatar className="shape-avatar" src={ava1} size={25} alt="" />
-          <div className="avatar-info">
-            <Title level={5}>Attack On Titan | Season 1</Title>
+        <Image.PreviewGroup>
+          <Image className="shape-avatar" width={50}
+          src={`${import.meta.env.VITE_BACKEND_URL}/storage/thumbnail/${film.thumbnail}`} alt="" />
+          <div className="avatar-info" style={{display: "inline-block", marginLeft: "5px"}}>
+            <Title level={5}>{film.name || 'No Name'}</Title>
           </div>
-        </Avatar.Group>
+        </Image.PreviewGroup>
       </>
     ),
-    episode: (
+    studio: (
       <>
-        <div className="semibold">11/14</div>
+        <div className="semibold">{film.studio || '---'}</div>
       </>
     ),
-    address: (
+    releaseYear: (
       <>
-        <div className="text-sm">working</div>
+        <div className="text-sm">{film.releaseYear || '@-@-@'}</div>
+      </>
+    ),
+    uploadTime: (
+      <>
+        <div className="text-sm">{film.uploadDate || '---'}</div>
       </>
     ),
     completion: (
       <>
         <div className="ant-progress-project">
-          <Progress percent={30} size="small" />
+          <Progress percent={20} size="small" />
           <span>
             <Link to="/">
               <img src={pencil} alt="" />
@@ -93,81 +120,8 @@ const ProductManage = () => {
         </div>
       </>
     ),
-  },
-
-  {
-    key: "2",
-    name: (
-      <>
-        <Avatar.Group>
-          <Avatar className="shape-avatar" src={ava2} size={25} alt="" />
-          <div className="avatar-info">
-            <Title level={5}>Hibike! Euphonium | Season 3</Title>
-          </div>
-        </Avatar.Group>
-      </>
-    ),
-    episode: (
-      <>
-        <div className="semibold">12/30</div>
-      </>
-    ),
-    address: (
-      <>
-        <div className="text-sm">working</div>
-      </>
-    ),
-    completion: (
-      <>
-        <div className="ant-progress-project">
-          <Progress percent={10} size="small" />
-          <span>
-            <Link to="/">
-              <img src={pencil} alt="" />
-            </Link>
-          </span>
-        </div>
-      </>
-    ),
-  },
-
-  {
-    key: "3",
-    name: (
-      <>
-        <Avatar.Group>
-          <Avatar className="shape-avatar" src={ava3} size={25} alt="" />
-          <div className="avatar-info">
-            <Title level={5}> Jira Platform Errors</Title>
-          </div>
-        </Avatar.Group>
-      </>
-    ),
-    age: (
-      <>
-        <div className="semibold">Not Set</div>
-      </>
-    ),
-    address: (
-      <>
-        <div className="text-sm">done</div>
-      </>
-    ),
-    completion: (
-      <>
-        <div className="ant-progress-project">
-          <Progress percent={100} size="small" format={() => "done"} />
-          <span>
-            <Link to="/">
-              <img src={pencil} alt="" />
-            </Link>
-          </span>
-        </div>
-      </>
-    ),
-  },
-
-  ];
+  })) : [];
+  
   return (
   <Row gutter={[24, 0]}>
           <Col xs="24" xl={24}>
@@ -194,6 +148,7 @@ const ProductManage = () => {
                 <Table
                   columns={project}
                   dataSource={dataproject}
+                  loading={isLoading}
                   pagination={{
                     current: current,
                     pageSize: pageSize,
@@ -207,7 +162,8 @@ const ProductManage = () => {
             </Card>
           </Col>
           <ModalCreate openModalCreate={openModalCreate}
-              setOpenModalCreate={setOpenModalCreate}/>
+              setOpenModalCreate={setOpenModalCreate}
+              refetchData={refetchData}/>
         </Row>
   )
 }

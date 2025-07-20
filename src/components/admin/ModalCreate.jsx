@@ -1,40 +1,15 @@
-import React, { useEffect } from 'react'
-import { Col, Divider, Form, Input, InputNumber, Modal, notification, Row, Select, Upload } from "antd";
+import React, { useEffect, useState } from 'react'
+import { Col, Divider,message, Form, Input, InputNumber, Modal, notification, Row, Select, Upload } from "antd";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
-import { callUploadImage, fetchFilmCategory, fetchFilmTags } from '../../services/api-handle';
+import { callCreateFilmAPI, callUploadImage, fetchFilmCategory, fetchFilmTags } from '../../services/api-handle';
 import { v4 as uuidv4 } from 'uuid';
 const ModalCreate = (props) => {
-    const { openModalCreate, setOpenModalCreate } = props;
+    const { openModalCreate, setOpenModalCreate, refetchData } = props;
 
     const [form] = Form.useForm();
-    useEffect(() => {
-        const fetchCategories = async () => {
-            const res = await fetchFilmCategory();
-            if(res && res.data){
-                const accept = res.data.map((item) => {
-                    return {
-                        label: item,
-                        value: item
-                    }
-                })
-                setListCategories(accept);
-            }
-        }
-        const fetchTags = async () => {
-            const res = await fetchFilmTags();
-            if(res && res.data){
-                const accept = res.data.map((item) => {
-                    return {
-                        label: item,
-                        value: item
-                    }
-                })
-                setListTags(accept)
-            }
-        }
-    }, [])
-
+    
     const [isLoading, setIsLoading] = useState(false);
+    const [isSubmit, setIsSubmit] = useState(false);
     const [isSliderLoading, setIsSliderLoading] = useState(false);
 
     const [previewOpen, setPreviewOpen] = useState(false);
@@ -45,6 +20,30 @@ const ModalCreate = (props) => {
     const [dataSlider, setDataSlider] = useState([]);
     const [listCategories, setListCategories] = useState([]);
     const [listTags, setListTags] = useState([]);
+     useEffect(() => {
+        const fetchCategories = async () => {
+            const res = await fetchFilmCategory();
+            if(res && res.data){
+                const accept = res.data.map((item) => ({
+                    label: item.name,
+                    value: item.id
+                }))
+                setListCategories(accept);
+            }
+        }
+        const fetchTags = async () => {
+            const res = await fetchFilmTags();
+            if(res && res.data){
+                const accept = res.data.map((item) => ({
+                    label: item.tagName,
+                    value: item.id
+                }))
+                setListTags(accept)
+            }
+        }
+        fetchCategories();
+        fetchTags();
+    }, [])
 
     const onFinish = async (values) => {
         if (dataThumbnail.length === 0) {
@@ -61,15 +60,16 @@ const ModalCreate = (props) => {
             })
             return;
         }
-        const { name, studio, description, tag,releaseYear, quantity, category } = values;
+        const { name, studio, description, tag,releaseYear, category } = values;
         const thumbnail = dataThumbnail[0].name;
-        const slider = dataSlider.map((item) => item.name);
+        console.log(thumbnail);
+        const slider = dataSlider[0].name;
         setIsSubmit(true);
-        const res = await callCreateBookAPI(thumbnail, slider, mainText, author, price, sold, quantity, category);
+        const res = await callCreateFilmAPI(thumbnail, slider, name, studio, description, releaseYear,tag, category);
         if (res && res.data) {
             notification.success({
                 message: 'Thành công',
-                description: 'Tạo mới sách thành công'
+                description: 'Tạo phim thành công'
             })
             setOpenModalCreate(false);
             form.resetFields();
@@ -79,16 +79,31 @@ const ModalCreate = (props) => {
         } else {
             notification.error({
                 message: 'Lỗi',
-                description: 'Tạo mới sách thất bại'
+                description: 'Tạo phim thất bại'
             })
         }
         setIsSubmit(false);
     }
      // handle upload file
     const handleUploadThumbnail = async ({ file, onSuccess, onError }) => {
-        const res = await callUploadImage(file,"thumbnail");
-        if (res && res.data) {
+        console.log("handleUploadThumbnail called");
+        const res_thumb = await callUploadImage(file,"thumbnail");
+        console.log(res_thumb.data)
+        if (res_thumb && res_thumb.data) {
             setDataThumbnail([{
+                name: res_thumb.data.fileName,
+                uid: uuidv4()
+            }]);
+            onSuccess("Tải ảnh thành công!");
+            message.success("done")
+        } else {
+            onError("Lỗi tải ảnh!");
+        }
+    };
+    const handleUploadSlider = async ({ file, onSuccess, onError }) => {
+        const res = await callUploadImage(file,"slider");
+        if (res && res.data) {
+            setDataSlider([{
                 name: res.data.fileName,
                 uid: uuidv4()
             }]);
@@ -113,10 +128,10 @@ const ModalCreate = (props) => {
     };
     const handleRemoveFile = (file, type) => {
         if (type === 'thumbnail') {
-            setDataThumbnail("")
+            setDataThumbnail([])
         }
         if (type === 'slider') {
-            setDataSlider("");
+            setDataSlider([]);
         }
     }
     const beforeUpload = (file) => {
@@ -124,13 +139,13 @@ const ModalCreate = (props) => {
         if (!isJpgOrPng) {
             message.error('You can only upload JPG/PNG or webp file!');
         }
-        const isLt4M = file.size / (1024 * 4) < 4;
-        if (!isLt2M) {
-            message.error('Image must smaller than 4MB!');
+        const isLt3M = file.size / 1024 / 1024 < 3;
+        if (!isLt3M) {
+            message.error('Image must smaller than 3MB!');
         }
-        return isJpgOrPng && isLt4M;
+        return isJpgOrPng && isLt3M;
     };
-    const handleChange = (info, type) => {
+    const handleChange = async (info, type) => {
         if (info.file.status === 'uploading') {
             type ? setIsSliderLoading(true) : setIsLoading(true);
             return;
@@ -139,7 +154,7 @@ const ModalCreate = (props) => {
             // Get this url from response in real world.
             getBase64(info.file.originFileObj, (url) => {
                 type ? setIsSliderLoading(false) : setIsLoading(false);
-                // setImageUrl(url);
+                setImageUrl(url);
             });
         }
     };
@@ -150,7 +165,12 @@ const ModalCreate = (props) => {
                 open={openModalCreate}
                 onOk={() => { form.submit() }}
                 okText={"Tạo mới"}
+                onCancel={() => {
+                    form.resetFields();
+                    setOpenModalCreate(false);
+                }}
                 cancelText={"Hủy"}
+                confirmLoading={isSubmit}
                 width={"50vw"}
                 //do not close when click fetchBook
                 maskClosable={false}
@@ -160,7 +180,7 @@ const ModalCreate = (props) => {
                 <Form
                     form={form}
                     name="basic"
-                    // onFinish={onFinish}
+                    onFinish={onFinish}
                     autoComplete="off"
                 >
                     <Row gutter={15}>
@@ -204,6 +224,7 @@ const ModalCreate = (props) => {
                                 rules={[{ required: true, message: 'Vui lòng chọn thể loại!' }]}
                             >
                                 <Select
+                                    mode="multiple"
                                     defaultValue={null}
                                     showSearch
                                     allowClear
@@ -219,11 +240,70 @@ const ModalCreate = (props) => {
                                 rules={[{ required: true, message: 'Vui lòng chọn tag phim!' }]}
                             >
                                 <Select
+                                    mode="multiple"
                                     defaultValue={null}
                                     showSearch
                                     allowClear
                                     options={listTags}
                                 />
+                            </Form.Item>
+                        </Col>
+                        <Col span={6}>
+                            <Form.Item
+                                labelCol={{ span: 24 }}
+                                label="Ảnh Thumbnail"
+                                name="thumbnail"
+                            >
+                                <Upload
+                                    name="thumbnail"
+                                    listType="picture-card"
+                                    className="avatar-uploader"
+                                    maxCount={1}
+                                    multiple={false}
+                                    customRequest={handleUploadThumbnail}
+                                    beforeUpload={beforeUpload}
+                                    onRemove={file => handleRemoveFile(file, 'thumbnail')}
+                                    onPreview={handlePreview}
+                                    showUploadList={{
+                                        showPreviewIcon: true,
+                                        showRemoveIcon: true,
+                                    }}
+                                >
+                                    <div>
+                                        {isLoading ? <LoadingOutlined /> : <PlusOutlined />}
+                                        <div style={{ marginTop: 8 }}>Upload</div>
+                                    </div>
+                                </Upload>
+                            </Form.Item>
+
+                        </Col>
+                        <Col span={6}>
+                            <Form.Item
+                                labelCol={{ span: 24 }}
+                                label="Ảnh Slider"
+                                name="slider"
+                            >
+                                <Upload
+                                    name="slider"
+                                    listType="picture-card"
+                                    className="avatar-uploader"
+                                    maxCount={1}
+                                    multiple={false}
+                                    beforeUpload={beforeUpload}
+                                    onChange={info => handleChange(info, 'slider')}
+                                    onRemove={file => handleRemoveFile(file, 'slider')}
+                                    onPreview={handlePreview}
+                                    customRequest={handleUploadSlider}
+                                    showUploadList={{
+                                        showPreviewIcon: true,
+                                        showRemoveIcon: true,
+                                    }}
+                                >
+                                    <div>
+                                        <PlusOutlined />
+                                        <div style={{ marginTop: 8 }}>Upload</div>
+                                    </div>
+                                </Upload>
                             </Form.Item>
                         </Col>
                         <Col span={6}>
@@ -237,60 +317,13 @@ const ModalCreate = (props) => {
                             </Form.Item>
                         </Col>
                         
-                        <Col span={12}>
-                            <Form.Item
-                                labelCol={{ span: 24 }}
-                                label="Ảnh Thumbnail"
-                                name="thumbnail"
-                            >
-                                <Upload
-                                    name="thumbnail"
-                                    listType="picture-card"
-                                    className="avatar-uploader"
-                                    maxCount={1}
-                                    multiple={false}
-                                    beforeUpload={beforeUpload}
-                                    onChange={handleChange}
-                                    onRemove={(file) => handleRemoveFile(file)}
-                                    onPreview={handlePreview}
-                                    showUploadList={{
-                                        showPreviewIcon: true,
-                                        showRemoveIcon: true,
-                                    }}
-                                >
-                                    <div>
-                                        <PlusOutlined />
-                                        <div style={{ marginTop: 8 }}>Upload</div>
-                                    </div>
-                                </Upload>
-                            </Form.Item>
-
-                        </Col>
-                        <Col span={12}>
-                            <Form.Item
-                                labelCol={{ span: 24 }}
-                                label="Ảnh Slider"
-                                name="slider"
-                            >
-                                <Upload
-                                    multiple
-                                    name="slider"
-                                   
-                                    listType="picture-card"
-                                    className="avatar-uploader"
-                                    
-                                >
-                                    <div>
-                                        <PlusOutlined />
-                                        <div style={{ marginTop: 8 }}>Upload</div>
-                                    </div>
-                                </Upload>
-                            </Form.Item>
-                        </Col>
+                        
                     </Row>
                 </Form>
             </Modal>
-            
+            <Modal open={previewOpen} title={previewTitle} footer={null} onCancel={() => setPreviewOpen(false)}>
+                <img alt="example" style={{ width: '100%' }} src={previewImage} />
+            </Modal>
 
         </>
   )

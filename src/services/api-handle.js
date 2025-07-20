@@ -1,10 +1,10 @@
-import axios from "axios";
+import instance from "./api-custom";
 
 export const callUploadImage = (file, folder) => {
     const bodyFormData = new FormData();
     bodyFormData.append('file', file);
     bodyFormData.append('folder',folder);
-    return axios({
+    return instance({
         method: 'post',
         url: '/api/v1/files',
         data: bodyFormData,
@@ -14,8 +14,14 @@ export const callUploadImage = (file, folder) => {
     });
 }
 export const fetchFilmCategory = () => {
-    return axios.get("/api/v1/get-all-category");
+    return instance.get("/api/v1/get-all-category");
 }
 export const fetchFilmTags = () => {
-    return axios.get("/api/v1/get-all-tags");
+    return instance.get("/api/v1/get-all-tags");
+}
+export const callCreateFilmAPI = (thumbnail, slider, name, studio, description, releaseYear, tag, category) => {
+    return instance.post('/api/v1/add-film', { thumbnail, slider, name, studio, description, releaseYear, tag, category })
+}
+export const fetchDataFilmsAPI = () => {
+    return instance.get("/api/v1/get-all-films");
 }

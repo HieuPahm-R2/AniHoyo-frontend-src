@@ -1,4 +1,3 @@
-
 import { Menu, Button } from "antd";
 import { NavLink, useLocation } from "react-router-dom";
 import logo from "../../assets/images/logo.png";
@@ -97,7 +96,7 @@ const tables = [
       <hr />
       <Menu theme="light" mode="inline">
         <Menu.Item key="1">
-          <NavLink to="/admin">
+          <NavLink to="/admin" className={({ isActive }) => isActive ? 'active' : ''} end>
             <span
               className="icon"
               style={{
@@ -110,7 +109,7 @@ const tables = [
           </NavLink>
         </Menu.Item>
         <Menu.Item key="2">
-          <NavLink to="/admin/table-users">
+          <NavLink to="/admin/table-users" className={({ isActive }) => isActive ? 'active' : ''}>
             <span
               className="icon"
               style={{
@@ -123,7 +122,7 @@ const tables = [
           </NavLink>
         </Menu.Item>
         <Menu.Item key="3">
-          <NavLink to="/admin/table-films">
+          <NavLink to="/admin/table-films" className={({ isActive }) => isActive ? 'active' : ''}>
             <span
               className="icon"
               style={{
@@ -139,7 +138,7 @@ const tables = [
           Account Pages
         </Menu.Item>
         <Menu.Item key="6">
-          <NavLink to="/profile">
+          <NavLink to="/profile" className={({ isActive }) => isActive ? 'active' : ''}>
             <span
               className="icon"
               style={{
@@ -152,7 +151,7 @@ const tables = [
           </NavLink>
         </Menu.Item>
         <Menu.Item key="7">
-          <NavLink to="/login">
+          <NavLink to="/login" className={({ isActive }) => isActive ? 'active' : ''}>
             <span className="icon">{signin}</span>
             <span className="label">Sign In</span>
           </NavLink>
@@ -168,10 +167,10 @@ const tables = [
           <span className="icon" style={{ color }}>
             {dashboard}
           </span>
-          <h6>Need Help?</h6>
-          <p>Please check our docs</p>
+          <h6>Gặp Lỗi gì sao?</h6>
+          <p>Liên hệ với tôi nhé!</p>
           <Button type="primary" className="ant-btn-sm ant-btn-block">
-            DOCUMENTATION
+            BÁO LỖI
           </Button>
         </div>
       </div>
