@@ -1,14 +1,14 @@
 import React from 'react'
-import ClientHeader from '../../client/header/clientHeader'
-import ClientFooter from '../../client/footer/clientFooter'
 import { Outlet } from "react-router-dom";
-import "../../client/main/mainStyles.scss";
+import Header from '../../client/Header';
+import Footer from '../../client/Footer';
+
 const Layout = () => {
   return (
     <div className='god-overrall'>
-        <ClientHeader/>
-        <Outlet/>
-        <ClientFooter/>
+      <Header />
+      <Outlet />
+      <Footer />
     </div>
   )
 }

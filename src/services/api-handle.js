@@ -22,6 +22,9 @@ export const fetchFilmTags = () => {
 export const callCreateFilmAPI = (thumbnail, slider, name, studio, description, releaseYear, tag, category) => {
     return instance.post('/api/v1/add-film', { thumbnail, slider, name, studio, description, releaseYear, tag, category })
 }
-export const fetchDataFilmsAPI = () => {
-    return instance.get("/api/v1/get-all-films");
+export const callUpdateFilmAPI = (id,thumbnail, slider, name, studio, description, releaseYear, tag, category) => {
+    return instance.put(`/api/v1/update-film`, {id, thumbnail, slider, name, studio, description, releaseYear, tag, category })
+}
+export const fetchDataFilmsAPI = (query) => {
+    return instance.get(`/api/v1/get-all-films?${query}`);
 }

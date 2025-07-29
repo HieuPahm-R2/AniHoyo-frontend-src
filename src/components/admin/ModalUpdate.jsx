@@ -1,49 +1,90 @@
-import React, { useEffect, useState } from 'react'
-import { Col, Divider,message, Form, Input, InputNumber, Modal, notification, Row, Select, Upload } from "antd";
+import { Col, Divider, Form, Input, InputNumber, Modal, notification, Row, Select, Upload } from "antd";
+import { useEffect, useState } from "react";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
-import { callCreateFilmAPI, callUploadImage, fetchFilmCategory, fetchFilmTags } from '../../services/api-handle';
+import { callCreateFilmAPI, callUpdateFilmAPI, callUploadImage, fetchFilmCategory, fetchFilmTags } from '../../services/api-handle';
 import { v4 as uuidv4 } from 'uuid';
-const ModalCreate = (props) => {
-    const { openModalCreate, setOpenModalCreate, refetchData } = props;
 
+const ModalUpdate = (props) => {
+    const { openModalUpdate, setOpenModalUpdate, dataUpdate, setDataUpdate, refetchData } = props;
     const [form] = Form.useForm();
-    
     const [isLoading, setIsLoading] = useState(false);
-    const [isSubmit, setIsSubmit] = useState(false);
     const [isSliderLoading, setIsSliderLoading] = useState(false);
-
     const [previewOpen, setPreviewOpen] = useState(false);
-    const [previewImage, setPreviewImage] = useState("");
-    const [previewTitle, setPreviewTitle] = useState("");
+    const [previewImage, setPreviewImage] = useState('');
+    const [previewTitle, setPreviewTitle] = useState('');
+    const [imageUrl, setImageUrl] = useState("");
 
     const [dataThumbnail, setDataThumbnail] = useState([]);
     const [dataSlider, setDataSlider] = useState([]);
+
+    const [initForm, setInitForm] = useState(null);
+
+    const [isSubmit, setIsSubmit] = useState(false);
     const [listCategories, setListCategories] = useState([]);
     const [listTags, setListTags] = useState([]);
-     useEffect(() => {
-        const fetchCategories = async () => {
-            const res = await fetchFilmCategory();
-            if(res && res.data){
-                const accept = res.data.map((item) => ({
-                    label: item.name,
-                    value: item.id
-                }))
-                setListCategories(accept);
+
+    useEffect(() => {
+            const fetchCategories = async () => {
+                const res = await fetchFilmCategory();
+                if(res && res.data){
+                    const accept = res.data.map((item) => ({
+                        label: item.name,
+                        value: item.id
+                    }))
+                    setListCategories(accept);
+                }
             }
-        }
-        const fetchTags = async () => {
-            const res = await fetchFilmTags();
-            if(res && res.data){
-                const accept = res.data.map((item) => ({
-                    label: item.tagName,
-                    value: item.id
-                }))
-                setListTags(accept)
+            const fetchTags = async () => {
+                const res = await fetchFilmTags();
+                if(res && res.data){
+                    const accept = res.data.map((item) => ({
+                        label: item.tagName,
+                        value: item.id
+                    }))
+                    setListTags(accept)
+                }
             }
-        }
-        fetchCategories();
-        fetchTags();
+            fetchCategories();
+            fetchTags();
     }, [])
+
+    useEffect(() => {
+        if (dataUpdate?._id) {
+            const arrThumbnail = [{
+                uid: uuidv4(),
+                name: dataUpdate.thumbnail,
+                status: 'done',
+                url: `${import.meta.env.VITE_BACKEND_URL}/storage/thumbnail/${dataUpdate.thumbnail}`,
+            }]
+            const arrSlider = [{
+                uid: uuidv4(),
+                name: dataUpdate.thumbnail,
+                status: 'done',
+                url: `${import.meta.env.VITE_BACKEND_URL}/storage/slider/${dataUpdate.slider}`,
+            }]
+            const initialVal = {
+                id: dataUpdate.id,
+                name: dataUpdate.name,
+                studio: dataUpdate.studio,
+                description: dataUpdate.description,
+                releaseYear: dataUpdate.releaseYear,
+                tag: dataUpdate.tag,
+                category: dataUpdate.category,
+                thumbnail: {
+                    fileList: arrThumbnail
+                },
+                slider: {
+                    fileList: arrSlider
+                }
+            }
+            setInitForm(initialVal);
+            setDataThumbnail(arrThumbnail);
+            setDataSlider(arrSlider);
+            form.setFieldsValue(initialVal);
+        }
+        return () => { form.resetFields() };
+
+    }, [dataUpdate]);
 
     const onFinish = async (values) => {
         if (dataThumbnail.length === 0) {
@@ -60,30 +101,34 @@ const ModalCreate = (props) => {
             })
             return;
         }
-        const { name, studio, description, tag,releaseYear, category } = values;
+        setIsSubmit(true);
         const thumbnail = dataThumbnail[0].name;
         const slider = dataSlider[0].name;
-        setIsSubmit(true);
-        const res = await callCreateFilmAPI(thumbnail, slider, name, studio, description, releaseYear,tag, category);
+        const {id, name, studio, description, tag,releaseYear, category } = values;
+        console.log(values);
+        const res = await callUpdateFilmAPI(
+            id,thumbnail, slider, name, studio, description, tag,releaseYear, category
+        );
         if (res && res.data) {
-            notification.success({
-                message: 'Thành công',
-                description: 'Tạo phim thành công'
-            })
-            setOpenModalCreate(false);
-            form.resetFields();
-            setDataSlider([]);
+            setOpenModalUpdate(false);
+            setInitForm(null);
             setDataThumbnail([]);
+            setDataSlider([]);
+            form.resetFields();
             await refetchData();
+            notification.success({
+                message: 'Cập nhật thành công',
+                description: 'Cập nhật thành công'
+            })
+
         } else {
             notification.error({
-                message: 'Lỗi',
-                description: 'Tạo phim thất bại'
+                message: 'Cập nhật thất bại',
+                description: res.message
             })
         }
         setIsSubmit(false);
     }
-     // handle upload file
     const handleUploadThumbnail = async ({ file, onSuccess, onError }) => {
         console.log("handleUploadThumbnail called");
         const res_thumb = await callUploadImage(file,"thumbnail");
@@ -158,15 +203,15 @@ const ModalCreate = (props) => {
         }
     };
   return (
-     <>
+    <>
             <Modal
-                title="Thêm Phim mới"
-                open={openModalCreate}
+                title="Chỉnh sửa thông tin phim"
+                open={openModalUpdate}
                 onOk={() => { form.submit() }}
-                okText={"Tạo mới"}
+                okText={"Cập Nhật"}
                 onCancel={() => {
                     form.resetFields();
-                    setOpenModalCreate(false);
+                    setOpenModalUpdate(false);
                 }}
                 cancelText={"Hủy"}
                 confirmLoading={isSubmit}
@@ -183,6 +228,16 @@ const ModalCreate = (props) => {
                     autoComplete="off"
                 >
                     <Row gutter={15}>
+                        <Col hidden>
+                            <Form.Item
+                                hidden
+                                labelCol={{ span: 24 }}
+                                label="ID Film"
+                                name="id"
+                            >
+                                <Input />
+                            </Form.Item>
+                        </Col>
                         <Col span={12}>
                             <Form.Item
                                 labelCol={{ span: 24 }}
@@ -328,4 +383,4 @@ const ModalCreate = (props) => {
   )
 }
 
-export default ModalCreate
+export default ModalUpdate
