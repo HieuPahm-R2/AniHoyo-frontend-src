@@ -14,8 +14,8 @@ import {
 } from "antd";
 import moment from "moment";
 import { DeleteTwoTone, EditTwoTone, PlusOutlined, ReloadOutlined, ToTopOutlined } from "@ant-design/icons";
-import { Link } from "react-router-dom";
-import pencil from "../../assets/images/pencil.svg";
+import "../../assets/styles/main.scss";
+import "../../assets/styles/responsive.scss";
 import { useEffect, useState } from "react";
 import ModalCreate from "../../components/admin/ModalCreate";
 import { fetchDataFilmsAPI } from "../../services/api-handle";

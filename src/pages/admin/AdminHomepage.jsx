@@ -229,7 +229,7 @@ const AdminHome = () => {
         </div>
       ),
     },
-    
+
   ];
 
   const timelineList = [
@@ -253,9 +253,9 @@ const AdminHome = () => {
     },
   ];
 
- 
+
   return (
-     <>
+    <>
       <div className="layout-content">
         <Row className="rowgap-vbox" gutter={[24, 0]}>
           {count.map((c, index) => (
@@ -268,7 +268,7 @@ const AdminHome = () => {
               xl={6}
               className="mb-24"
             >
-              <Card  className="criclebox ">
+              <Card className="criclebox ">
                 <div className="number">
                   <Row align="middle" gutter={[24, 0]}>
                     <Col xs={18}>
@@ -288,7 +288,7 @@ const AdminHome = () => {
         </Row>
 
         <Row gutter={[24, 0]}>
-          
+
           <Col xs={24} sm={24} md={12} lg={12} xl={14} className="mb-24">
             <Card bordered={false} className="criclebox h-full">
               <LineChart />
@@ -353,7 +353,7 @@ const AdminHome = () => {
                   </tbody>
                 </table>
               </div>
-             
+
             </Card>
           </Col>
           <Col xs={24} sm={24} md={12} lg={12} xl={8} className="mb-24">

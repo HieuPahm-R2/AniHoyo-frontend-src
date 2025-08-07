@@ -74,7 +74,7 @@ const Footer = () => {
                                 <a href="privacy.html">Privacy policy</a>
                                 <a href="privacy.html">Terms and conditions</a>
                             </div>
-                            <small class="footer__copyright">© AniHoyo, 2025. Created by <a href="https://themeforest.net/user/dmitryvolkov/portfolio" target="_blank">HieuPahm-R2</a>.</small>
+                            <small class="footer__copyright">© AniHoyo, 2025. Created by <a href="https://github.com/HieuPahm-R2" target="_blank">HieuPahm-R2</a>.</small>
                         </div>
                     </div>
                 </div>

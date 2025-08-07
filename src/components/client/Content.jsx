@@ -2,7 +2,6 @@ import React from 'react'
 import { Col, Divider, Pagination, Rate, Row, Select, Tabs } from "antd";
 import { FilterTwoTone, ReloadOutlined } from "@ant-design/icons";
 import { IoIosPlayCircle } from "react-icons/io";
-import { FaStar } from "react-icons/fa";
 const Content = () => {
     return (
         <div class="catalog">

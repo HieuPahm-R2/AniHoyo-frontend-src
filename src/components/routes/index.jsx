@@ -8,8 +8,6 @@ import AdminHome from "../../pages/admin/AdminHomepage";
 import UserManage from "../../pages/admin/UserManage";
 import ProductManage from "../../pages/admin/ProductManage";
 import MadContent from "../admin/MadContent";
-import "../../assets/styles/main.scss";
-import "../../assets/styles/responsive.scss";
 import "../../assets/styles/mainClient.scss"
 import Layout from "../layout/client/layout";
 import Error404 from "../errors/404-page";
