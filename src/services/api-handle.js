@@ -28,3 +28,13 @@ export const callUpdateFilmAPI = (id,thumbnail, slider, name, studio, descriptio
 export const fetchDataFilmsAPI = (query) => {
     return instance.get(`/api/v1/get-all-films?${query}`);
 }
+// authentication
+export const registerAPI = (fullName, email, password) => {
+    return instance.post(`/api/v1/auth/register`, {fullName, email, password})
+}
+export const loginAPI = (username, password) => {
+    return instance.post(`/api/v1/auth/login`, {username, password})
+}
+export const callFetchAccountAPI = () => {
+    return instance.get(`/api/v1/auth/account`)
+}

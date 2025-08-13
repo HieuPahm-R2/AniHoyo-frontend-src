@@ -1,24 +1,12 @@
-import {
-  Layout,
-  Menu,
-  Button,
-  Typography,
-  Card,
-  Form,
-  Input,
-  Checkbox,
-} from "antd";
+import { Layout, Menu, Button, Typography, Card, Form, Input, Checkbox, message, notification } from "antd";
 import logo1 from "../../assets/images/logos-facebook.svg";
 import logo2 from "../../assets/images/logo-apple.svg";
 import logo3 from "../../assets/images/Google__G__Logo.svg.png";
 
-import { Link } from "react-router-dom";
-import {
-  DribbbleOutlined,
-  TwitterOutlined,
-  InstagramOutlined,
-  GithubOutlined,
-} from "@ant-design/icons";
+import { Link, useNavigate } from "react-router-dom";
+import { DribbbleOutlined, TwitterOutlined, InstagramOutlined, GithubOutlined } from "@ant-design/icons";
+import { registerAPI } from "../../services/api-handle";
+import { useState } from "react";
 
 const { Title } = Typography;
 const { Header, Footer, Content } = Layout;
@@ -53,7 +41,6 @@ const template = [
   </svg>,
 ];
 
-
 const signin = [
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -69,13 +56,26 @@ const signin = [
 ];
 
 const RegisterPage = () => {
-  const onFinish = (values) => {
-    console.log("Success:", values);
+  const [isSubmit, setIsSumbit] = useState(false);
+  const navigate = useNavigate();
+
+  const onFinish = async (values) => {
+    const { fullName, email, password } = values;
+    setIsSumbit(true);
+    const result = await registerAPI(fullName, email, password);
+    setIsSumbit(false)
+    if (result.data.id) {
+      message.success('Đăng ký thành công');
+      navigate("/login")
+    } else {
+      notification.error({
+        message: "Something went wrongs",
+        description: result.message && Array.isArray(result.message) ? result.message : "",
+        duration: 3
+      })
+    }
   };
 
-  const onFinishFailed = (errorInfo) => {
-    console.log("Failed:", errorInfo);
-  };
   return (
     <>
       <div className="layout-default ant-layout layout-sign-up">
@@ -94,7 +94,7 @@ const RegisterPage = () => {
               <Menu.Item key="4">
                 <Link to="/login">
                   {signin}
-                  <span> Đăng ký</span>
+                  <span> Đăng nhập ngay</span>
                 </Link>
               </Menu.Item>
             </Menu>
@@ -117,7 +117,6 @@ const RegisterPage = () => {
           <Card
             className="card-signup header-solid h-full ant-card pt-0"
             title={<h5>Đăng ký với</h5>}
-            bordered="false"
           >
             <div className="sign-up-gateways">
               <Button type="false">
@@ -135,11 +134,10 @@ const RegisterPage = () => {
               name="basic"
               initialValues={{ remember: true }}
               onFinish={onFinish}
-              onFinishFailed={onFinishFailed}
               className="row-col"
             >
               <Form.Item
-                name="Name"
+                name="fullName"
                 rules={[
                   { required: true, message: "Please input your username!" },
                 ]}
@@ -149,7 +147,14 @@ const RegisterPage = () => {
               <Form.Item
                 name="email"
                 rules={[
-                  { required: true, message: "Please input your email!" },
+                  {
+                    type: 'email',
+                    message: 'The input is not a valid E-mail!',
+                  },
+                  {
+                    required: true,
+                    message: 'Please input your E-mail!',
+                  },
                 ]}
               >
                 <Input placeholder="email" />
@@ -177,6 +182,7 @@ const RegisterPage = () => {
                   style={{ width: "100%" }}
                   type="primary"
                   htmlType="submit"
+                  loading={isSubmit}
                 >
                   Đăng ký ngay
                 </Button>

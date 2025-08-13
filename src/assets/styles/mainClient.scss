@@ -6119,18 +6119,6 @@ body {
   margin-top: 30px;
 }
 
-.plyr__tooltip {
-  font-weight: 400;
-}
-
-.plyr__tab-focus {
-  box-shadow: none;
-  outline: none;
-}
-
-.plyr__control {
-  border-radius: 10px;
-}
 
 @media (min-width: 768px) {
   .plyr {
@@ -6220,19 +6208,7 @@ body {
   }
 }
 
-.plyr__progress__buffer {
-  border-radius: 0;
-}
 
-
-.plyr__control.plyr__tab-focus {
-  box-shadow: none;
-}
-
-.plyr__menu__container .plyr__control[role="menuitemradio"][aria-checked="true"]::before {
-  background: none;
-  background-color: #2f80ed;
-}
 
 .plyr--video .plyr__control svg {
   filter: none;

@@ -63,14 +63,14 @@ const Introduce = () => {
                                             <a href="details.html" class="series__cover">
 
                                             </a>
-                                            <h3 class="series__title"><a href="details.html.html">1st series</a></h3>
+                                            <h3 class="series__title"><a href="details.html.html">1st season</a></h3>
                                         </div>
                                         <div class="series">
                                             <a href="details.html" class="series__cover">
 
 
                                             </a>
-                                            <h3 class="series__title"><a href="details.html">2nd series</a></h3>
+                                            <h3 class="series__title"><a href="details.html">2nd season</a></h3>
                                         </div>
 
                                         <div class="series">

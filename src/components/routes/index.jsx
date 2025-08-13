@@ -12,6 +12,7 @@ import "../../assets/styles/mainClient.scss"
 import Layout from "../layout/client/layout";
 import Error404 from "../errors/404-page";
 import ClientHome from "../../pages/client/ClientHomepage";
+import ProtectedRoute from "../protected";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -39,7 +40,9 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <AdminHome />
+        element: <ProtectedRoute>
+          <AdminHome />
+        </ProtectedRoute>
       },
       {
         path: "table-users",

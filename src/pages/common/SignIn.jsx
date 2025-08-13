@@ -1,6 +1,9 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import {
   Layout, Menu, Button, Row, Col, Typography, Form, Input, Switch,
+  message,
+  notification,
 } from "antd";
 import signinbg from "../../assets/images/login-intro1.jpg";
 import {
@@ -9,6 +12,9 @@ import {
   InstagramOutlined,
   GithubOutlined,
 } from "@ant-design/icons";
+import { loginAPI } from "../../services/api-handle";
+import { useState } from "react";
+import { runLoginAction } from "../../context/account/accountSlice";
 
 const { Title } = Typography;
 const { Header, Footer, Content } = Layout;
@@ -80,28 +86,31 @@ const signup = [
     ></path>
   </svg>,
 ];
-const signin = [
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="14"
-    height="14"
-    viewBox="0 0 14 14"
-  >
-    <path
-      className="fill-muted"
-      d="M12.25,14H1.75A1.752,1.752,0,0,1,0,12.25V3.5A1.752,1.752,0,0,1,1.75,1.75h.876V.875a.875.875,0,0,1,1.75,0V1.75h5.25V.875a.875.875,0,0,1,1.75,0V1.75h.875A1.752,1.752,0,0,1,14,3.5v8.75A1.752,1.752,0,0,1,12.25,14ZM3.5,4.375a.875.875,0,0,0,0,1.75h7a.875.875,0,0,0,0-1.75Z"
-    />
-  </svg>,
-];
+
 
 const SingInPage = () => {
-  const onFinish = (values) => {
-    console.log("Success:", values);
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const onFinish = async (values) => {
+    const { username, password } = values;
+    setIsLoading(true);
+    const res = await loginAPI(username, password);
+    setIsLoading(false);
+    if (res?.data) {
+      localStorage.setItem(res.data.access_token);
+      dispatch(runLoginAction(res.data.user))
+      message.success("Everything done");
+      navigate("/")
+    } else {
+      notification.error({
+        message: "Something went wrongs",
+        description: "Failed action, try again..!",
+      })
+    }
   };
 
-  const onFinishFailed = (errorInfo) => {
-    console.log("Failed:", errorInfo);
-  };
   return (
     <>
       <Layout className="layout-default layout-signin">
@@ -148,14 +157,13 @@ const SingInPage = () => {
               </Title>
               <Form
                 onFinish={onFinish}
-                onFinishFailed={onFinishFailed}
                 layout="vertical"
                 className="row-col"
               >
                 <Form.Item
                   className="username"
                   label="Email"
-                  name="email"
+                  name="username"
                   rules={[
                     {
                       required: true,
@@ -170,6 +178,7 @@ const SingInPage = () => {
                   className="username"
                   label="Password"
                   name="password"
+
                   rules={[
                     {
                       required: true,
@@ -177,7 +186,7 @@ const SingInPage = () => {
                     },
                   ]}
                 >
-                  <Input placeholder="Password" />
+                  <Input.Password placeholder="Password" />
                 </Form.Item>
 
                 <Form.Item
