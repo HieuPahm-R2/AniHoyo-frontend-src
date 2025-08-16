@@ -99,7 +99,7 @@ const SingInPage = () => {
     const res = await loginAPI(username, password);
     setIsLoading(false);
     if (res?.data) {
-      localStorage.setItem(res.data.access_token);
+      localStorage.setItem('access_token', res.data.access_token);
       dispatch(runLoginAction(res.data.user))
       message.success("Everything done");
       navigate("/")
@@ -159,10 +159,13 @@ const SingInPage = () => {
                 onFinish={onFinish}
                 layout="vertical"
                 className="row-col"
+                initialValues={{
+                  remember: true
+                }}
               >
                 <Form.Item
                   className="username"
-                  label="Email"
+                  label="Email/username"
                   name="username"
                   rules={[
                     {
@@ -178,7 +181,6 @@ const SingInPage = () => {
                   className="username"
                   label="Password"
                   name="password"
-
                   rules={[
                     {
                       required: true,

@@ -24,28 +24,28 @@ const ModalUpdate = (props) => {
     const [listTags, setListTags] = useState([]);
 
     useEffect(() => {
-            const fetchCategories = async () => {
-                const res = await fetchFilmCategory();
-                if(res && res.data){
-                    const accept = res.data.map((item) => ({
-                        label: item.name,
-                        value: item.id
-                    }))
-                    setListCategories(accept);
-                }
+        const fetchCategories = async () => {
+            const res = await fetchFilmCategory();
+            if (res && res.data) {
+                const accept = res.data.result.map((item) => ({
+                    label: item.name,
+                    value: item.id
+                }))
+                setListCategories(accept);
             }
-            const fetchTags = async () => {
-                const res = await fetchFilmTags();
-                if(res && res.data){
-                    const accept = res.data.map((item) => ({
-                        label: item.tagName,
-                        value: item.id
-                    }))
-                    setListTags(accept)
-                }
+        }
+        const fetchTags = async () => {
+            const res = await fetchFilmTags();
+            if (res && res.data) {
+                const accept = res.data.result.map((item) => ({
+                    label: item.tagName,
+                    value: item.id
+                }))
+                setListTags(accept)
             }
-            fetchCategories();
-            fetchTags();
+        }
+        fetchCategories();
+        fetchTags();
     }, [])
 
     useEffect(() => {
@@ -104,10 +104,10 @@ const ModalUpdate = (props) => {
         setIsSubmit(true);
         const thumbnail = dataThumbnail[0].name;
         const slider = dataSlider[0].name;
-        const {id, name, studio, description, tag,releaseYear, category } = values;
+        const { id, name, studio, description, tag, releaseYear, category } = values;
         console.log(values);
         const res = await callUpdateFilmAPI(
-            id,thumbnail, slider, name, studio, description, tag,releaseYear, category
+            id, thumbnail, slider, name, studio, description, tag, releaseYear, category
         );
         if (res && res.data) {
             setOpenModalUpdate(false);
@@ -131,7 +131,7 @@ const ModalUpdate = (props) => {
     }
     const handleUploadThumbnail = async ({ file, onSuccess, onError }) => {
         console.log("handleUploadThumbnail called");
-        const res_thumb = await callUploadImage(file,"thumbnail");
+        const res_thumb = await callUploadImage(file, "thumbnail");
         console.log(res_thumb.data)
         if (res_thumb && res_thumb.data) {
             setDataThumbnail([{
@@ -145,7 +145,7 @@ const ModalUpdate = (props) => {
         }
     };
     const handleUploadSlider = async ({ file, onSuccess, onError }) => {
-        const res = await callUploadImage(file,"slider");
+        const res = await callUploadImage(file, "slider");
         if (res && res.data) {
             setDataSlider([{
                 name: res.data.fileName,
@@ -202,8 +202,8 @@ const ModalUpdate = (props) => {
             });
         }
     };
-  return (
-    <>
+    return (
+        <>
             <Modal
                 title="Chỉnh sửa thông tin phim"
                 open={openModalUpdate}
@@ -370,8 +370,8 @@ const ModalUpdate = (props) => {
                                 <InputNumber min={1} style={{ width: '100%' }} />
                             </Form.Item>
                         </Col>
-                        
-                        
+
+
                     </Row>
                 </Form>
             </Modal>
@@ -380,7 +380,7 @@ const ModalUpdate = (props) => {
             </Modal>
 
         </>
-  )
+    )
 }
 
 export default ModalUpdate

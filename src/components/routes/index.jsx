@@ -7,12 +7,13 @@ import RegisterPage from "../../pages/common/Register";
 import AdminHome from "../../pages/admin/AdminHomepage";
 import UserManage from "../../pages/admin/UserManage";
 import ProductManage from "../../pages/admin/ProductManage";
-import MadContent from "../admin/MadContent";
+import MadContent from "../layout/admin/MadContent";
 import "../../assets/styles/mainClient.scss"
 import Layout from "../layout/client/layout";
 import Error404 from "../errors/404-page";
 import ClientHome from "../../pages/client/ClientHomepage";
 import ProtectedRoute from "../protected";
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -46,11 +47,15 @@ const router = createBrowserRouter([
       },
       {
         path: "table-users",
-        element: <UserManage />
+        element: <ProtectedRoute>
+          <UserManage />
+        </ProtectedRoute>
       },
       {
         path: "table-films",
-        element: <ProductManage />
+        element: <ProtectedRoute>
+          <ProductManage />
+        </ProtectedRoute>
       },
     ]
   },

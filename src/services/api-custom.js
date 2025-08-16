@@ -10,8 +10,26 @@ const instance = axios.create({
 // sending bearer token with axios
 instance.defaults.headers.common = { 'Authorization': `Bearer ${localStorage.getItem('access_token')}` }
 
+const handleRefreshToken = async () => {
+    // Tạo một instance axios riêng không có Authorization header
+    const refreshInstance = axios.create({
+        baseURL: baseURL,
+        withCredentials: true
+    });
+    const res = await refreshInstance.get(`/api/v1/auth/refresh`);
+    if (res && res.data) {
+        return res.data.access_token;
+    }
+    return null;
+}
 // Add a request interceptor
 instance.interceptors.request.use(function (config) {
+    // Nếu là request login hoặc refresh thì xóa Authorization header
+    if (config.url && (config.url.includes('/api/v1/auth/login') )) {
+        if (config.headers && config.headers['Authorization']) {
+            delete config.headers['Authorization'];
+        }
+    }
     // Do something before request is sent
     return config;
 }, function (error) {
@@ -24,14 +42,28 @@ instance.interceptors.response.use(function (response) {
     // Any status code that lie within the range of 2xx cause this function to trigger
     // Do something with response data
     return response && response.data ? response.data : response;
-}, function (error) {
+}, async function (error) {
+    // Không thực hiện refresh token nếu là request login hoặc refresh
+    if (error.config && error.response
+        && +error.response.status === 401
+        && !error.config.headers[NO_RETRY_HEADER]
+        && !(error.config.url && (error.config.url.includes('/api/v1/auth/login') || error.config.url.includes('/api/v1/auth/refresh')))) {
+        const access_token = await handleRefreshToken();
+        error.config.headers[NO_RETRY_HEADER] = 'true'
+        if (access_token) {
+            error.config.headers['Authorization'] = `Bearer ${access_token}`;
+            localStorage.setItem("access_token", access_token);
+            return instance.request(error.config);
+        }
+    }
     // handle logic when refresh token and accesstoken expired
-    // if (error.config && error.response
-    //     && +error.response.status === 400
-    //     && error.config.url === '/api/v1/auth/refresh') {
-    //     window.location.href = '/login';
-    // }
+    if (error.config && error.response
+        && +error.response.status === 400
+        && error.config.url === '/api/v1/auth/refresh') {
+        window.location.href = '/login';
+      
+    }
     // Do something with response error
-    return error?.response?.data ?? Promise.reject(error);
+    return error.response.data ?? Promise.reject(error);
 });
 export default instance

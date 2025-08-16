@@ -2,18 +2,9 @@ import React from 'react'
 import { useState, useEffect } from "react";
 
 import {
-  Row,
-  Col,
-  Breadcrumb,
-  Badge,
-  Dropdown,
-  Button,
-  List,
-  Avatar,
-  Input,
-  Drawer,
-  Typography,
-  Switch,
+  Row, Col, Breadcrumb, Button, List, Avatar, Input, Drawer, Typography, Switch,
+  Badge, Dropdown,
+  Space
 } from "antd";
 import styled from "styled-components";
 import {
@@ -21,9 +12,11 @@ import {
   StarOutlined,
   TwitterOutlined,
   FacebookFilled,
+  DownOutlined,
 } from "@ant-design/icons";
 import avtar from "../../assets/images/team-2.jpg";
 import { NavLink, Link } from "react-router-dom";
+import { useSelector } from 'react-redux';
 
 const ButtonContainer = styled.div`
   .ant-btn-primary {
@@ -34,12 +27,6 @@ const ButtonContainer = styled.div`
   }
   .ant-btn-yellow {
     background-color: #fadb14;
-  }
-  .ant-btn-black {
-    background-color: #262626;
-    color: #fff;
-    border: 0px;
-    border-radius: 5px;
   }
   .ant-switch-active {
     background-color: #1890ff;
@@ -92,27 +79,6 @@ const wifi = [
   </svg>,
 ];
 
-const credit = [
-  <svg
-    width="20"
-    height="20"
-    viewBox="0 0 20 20"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-    key={0}
-  >
-    <path
-      fill="#1890FF"
-      d="M4 4C2.89543 4 2 4.89543 2 6V7H18V6C18 4.89543 17.1046 4 16 4H4Z"
-    ></path>
-    <path
-      fill="#1890FF"
-      fillRule="evenodd"
-      clipRule="evenodd"
-      d="M18 9H2V14C2 15.1046 2.89543 16 4 16H16C17.1046 16 18 15.1046 18 14V9ZM4 13C4 12.4477 4.44772 12 5 12H6C6.55228 12 7 12.4477 7 13C7 13.5523 6.55228 14 6 14H5C4.44772 14 4 13.5523 4 13ZM9 12C8.44772 12 8 12.4477 8 13C8 13.5523 8.44772 14 9 14H10C10.5523 14 11 13.5523 11 13C11 12.4477 10.5523 12 10 12H9Z"
-    ></path>
-  </svg>,
-];
 
 const clockicon = [
   <svg
@@ -136,26 +102,19 @@ const data = [
   {
     title: "New message from Sophie",
     description: <>{clockicon} 2 days ago</>,
-
-    avatar: avtar,
+    avatar: <Avatar shape="square">{wifi}</Avatar>,
   },
   {
     title: "New album by Travis Scott",
     description: <>{clockicon} 2 days ago</>,
-
     avatar: <Avatar shape="square">{wifi}</Avatar>,
-  },
-  {
-    title: "Payment completed",
-    description: <>{clockicon} 2 days ago</>,
-    avatar: <Avatar shape="square">{credit}</Avatar>,
   },
 ];
 
 const menu = (
   <List
     min-width="100%"
-    className="header-notifications-dropdown "
+    className="header-notifications-dropdown"
     itemLayout="horizontal"
     dataSource={data}
     renderItem={(item) => (
@@ -237,17 +196,37 @@ const setting = [
 ];
 
 const HeaderAdmin = (props) => {
-    const {name, subName, onPress, handleSidenavColor, handleFixedNavbar} = props;
-    const {Title, Text} = Typography
-    
-    const [visible, setVisible] = useState(false);
+  const user = useSelector(state => state.account.user);
 
-    const showDrawer = () => setVisible(true);
-    const hideDrawer = () => setVisible(false);
-    useEffect(() => window.scrollTo(0, 0));
+  const { name, subName, onPress, handleSidenavColor, handleFixedNavbar } = props;
+  const { Title, Text } = Typography
+
+  const urlAvatarTemp = `${import.meta.env.VITE_BACKEND_URL}/storage/temp/user33.svg`;
+  const urlAvatar = `${import.meta.env.VITE_BACKEND_URL}/storage/avatar/${user?.avatar}`;
+
+  let items = [
+    {
+      label: <label>Quản lý tài khoản</label>,
+      key: 'account',
+    },
+    {
+      label: <label>Đăng xuất</label>,
+      key: 'logout',
+    },
+  ];
+  const handleMenuClick = ({ key }) => {
+    if (key === 'admin') navigate('/admin');
+    if (key === 'logout') handleLogout();
+  }
+
+  const [visible, setVisible] = useState(false);
+
+  const showDrawer = () => setVisible(true);
+  const hideDrawer = () => setVisible(false);
+  useEffect(() => window.scrollTo(0, 0));
 
   return (
-     <>
+    <>
       <div className="setting-drwer" onClick={showDrawer}>
         {setting}
       </div>
@@ -298,6 +277,7 @@ const HeaderAdmin = (props) => {
             width={360}
             onClose={hideDrawer}
             placement={"right"}
+            visible={visible}
           >
             <div layout="vertical">
               <div className="header-top">
@@ -323,36 +303,24 @@ const HeaderAdmin = (props) => {
                     >
                       1
                     </Button>
-                    <Button
-                      type="danger"
-                      onClick={() => handleSidenavColor("#d9363e")}
-                    >
-                      1
-                    </Button>
+
                     <Button
                       type="yellow"
                       onClick={() => handleSidenavColor("#fadb14")}
                     >
                       1
                     </Button>
-
-                    <Button
-                      type="black"
-                      onClick={() => handleSidenavColor("#111")}
-                    >
-                      1
-                    </Button>
                   </ButtonContainer>
                 </div>
 
-               
+
                 <div className="fixed-nav mb-2">
                   <Title level={5}>Navbar Fixed </Title>
                   <Switch onChange={(e) => handleFixedNavbar(e)} />
                 </div>
                 <div className="ant-docment">
                   <ButtonContainer>
-                    <Button type="black" size="large">
+                    <Button style={{ backgroundColor: "#52c41a" }} size="large">
                       Anihoyo free watching Anime
                     </Button>
                     <Button size="large">VIEW DOCUMENTATION</Button>
@@ -368,22 +336,22 @@ const HeaderAdmin = (props) => {
                     Thank you for sharing!
                   </Title>
                   <ButtonContainer className="social">
-                    <Button type="black">{<TwitterOutlined />}TWEET</Button>
-                    <Button type="black">{<FacebookFilled />}SHARE</Button>
+                    <Button >{<TwitterOutlined />}TWEET</Button>
+                    <Button>{<FacebookFilled />}SHARE</Button>
                   </ButtonContainer>
                 </div>
               </div>
             </div>
           </Drawer>
-          <Link to="/sign-in" className="btn-sign-in">
-            {profile}
-            <span>Sign in</span>
-          </Link>
-          <Input
-            className="header-search"
-            placeholder="Type here..."
-            prefix={<SearchOutlined />}
-          />
+          <Dropdown menu={{ items, onClick: handleMenuClick }} trigger={['click']} >
+            <a style={{ color: "black" }} onClick={(e) => e.preventDefault()}>
+              <Space>
+                <Avatar src={user?.avatar ? urlAvatar : urlAvatarTemp} />
+                Welcome_{user?.name}
+                <DownOutlined />
+              </Space>
+            </a>
+          </Dropdown>
         </Col>
       </Row>
     </>

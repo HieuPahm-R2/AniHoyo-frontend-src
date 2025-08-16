@@ -1,16 +1,5 @@
 import {
-  Row,
-  Col,
-  Card,
-  Radio,
-  Table,
-  Upload,
-  message,
-  Progress,
-  Button,
-  Typography,
-  Image,
-  Popconfirm
+  Row, Col, Card, Table, Upload, message, Progress, Button, Typography, Image, Popconfirm
 } from "antd";
 import moment from "moment";
 import { DeleteTwoTone, EditTwoTone, PlusOutlined, ReloadOutlined, ToTopOutlined } from "@ant-design/icons";
@@ -21,6 +10,7 @@ import ModalCreate from "../../components/admin/ModalCreate";
 import { fetchDataFilmsAPI } from "../../services/api-handle";
 import { FORMAT_DATE_DISPLAY } from "../../services/constant-date";
 import ModalUpdate from "../../components/admin/ModalUpdate";
+import ModalAdjustFilm from "../../components/admin/ModalAdjustFilm";
 const ProductManage = () => {
   const { Title } = Typography;
 
@@ -31,6 +21,7 @@ const ProductManage = () => {
   const [dataUpdate, setDataUpdate] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [dataFilm, setDataFilm] = useState([]);
+  const [dataDetail, setDataDetail] = useState(null);
 
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(5);
@@ -127,7 +118,13 @@ const ProductManage = () => {
         <Image.PreviewGroup>
           <Image className="shape-avatar" width={50}
             src={`${import.meta.env.VITE_BACKEND_URL}/storage/thumbnail/${film.thumbnail}`} alt="" />
-          <div className="avatar-info" style={{ display: "inline-block", marginLeft: "5px" }}>
+          <div className="avatar-info" style={{ display: "inline-block", marginLeft: "5px", cursor: "pointer" }}
+            onClick={
+              () => {
+                setDataDetail(film);
+                setOpenViewDetail(true);
+              }
+            }>
             <Title level={5}>{film.name || 'No Name'}</Title>
           </div>
         </Image.PreviewGroup>
@@ -150,6 +147,19 @@ const ProductManage = () => {
     ),
   })) : [];
 
+  const onChange = (pagination, filters, sorter) => {
+    if (pagination.current !== current && pagination) {
+      setCurrent(pagination.current);
+    }
+    if (pagination.pageSize !== pageSize && pagination) {
+      setPageSize(pagination.pageSize);
+      setCurrent(1);
+    }
+    if (sorter && sorter.field) {
+      const sort = sorter.order === "ascend" ? `sort=${sorter.field}` : `sort=-${sorter.field}`;
+      setSortQuery(sort);
+    }
+  }
   return (
     <Row gutter={[24, 0]}>
       <Col xs="24" xl={24}>
@@ -177,6 +187,7 @@ const ProductManage = () => {
               columns={project}
               dataSource={dataproject}
               loading={isLoading}
+              onChange={onChange}
               pagination={{
                 current: current,
                 pageSize: pageSize,
@@ -196,6 +207,11 @@ const ProductManage = () => {
         dataUpdate={dataUpdate}
         setDataUpdate={setDataUpdate}
         setOpenModalUpdate={setOpenModalUpdate}
+        refetchData={refetchData} />
+      <ModalAdjustFilm dataDetail={dataDetail}
+        setDataDetail={setDataDetail}
+        openViewDetail={openViewDetail}
+        setOpenViewDetail={setOpenViewDetail}
         refetchData={refetchData} />
     </Row>
   )

@@ -14,10 +14,10 @@ export const callUploadImage = (file, folder) => {
     });
 }
 export const fetchFilmCategory = () => {
-    return instance.get("/api/v1/get-all-category");
+    return instance.get("/api/v1/categories");
 }
 export const fetchFilmTags = () => {
-    return instance.get("/api/v1/get-all-tags");
+    return instance.get("/api/v1/tags");
 }
 export const callCreateFilmAPI = (thumbnail, slider, name, studio, description, releaseYear, tag, category) => {
     return instance.post('/api/v1/add-film', { thumbnail, slider, name, studio, description, releaseYear, tag, category })
@@ -26,7 +26,7 @@ export const callUpdateFilmAPI = (id,thumbnail, slider, name, studio, descriptio
     return instance.put(`/api/v1/update-film`, {id, thumbnail, slider, name, studio, description, releaseYear, tag, category })
 }
 export const fetchDataFilmsAPI = (query) => {
-    return instance.get(`/api/v1/get-all-films?${query}`);
+    return instance.get(`/api/v1/films?${query}`);
 }
 // authentication
 export const registerAPI = (fullName, email, password) => {
@@ -37,4 +37,11 @@ export const loginAPI = (username, password) => {
 }
 export const callFetchAccountAPI = () => {
     return instance.get(`/api/v1/auth/account`)
+}
+export const LogoutAPI = () => {
+    return instance.post('/api/v1/auth/logout')
+}
+// season of film
+export const fetchSeasonsOfFilmAPI = (id, query) => {
+    return instance.get(`/api/v1/seasons/by-film/${id}?${query}`)
 }

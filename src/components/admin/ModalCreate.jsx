@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Col, Divider,message, Form, Input, InputNumber, Modal, notification, Row, Select, Upload } from "antd";
+import { Col, Divider, message, Form, Input, InputNumber, Modal, notification, Row, Select, Upload } from "antd";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 import { callCreateFilmAPI, callUploadImage, fetchFilmCategory, fetchFilmTags } from '../../services/api-handle';
 import { v4 as uuidv4 } from 'uuid';
@@ -7,7 +7,7 @@ const ModalCreate = (props) => {
     const { openModalCreate, setOpenModalCreate, refetchData } = props;
 
     const [form] = Form.useForm();
-    
+
     const [isLoading, setIsLoading] = useState(false);
     const [isSubmit, setIsSubmit] = useState(false);
     const [isSliderLoading, setIsSliderLoading] = useState(false);
@@ -20,11 +20,11 @@ const ModalCreate = (props) => {
     const [dataSlider, setDataSlider] = useState([]);
     const [listCategories, setListCategories] = useState([]);
     const [listTags, setListTags] = useState([]);
-     useEffect(() => {
+    useEffect(() => {
         const fetchCategories = async () => {
             const res = await fetchFilmCategory();
-            if(res && res.data){
-                const accept = res.data.map((item) => ({
+            if (res && res.data) {
+                const accept = res.data.result.map((item) => ({
                     label: item.name,
                     value: item.id
                 }))
@@ -33,8 +33,8 @@ const ModalCreate = (props) => {
         }
         const fetchTags = async () => {
             const res = await fetchFilmTags();
-            if(res && res.data){
-                const accept = res.data.map((item) => ({
+            if (res && res.data) {
+                const accept = res.data.result.map((item) => ({
                     label: item.tagName,
                     value: item.id
                 }))
@@ -60,11 +60,11 @@ const ModalCreate = (props) => {
             })
             return;
         }
-        const { name, studio, description, tag,releaseYear, category } = values;
+        const { name, studio, description, tag, releaseYear, category } = values;
         const thumbnail = dataThumbnail[0].name;
         const slider = dataSlider[0].name;
         setIsSubmit(true);
-        const res = await callCreateFilmAPI(thumbnail, slider, name, studio, description, releaseYear,tag, category);
+        const res = await callCreateFilmAPI(thumbnail, slider, name, studio, description, releaseYear, tag, category);
         if (res && res.data) {
             notification.success({
                 message: 'Thành công',
@@ -83,10 +83,10 @@ const ModalCreate = (props) => {
         }
         setIsSubmit(false);
     }
-     // handle upload file
+    // handle upload file
     const handleUploadThumbnail = async ({ file, onSuccess, onError }) => {
         console.log("handleUploadThumbnail called");
-        const res_thumb = await callUploadImage(file,"thumbnail");
+        const res_thumb = await callUploadImage(file, "thumbnail");
         console.log(res_thumb.data)
         if (res_thumb && res_thumb.data) {
             setDataThumbnail([{
@@ -100,7 +100,7 @@ const ModalCreate = (props) => {
         }
     };
     const handleUploadSlider = async ({ file, onSuccess, onError }) => {
-        const res = await callUploadImage(file,"slider");
+        const res = await callUploadImage(file, "slider");
         if (res && res.data) {
             setDataSlider([{
                 name: res.data.fileName,
@@ -157,8 +157,8 @@ const ModalCreate = (props) => {
             });
         }
     };
-  return (
-     <>
+    return (
+        <>
             <Modal
                 title="Thêm Phim mới"
                 open={openModalCreate}
@@ -315,8 +315,8 @@ const ModalCreate = (props) => {
                                 <InputNumber min={1} style={{ width: '100%' }} />
                             </Form.Item>
                         </Col>
-                        
-                        
+
+
                     </Row>
                 </Form>
             </Modal>
@@ -325,7 +325,7 @@ const ModalCreate = (props) => {
             </Modal>
 
         </>
-  )
+    )
 }
 
 export default ModalCreate
