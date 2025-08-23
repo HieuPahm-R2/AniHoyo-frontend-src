@@ -24,14 +24,19 @@ const handleRefreshToken = async () => {
 }
 // Add a request interceptor
 instance.interceptors.request.use(function (config) {
+    // Luôn set Authorization header mới nhất từ localStorage
+    const token = localStorage.getItem('access_token');
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
+    
     // Nếu là request login hoặc refresh thì xóa Authorization header
     if (config.url && (config.url.includes('/api/v1/auth/login') )) {
         if (config.headers && config.headers['Authorization']) {
             delete config.headers['Authorization'];
         }
     }
-    // Do something before request is sent
-    return config;
+   return config;
 }, function (error) {
     // Do something with request error
     return Promise.reject(error);
@@ -47,7 +52,8 @@ instance.interceptors.response.use(function (response) {
     if (error.config && error.response
         && +error.response.status === 401
         && !error.config.headers[NO_RETRY_HEADER]
-        && !(error.config.url && (error.config.url.includes('/api/v1/auth/login') || error.config.url.includes('/api/v1/auth/refresh')))) {
+        && !(error.config.url && (error.config.url.includes('/api/v1/auth/login') || error.config.url.includes('/api/v1/auth/refresh')))
+      ) {
         const access_token = await handleRefreshToken();
         error.config.headers[NO_RETRY_HEADER] = 'true'
         if (access_token) {
@@ -67,3 +73,4 @@ instance.interceptors.response.use(function (response) {
     return error.response.data ?? Promise.reject(error);
 });
 export default instance
+//  

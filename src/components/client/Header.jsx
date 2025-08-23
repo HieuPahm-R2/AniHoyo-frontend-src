@@ -110,7 +110,7 @@ const Header = () => {
                                     </Link>
                                     :
                                     <Dropdown menu={{ items, onClick: handleMenuClick }} trigger={['click']} >
-                                        <a style={{ color: "white" }} onClick={(e) => e.preventDefault()}>
+                                        <a style={{ color: "white", cursor: "pointer" }} onClick={(e) => e.preventDefault()}>
                                             <Space>
                                                 <Avatar src={user?.avatar ? urlAvatar : urlAvatarTemp} />
                                                 Welcome_{user?.name}

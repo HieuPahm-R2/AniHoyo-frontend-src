@@ -13,6 +13,33 @@ export const callUploadImage = (file, folder) => {
         },
     });
 }
+export const uploadVideoAPI = (file, folder) => {
+    const bodyFormData = new FormData();
+    bodyFormData.append('file', file);
+    bodyFormData.append('folder',folder);
+    return instance({
+        method: 'post',
+        url: '/api/v1/upload/video',
+        data: bodyFormData,
+        headers: {
+            "Content-Type": "multipart/form-data",
+        },
+    });
+}
+// Episode
+export const createEpisodeAPI = (title, filePath, contentType, seasonId) => {
+    return instance.post("/api/v1/add-episode",{
+        title, filePath,
+        contentType,
+        season: {
+            "id": seasonId
+        }
+    })
+}
+export const fetchAllEpisodeBySeason = (seasonId) => {
+    return instance.get(`/api/v1/episodes/by-season/${seasonId}`)
+}
+// Film
 export const fetchFilmCategory = () => {
     return instance.get("/api/v1/categories");
 }
