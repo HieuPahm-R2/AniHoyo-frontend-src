@@ -25,8 +25,10 @@ const router = createBrowserRouter([
         element: <ClientHome />
       },
       {
-        path: "detail-film",
-        element: <DetailsPage />
+        path: "/detail/:slug",
+        element: <ProtectedRoute>
+          <DetailsPage />
+        </ProtectedRoute>
       },
       {
         path: "social-community",

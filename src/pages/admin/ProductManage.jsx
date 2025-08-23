@@ -53,6 +53,11 @@ const ProductManage = () => {
   // project table start
   const project = [
     {
+      title: 'Id Product',
+      key: 'id',
+      hidden: true
+    },
+    {
       title: "Film/Movie Name",
       dataIndex: "name",
       width: "32%",
@@ -100,6 +105,7 @@ const ProductManage = () => {
                 twoToneColor="#f57800" style={{ cursor: "pointer" }}
                 onClick={() => {
                   setOpenModalUpdate(true);
+                  console.log("TRINH LA GIF", record)
                   setDataUpdate(record);
                 }}
               />
@@ -109,7 +115,7 @@ const ProductManage = () => {
         )
       }
     },
-  ];
+  ].filter(item => !item.hidden);
   // Tạo dataproject động từ dataFilm, đảm bảo dataFilm luôn là mảng
   const dataproject = Array.isArray(dataFilm) ? dataFilm.map((film, idx) => ({
     // key: film.id || idx,
@@ -186,6 +192,7 @@ const ProductManage = () => {
             <Table
               columns={project}
               dataSource={dataproject}
+              rowKey="id"
               loading={isLoading}
               onChange={onChange}
               pagination={{

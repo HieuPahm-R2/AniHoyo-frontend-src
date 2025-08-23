@@ -2,16 +2,19 @@ import { Badge, Button, Col, Descriptions, Drawer, Image, Popconfirm, Row, Table
 import moment from 'moment';
 import React, { useEffect, useState } from 'react'
 import { FORMAT_DATE_DISPLAY } from '../../services/constant-date';
-import { DeleteTwoTone, EditTwoTone, PlusOutlined, ReloadOutlined } from "@ant-design/icons";
+import { DeleteTwoTone, EditTwoTone, EyeOutlined, PlusOutlined, ReloadOutlined } from "@ant-design/icons";
 import { fetchSeasonsOfFilmAPI } from '../../services/api-handle';
-import ModalEpisode from './ModalEpisode';
+import ModalEpisodeUpload from './ModalEpisodeUpload';
+import ModalEpisodeList from './ModalEpisodeList';
 
 const ModalAdjustFilm = (props) => {
-    const { openViewDetail, setOpenViewDetail, dataDetail, setDataDetail, } = props;
-    const [modalAddSeason, setModalAppSeason] = useState(false)
+    const { openViewDetail, setOpenViewDetail, dataDetail, setDataDetail } = props;
+    const [modalAddSeason, setModalAddSeason] = useState(false)
     const [modalAddEpisode, setModalAddEpisode] = useState(false)
+    const [modalListEpisode, setModalListEpisode] = useState(false)
 
-    const [dataSeason, setDataSeason] = useState([])
+    const [dataSeason, setDataSeason] = useState(null)
+    const [selectedSeason, setSelectedSeason] = useState(null)
 
     const [current, setCurrent] = useState(1);
     const [pageSize, setPageSize] = useState(5);
@@ -20,7 +23,7 @@ const ModalAdjustFilm = (props) => {
     const [filter, setFilter] = useState("");
 
     const { Title } = Typography;
-    console.log(dataDetail?.id)
+
 
     useEffect(() => {
         if (dataDetail && dataDetail.id) {
@@ -28,45 +31,84 @@ const ModalAdjustFilm = (props) => {
         }
     }, [current, pageSize, sortQuery, filter, dataDetail]);
 
+
     const refetchData = async () => {
         if (!dataDetail || !dataDetail.id) return;
-        // add filter (later)
-        let queryString = `current=${current}&pageSize=${pageSize}`;
-        if (filter) {
-            queryString += filter;
-        }
-        if (sortQuery) {
-            queryString += sortQuery;
-        }
-        const res = await fetchSeasonsOfFilmAPI(dataDetail.id, queryString);
-        if (res && res.data) {
-            setDataSeason(res.data.result);
-            setTotal(res.data.meta.total);
+        try {
+            // add filter (later)
+            let queryString = `current=${current}&pageSize=${pageSize}`;
+            if (filter) {
+                queryString += filter;
+            }
+            if (sortQuery) {
+                queryString += sortQuery;
+            }
+
+            const res = await fetchSeasonsOfFilmAPI(dataDetail.id, queryString);
+
+            if (res && res.data && res.data.result) {
+                setDataSeason(res.data.result);
+                setTotal(res.data.meta?.total || 0);
+
+            } else {
+                console.log('No data received from API');
+                setDataSeason([]);
+                setTotal(0);
+            }
+        } catch (error) {
+            console.error('Error fetching seasons:', error);
+            setDataSeason([]);
+            setTotal(0);
         }
     }
 
     const onClose = () => {
         setOpenViewDetail(false);
         setDataDetail(null);
+        setSelectedSeason(null);
     }
 
     const columns = [
         {
+            title: 'Id Product',
+            key: 'id',
+            hidden: true
+        },
+        {
             title: "Season Name",
-            dataIndex: "name",
+            dataIndex: "seasonName",
             width: "32%",
+            render: (text, record, index) => {
+                return (
+                    <Image.PreviewGroup>
+                        <Image className="shape-avatar" width={50}
+                            src={`${import.meta.env.VITE_BACKEND_URL}/storage/visual/haha.jpg`} alt="" />
+                        <div className="avatar-info" style={{ display: "inline-block", marginLeft: "5px", cursor: "pointer" }}>
+                            <Title level={5}>{record.seasonName || 'No Name'}</Title>
+                        </div>
+                    </Image.PreviewGroup>
+                )
+            }
         },
         {
             title: "Dạng Anime",
             dataIndex: "type",
+            key: "type",
+            render: (text, record, index) => {
+                return (
+                    <div className="semibold">{record.type || '---'}</div>
+                )
+            }
         },
         {
             title: "Release Year",
             dataIndex: "releaseYear",
+            key: "releaseYear"
         },
         {
             title: "Upload Date",
             dataIndex: "uploadDate",
+            key: "uploadDate",
             sorter: true,
             render: (text, record, index) => {
                 return (
@@ -76,11 +118,10 @@ const ModalAdjustFilm = (props) => {
         },
         {
             title: "Thêm tập phim",
-            dataIndex: "completion",
+            ket: "action",
             render: (_, record) => {
                 return (
                     <>
-
                         <Popconfirm
                             placement="leftTop"
                             title={"Xác nhận xóa?"}
@@ -89,7 +130,7 @@ const ModalAdjustFilm = (props) => {
                             okText="OK"
                             cancelText="Hủy bỏ"
                         >
-                            <span style={{ cursor: "pointer", margin: "0 20px" }}>
+                            <span style={{ cursor: "pointer", margin: "0 10px" }}>
                                 <DeleteTwoTone twoToneColor="#ff4d4f" />
                             </span>
                         </Popconfirm>
@@ -99,40 +140,20 @@ const ModalAdjustFilm = (props) => {
                                 setModalAddEpisode(true);
                             }}
                         />
+                        <EyeOutlined twoToneColor="yellow" style={{ cursor: "pointer", margin: "0 10px" }}
+                            onClick={() => {
+                                setOpenViewDetail(false)
+                                setModalListEpisode(true)
+                                setSelectedSeason(record)
+                            }}
+                        />
                     </>
                 )
             }
         },
-    ];
+    ].filter(item => !item.hidden);
 
-    const dataSource = Array.isArray(dataSeason) ? dataSeason.map((film, idx) => ({
-        name: (
-            <>
-                <Image.PreviewGroup>
-                    <Image className="shape-avatar" width={50}
-                        src={`${import.meta.env.VITE_BACKEND_URL}/storage/visual/haha.jpg`} alt="" />
-                    <div className="avatar-info" style={{ display: "inline-block", marginLeft: "5px", cursor: "pointer" }}>
-                        <Title level={5}>{film.seasonName || 'No Name'}</Title>
-                    </div>
-                </Image.PreviewGroup>
-            </>
-        ),
-        type: (
-            <>
-                <div className="semibold">{film.type || '---'}</div>
-            </>
-        ),
-        releaseYear: (
-            <>
-                <div className="text-sm">{film.releaseYear || '@-@-@'}</div>
-            </>
-        ),
-        uploadDate: (
-            <>
-                <div className="text-sm">{film.uploadDate || '---'}</div>
-            </>
-        ),
-    })) : [];
+
     const renderHeader = () => {
         return (
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: "center" }}>
@@ -141,7 +162,7 @@ const ModalAdjustFilm = (props) => {
                     <Button
                         icon={<PlusOutlined />}
                         type="primary" onClick={() => {
-                            setModalAppSeason(true);
+                            setModalAddSeason(true);
                         }}
                     >Thêm Season/Movie/OVA</Button>
                     <Button type='ghost' >
@@ -183,8 +204,8 @@ const ModalAdjustFilm = (props) => {
                         <Table
                             title={renderHeader}
                             columns={columns}
-                            rowKey="_id"
-                            dataSource={dataSource}
+                            rowKey="id"
+                            dataSource={dataSeason}
                             pagination={{
                                 current: current,
                                 pageSize: pageSize,
@@ -194,9 +215,19 @@ const ModalAdjustFilm = (props) => {
                             }} />
                     </Col>
                 </Row>
+
             </Drawer>
-            <ModalEpisode modalAddEpisode={modalAddEpisode}
-                setModalAddEpisode={setModalAddEpisode} />
+            <ModalEpisodeList
+                modalListEpisode={modalListEpisode}
+                setModalListEpisode={setModalListEpisode}
+                dataSeason={dataSeason}
+                selectedSeason={selectedSeason}
+                onSeasonSelect={setSelectedSeason} />
+            <ModalEpisodeUpload modalAddEpisode={modalAddEpisode}
+                setModalAddEpisode={setModalAddEpisode}
+                dataSeason={dataSeason} />
+            <modalAddSeason modalAddSeason={modalAddEpisode} />
+
         </div>
     )
 }
