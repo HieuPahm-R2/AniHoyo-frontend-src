@@ -1,48 +1,25 @@
-import { Drawer, message, List, Avatar, Button, Space, Slider, Dropdown } from 'antd'
-import Hls from "hls.js";
-import React, { useEffect, useRef, useState, useCallback } from 'react'
-import {
-    PlayCircleOutlined,
-    PauseCircleOutlined,
-    SoundOutlined,
-    FullscreenOutlined,
-    SettingOutlined,
-    ReloadOutlined
-} from '@ant-design/icons';
+import { Drawer, message, List, Avatar, Button, Space, Dropdown } from 'antd'
+import React, { useEffect, useState, useCallback } from 'react'
+
 import { fetchAllEpisodeBySeason } from '../../services/api-handle';
+import {
+    MediaPlayer,
+} from '@vidstack/react';
+
+import '@vidstack/react/player/styles/default/theme.css';
+import '@vidstack/react/player/styles/default/layouts/audio.css';
+import '@vidstack/react/player/styles/default/layouts/video.css';
+
+import { MediaProvider } from "@vidstack/react"
+import { DefaultVideoLayout, defaultLayoutIcons } from '@vidstack/react/player/layouts/default';
 
 const ModalEpisodeList = (props) => {
     const { modalListEpisode, setModalListEpisode, dataSeason, selectedSeason, onSeasonSelect } = props
 
-    const videoRef = useRef(null);
-    const hlsRef = useRef(null);
-    const controlsRef = useRef(null);
-
     const [videoId, setVideoId] = useState("");
     const [currentEpisode, setCurrentEpisode] = useState(0);
-    const [isPlaying, setIsPlaying] = useState(false);
     const [episodeList, setEpisodeList] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
-    const [currentTime, setCurrentTime] = useState(0);
-    const [duration, setDuration] = useState(0);
-    const [volume, setVolume] = useState(1);
-    const [isMuted, setIsMuted] = useState(false);
-    const [showControls, setShowControls] = useState(true);
-    const [playbackRate, setPlaybackRate] = useState(1);
-    const [showVolumeSlider, setShowVolumeSlider] = useState(false);
-
-    // Safe cleanup function
-    const safeCleanup = useCallback(() => {
-        try {
-            if (hlsRef.current) {
-                console.log('Safely destroying HLS player');
-                hlsRef.current.destroy();
-                hlsRef.current = null;
-            }
-        } catch (error) {
-            console.error('Error cleanup:', error);
-        }
-    }, []);
 
     // Save modal state to localStorage
     const saveModalState = (isOpen, seasonId, episodeIndex) => {
@@ -106,139 +83,12 @@ const ModalEpisodeList = (props) => {
         }
     }, [modalListEpisode, selectedSeason, currentEpisode]);
 
-    // Reset video state when modal opens
-    useEffect(() => {
-        if (modalListEpisode && videoRef.current) {
-            // Reset video to beginning
-            videoRef.current.currentTime = 0;
-            videoRef.current.load();
-            setIsPlaying(false);
-            setCurrentTime(0);
-        }
-    }, [modalListEpisode]);
-
     // Fetch episodes when selectedSeason changes
     useEffect(() => {
         if (selectedSeason) {
             fetchEpisodes();
         }
     }, [selectedSeason]);
-
-    // Cleanup when modal closes
-    useEffect(() => {
-        if (!modalListEpisode) {
-            safeCleanup();
-        }
-    }, [modalListEpisode, safeCleanup]);
-
-    // Auto-hide controls
-    useEffect(() => {
-        let timeout;
-        if (isPlaying && showControls) {
-            timeout = setTimeout(() => {
-                setShowControls(false);
-            }, 3000);
-        }
-        return () => clearTimeout(timeout);
-    }, [isPlaying, showControls]);
-
-    // Initialize video player when videoId changes
-    useEffect(() => {
-        if (!videoRef.current || !videoId || !modalListEpisode) return;
-
-        console.log(`Initializing video player for videoId: ${videoId}`);
-        setIsLoading(true);
-
-        // Clean up previous players first
-        safeCleanup();
-
-        // Small delay to ensure DOM is ready
-        const initTimer = setTimeout(() => {
-            if (!videoRef.current || !videoId) {
-                return;
-            }
-
-            let hls;
-
-            // Clear video element completely
-            if (videoRef.current) {
-                videoRef.current.src = '';
-                videoRef.current.removeAttribute('src');
-                videoRef.current.load();
-            }
-
-            // Initialize HLS
-            if (Hls.isSupported()) {
-                hls = new Hls({
-                    enableWorker: false, // Disable worker to avoid DOM issues
-                    lowLatencyMode: true,
-                    backBufferLength: 90,
-                    maxBufferLength: 30,
-                    maxMaxBufferLength: 600,
-                    maxBufferSize: 60 * 1000 * 1000,
-                    maxBufferHole: 0.5,
-                    highBufferWatchdogPeriod: 2,
-                    nudgeOffset: 0.2,
-                    nudgeMaxRetry: 5,
-                    maxFragLookUpTolerance: 0.25,
-                    liveSyncDurationCount: 3,
-                    liveMaxLatencyDurationCount: 10,
-                    liveDurationInfinity: true,
-                    liveBackBufferLength: 90,
-                    liveTolerance: 15,
-                    progressive: false,
-                    debug: false,
-                });
-
-                hlsRef.current = hls;
-
-                console.log(`Loading HLS source for video ID: ${videoId}`);
-                hls.loadSource(`http://localhost:8083/api/v1/${videoId}/master.m3u8`);
-                hls.attachMedia(videoRef.current);
-
-                hls.on(Hls.Events.MANIFEST_PARSED, () => {
-                    console.log("HLS manifest parsed successfully");
-                    setIsLoading(false);
-                });
-
-                hls.on(Hls.Events.ERROR, (event, data) => {
-                    console.error("HLS Error:", data);
-                    setIsLoading(false);
-                    if (data.fatal) {
-                        switch (data.type) {
-                            case Hls.ErrorTypes.NETWORK_ERROR:
-                                console.log("Network error, trying to recover...");
-                                hls.startLoad();
-                                break;
-                            case Hls.ErrorTypes.MEDIA_ERROR:
-                                console.log("Media error, trying to recover...");
-                                hls.recoverMediaError();
-                                break;
-                            default:
-                                console.log("Fatal error, destroying...");
-                                hls.destroy();
-                                break;
-                        }
-                    }
-                });
-
-            } else if (videoRef.current.canPlayType("application/vnd.apple.mpegurl")) {
-                // Safari native HLS support
-                console.log(`Loading Safari HLS source for video ID: ${videoId}`);
-                videoRef.current.src = `http://localhost:8083/api/v1/${videoId}/master.m3u8`;
-                setIsLoading(false);
-            } else {
-                message.error("Trình duyệt không hỗ trợ phát video HLS");
-                setIsLoading(false);
-                return;
-            }
-        }, 100);
-
-        return () => {
-            clearTimeout(initTimer);
-            safeCleanup();
-        };
-    }, [videoId, modalListEpisode, safeCleanup]);
 
     const fetchEpisodes = async () => {
         if (selectedSeason?.id) {
@@ -286,173 +136,17 @@ const ModalEpisodeList = (props) => {
         const episode = episodeList[episodeIndex];
         if (episode) {
             console.log(`Changing to episode: ${episode.title} (ID: ${episode.videoId})`);
-
-            // Pause current video if playing
-            if (videoRef.current && isPlaying) {
-                try {
-                    videoRef.current.pause();
-                } catch (error) {
-                    console.error('Error pausing video:', error);
-                }
-                setIsPlaying(false);
-            }
-
-            // Clean up current players
-            safeCleanup();
-
-            // Reset video element
-            if (videoRef.current) {
-                console.log('Resetting video element');
-                try {
-                    videoRef.current.currentTime = 0;
-                    videoRef.current.load();
-                    // Clear any existing source
-                    videoRef.current.src = '';
-                    videoRef.current.removeAttribute('src');
-                } catch (error) {
-                    console.error('Error resetting video element:', error);
-                }
-            }
-
             setCurrentEpisode(episodeIndex);
             setVideoId(episode.videoId);
-            setCurrentTime(0);
-            setDuration(0);
             message.success(`Đang chuyển sang ${episode.title}`);
         }
     };
 
-    // Handle play/pause
-    const togglePlay = () => {
-        if (videoRef.current) {
-            try {
-                if (isPlaying) {
-                    videoRef.current.pause();
-                } else {
-                    videoRef.current.play();
-                }
-            } catch (error) {
-                console.error('Error toggling play/pause:', error);
-            }
-        }
-    };
-
-    // Handle time update
-    const handleTimeUpdate = () => {
-        if (videoRef.current) {
-            setCurrentTime(videoRef.current.currentTime);
-            setDuration(videoRef.current.duration);
-        }
-    };
-
-    // Handle play/pause events
-    const handlePlay = () => {
-        setIsPlaying(true);
-        setShowControls(true);
-    };
-
-    const handlePause = () => {
-        setIsPlaying(false);
-        setShowControls(true);
-    };
-
-    // Handle video end
-    const handleEnded = () => {
-        setIsPlaying(false);
-        setCurrentTime(0);
-        // Auto play next episode
-        if (currentEpisode < episodeList.length - 1) {
-            handleEpisodeChange(currentEpisode + 1);
-        }
-    };
-
-    // Format time
-    const formatTime = (seconds) => {
-        if (isNaN(seconds)) return '0:00';
-        const mins = Math.floor(seconds / 60);
-        const secs = Math.floor(seconds % 60);
-        return `${mins}:${secs.toString().padStart(2, '0')}`;
-    };
-
-    // Handle seek
-    const handleSeek = (value) => {
-        if (videoRef.current && duration > 0) {
-            const seekTime = (value / 100) * duration;
-            videoRef.current.currentTime = seekTime;
-        }
-    };
-
-    // Handle volume change
-    const handleVolumeChange = (value) => {
-        if (videoRef.current) {
-            const newVolume = value / 100;
-            videoRef.current.volume = newVolume;
-            setVolume(newVolume);
-            setIsMuted(newVolume === 0);
-        }
-    };
-
-    // Toggle mute
-    const toggleMute = () => {
-        if (videoRef.current) {
-            if (isMuted) {
-                videoRef.current.volume = volume;
-                setIsMuted(false);
-            } else {
-                videoRef.current.volume = 0;
-                setIsMuted(true);
-            }
-        }
-    };
-
-    // Handle playback rate change
-    const handlePlaybackRateChange = (rate) => {
-        if (videoRef.current) {
-            videoRef.current.playbackRate = rate;
-            setPlaybackRate(rate);
-        }
-    };
-
-    // Toggle fullscreen
-    const toggleFullscreen = () => {
-        if (videoRef.current) {
-            if (document.fullscreenElement) {
-                document.exitFullscreen();
-            } else {
-                videoRef.current.requestFullscreen();
-            }
-        }
-    };
-
-    // Show controls on mouse move
-    const handleMouseMove = () => {
-        setShowControls(true);
-    };
-
     const onCloseChild = () => {
-        // Cleanup
-        safeCleanup();
         // Clear localStorage when closing
         localStorage.removeItem('modalEpisodeList');
         setModalListEpisode(false);
     }
-
-    // Cleanup on unmount
-    useEffect(() => {
-        return () => {
-            safeCleanup();
-        };
-    }, [safeCleanup]);
-
-    // Playback rate options
-    const playbackRateOptions = [
-        { label: '0.5x', value: 0.5 },
-        { label: '0.75x', value: 0.75 },
-        { label: '1x', value: 1 },
-        { label: '1.25x', value: 1.25 },
-        { label: '1.5x', value: 1.5 },
-        { label: '2x', value: 2 },
-    ];
 
     return (
         <Drawer
@@ -471,195 +165,32 @@ const ModalEpisodeList = (props) => {
         >
             <div style={{ display: 'flex', gap: '20px', height: '100%', alignItems: 'flex-start' }}>
                 {/* Video Player Section */}
-                <div style={{ flex: '2', minHeight: '400px' }}>
-                    <div
-                        style={{
-                            width: "100%",
-                            height: "400px",
-                            overflow: 'hidden',
-                            position: 'relative',
-                            backgroundColor: '#000',
-                            borderRadius: '8px',
-                            cursor: 'pointer'
-                        }}
-                        onMouseMove={handleMouseMove}
-                        onMouseLeave={() => {
-                            if (isPlaying) {
-                                setTimeout(() => setShowControls(false), 1000);
-                            }
-                        }}
-                    >
-                        {isLoading && (
-                            <div style={{
-                                position: 'absolute',
-                                top: '50%',
-                                left: '50%',
-                                transform: 'translate(-50%, -50%)',
-                                color: '#fff',
-                                fontSize: '16px',
-                                zIndex: 10
-                            }}>
-                                Đang tải video...
-                            </div>
-                        )}
+                <div style={{ flex: '2', height: "400px", }}>
 
-                        <video
-                            id="player"
-                            ref={videoRef}
-                            style={{
-                                width: '100%',
-                                height: '100%',
-                                objectFit: 'contain',
-
-                            }}
-                            onPlay={handlePlay}
-                            onPause={handlePause}
-                            onTimeUpdate={handleTimeUpdate}
-                            onEnded={handleEnded}
+                    {videoId && (
+                        <MediaPlayer
+                            viewType='video'
+                            streamType='on-demand'
+                            src={`http://localhost:8083/api/v1/${videoId}/master.m3u8`}
+                            onLoadStart={() => setIsLoading(true)}
+                            onCanPlay={() => setIsLoading(false)}
                             onError={(e) => {
-                                console.error('Video error:', e);
                                 message.error('Lỗi phát video');
+                                setIsLoading(false);
                             }}
-                        />
 
-                        {/* Custom Video Controls - Plyr Style */}
-                        <div
-                            ref={controlsRef}
-                            style={{
-                                position: 'absolute',
-                                bottom: 0,
-                                left: 0,
-                                right: 0,
-                                background: 'linear-gradient(transparent, rgba(0,0,0,0.9))',
-                                padding: '20px 15px 15px',
-                                borderRadius: '0 0 8px 8px',
-                                opacity: showControls ? 1 : 0,
-                                transition: 'opacity 0.3s ease',
-                                zIndex: 20
-                            }}
+                            key={videoId} // Force re-render when episode changes
                         >
-                            {/* Progress Bar */}
-                            <div style={{ marginBottom: '15px' }}>
-                                <Slider
-                                    value={duration > 0 ? (currentTime / duration) * 100 : 0}
-                                    onChange={handleSeek}
-                                    tooltip={{
-                                        formatter: (value) => {
-                                            const time = (value / 100) * duration;
-                                            return formatTime(time);
-                                        }
-                                    }}
-                                    style={{
-                                        margin: 0
-                                    }}
-                                />
-                            </div>
+                            <MediaProvider />
 
-                            {/* Controls Row */}
-                            <div style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'space-between',
-                                gap: '15px'
-                            }}>
-                                {/* Left Controls */}
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                    {/* Play/Pause Button */}
-                                    <Button
-                                        type="text"
-                                        icon={isPlaying ? <PauseCircleOutlined /> : <PlayCircleOutlined />}
-                                        onClick={togglePlay}
-                                        style={{
-                                            color: '#fff',
-                                            fontSize: '24px',
-                                            padding: '4px 8px'
-                                        }}
-                                    />
+                            <DefaultVideoLayout
+                                thumbnails='https://files.vidstack.io/sprite-fight/thumbnails.vtt'
+                                icons={defaultLayoutIcons}
+                            />
 
-                                    {/* Volume Control */}
-                                    <div style={{ position: 'relative' }}>
-                                        <Button
-                                            type="text"
-                                            icon={<SoundOutlined />}
-                                            onClick={toggleMute}
-                                            style={{
-                                                color: '#fff',
-                                                fontSize: '18px',
-                                                padding: '4px 8px'
-                                            }}
-                                        />
-                                        {showVolumeSlider && (
-                                            <div style={{
-                                                position: 'absolute',
-                                                bottom: '100%',
-                                                left: '50%',
-                                                transform: 'translateX(-50%)',
-                                                background: 'rgba(0,0,0,0.9)',
-                                                padding: '10px',
-                                                borderRadius: '8px',
-                                                marginBottom: '10px'
-                                            }}>
-                                                <Slider
-                                                    vertical
-                                                    value={isMuted ? 0 : volume * 100}
-                                                    onChange={handleVolumeChange}
-                                                    style={{ height: '100px' }}
-                                                />
-                                            </div>
-                                        )}
-                                    </div>
+                        </MediaPlayer>
+                    )}
 
-                                    {/* Time Display */}
-                                    <span style={{
-                                        color: '#fff',
-                                        fontSize: '14px',
-                                        fontFamily: 'monospace'
-                                    }}>
-                                        {formatTime(currentTime)} / {formatTime(duration)}
-                                    </span>
-                                </div>
-
-                                {/* Right Controls */}
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                    {/* Playback Rate */}
-                                    <Dropdown
-                                        menu={{
-                                            items: playbackRateOptions.map(option => ({
-                                                key: option.value,
-                                                label: option.label,
-                                                onClick: () => handlePlaybackRateChange(option.value)
-                                            }))
-                                        }}
-                                        placement="topCenter"
-                                    >
-                                        <Button
-                                            type="text"
-                                            style={{
-                                                color: '#fff',
-                                                fontSize: '14px',
-                                                padding: '4px 8px',
-                                                minWidth: '50px'
-                                            }}
-                                        >
-                                            {playbackRate}x
-                                        </Button>
-                                    </Dropdown>
-
-                                    {/* Fullscreen */}
-                                    <Button
-                                        type="text"
-                                        icon={<FullscreenOutlined />}
-                                        onClick={toggleFullscreen}
-                                        style={{
-                                            color: '#fff',
-                                            fontSize: '18px',
-                                            padding: '4px 8px'
-                                        }}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
                 {/* Episode List Section */}
