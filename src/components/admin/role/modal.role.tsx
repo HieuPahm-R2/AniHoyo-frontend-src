@@ -8,12 +8,17 @@ import ModuleApi from "./module.api";
 import { useState, useEffect } from 'react';
 import groupBy from 'lodash/groupBy';
 import map from 'lodash/map';
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { resetSingleRole } from "@/redux/slice/roleSlide";
+import { useAppDispatch, useAppSelector } from "@/context/hooks";
+import { resetSingleRole } from "@/context/slice/roleSlide";
+
+interface IProps {
+    openModal: boolean;
+    setOpenModal: (v: boolean) => void;
+    reloadTable: () => void;
+}
 
 
-
-const ModalRole = (props) => {
+const ModalRole = (props: IProps) => {
     const { openModal, setOpenModal, reloadTable } = props;
     const singleRole = useAppSelector(state => state.role.singleRole);
     const dispatch = useAppDispatch();
@@ -21,10 +26,10 @@ const ModalRole = (props) => {
     const [form] = Form.useForm();
 
     //all backend permissions
-    const [listPermissions, setListPermissions] = useState < {
+    const [listPermissions, setListPermissions] = useState<{
         module: string;
         permissions: IPermission[]
-    }[] | null > (null);
+    }[] | null>(null);
 
     const groupByPermission = (data: any[]): { module: string; permissions: IPermission[] }[] => {
         const groupedData = groupBy(data, x => x.module);
@@ -37,7 +42,7 @@ const ModalRole = (props) => {
         const init = async () => {
             const res = await callFetchPermission(`page=1&size=100`);
             if (res.data?.result) {
-                setListPermissions(groupByPermission(res.data?.result))
+                setListPermissions(groupByPermission(res.data.result))
             }
         }
         init();
@@ -51,7 +56,7 @@ const ModalRole = (props) => {
                 description: singleRole.description
             })
             //current permissions of role
-            const userPermissions = groupByPermission(singleRole.permissions);
+            const userPermissions = groupByPermission(singleRole.permissions ?? []);
 
             listPermissions.forEach(x => {
                 let allCheck = true;
@@ -97,7 +102,7 @@ const ModalRole = (props) => {
             } else {
                 notification.error({
                     message: 'Có lỗi xảy ra',
-                    description: res.message
+                    description: (res as any).message
                 });
             }
         } else {
@@ -113,7 +118,7 @@ const ModalRole = (props) => {
             } else {
                 notification.error({
                     message: 'Có lỗi xảy ra',
-                    description: res.message
+                    description: (res as any).message
                 });
             }
         }

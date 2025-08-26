@@ -1,20 +1,49 @@
-import React, { useRef, useState } from 'react'
-import { ALL_PERMISSIONS } from '../../config/permission';
+import DataTable from "@/components/admin/data.table";
+import { useAppDispatch, useAppSelector } from "@/context/hooks";
+import { IRole } from "@/types/backend";
 import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
-import { Button, Space, Tag } from 'antd';
-import dayjs from 'dayjs';
-import Access from '../../components/share/access';
+import { ActionType, ProColumns } from "@ant-design/pro-components";
+import { Button, Popconfirm, Space, Tag, message, notification } from "antd";
+import { useState, useRef } from "react";
+import dayjs from "dayjs";
+import { callDeleteRole } from "@/config/api";
+import queryString from "query-string";
+import { fetchRole, fetchRoleById } from "@/context/slice/roleSlide";
+import ModalRole from "@/components/admin/role/modal.role";
+import { ALL_PERMISSIONS } from "@/config/permission";
+import Access from "@/components/share/access";
+import { sfLike } from "spring-filter-query-builder";
 
-const RoleManage = () => {
-    const [openModal, setOpenModal] = useState(false);
+const RolePage = () => {
+    const [openModal, setOpenModal] = useState<boolean>(false);
 
-    const tableRef = useRef();
+    const tableRef = useRef<ActionType>();
 
     const isFetching = useAppSelector((state) => state.role.isFetching);
     const meta = useAppSelector((state) => state.role.meta);
     const roles = useAppSelector((state) => state.role.result);
     const dispatch = useAppDispatch();
-    const columns = [
+
+    const handleDeleteRole = async (id: string | undefined) => {
+        if (id) {
+            const res = await callDeleteRole(id);
+            if (res && res.data === null) {
+                message.success("Xóa Role thành công");
+                reloadTable();
+            } else {
+                notification.error({
+                    message: "Có lỗi xảy ra",
+                    description: res.message,
+                });
+            }
+        }
+    };
+
+    const reloadTable = () => {
+        tableRef?.current?.reload();
+    };
+
+    const columns: ProColumns<IRole>[] = [
         {
             title: "Id",
             dataIndex: "id",
@@ -89,7 +118,7 @@ const RoleManage = () => {
                             }}
                             type=""
                             onClick={() => {
-                                dispatch(fetchRoleById(entity.id));
+                                dispatch(fetchRoleById(entity.id as string));
                                 setOpenModal(true);
                             }}
                         />
@@ -117,17 +146,59 @@ const RoleManage = () => {
             ),
         },
     ];
+
+    const buildQuery = (params: any, sort: any, filter: any) => {
+        const clone = { ...params };
+        const q: any = {
+            page: params.current,
+            size: params.pageSize,
+            filter: "",
+        };
+
+        if (clone.name) q.filter = `${sfLike("name", clone.name)}`;
+
+        if (!q.filter) delete q.filter;
+
+        let temp = queryString.stringify(q);
+
+        let sortBy = "";
+        if (sort && sort.name) {
+            sortBy = sort.name === "ascend" ? "sort=name,asc" : "sort=name,desc";
+        }
+        if (sort && sort.createdAt) {
+            sortBy =
+                sort.createdAt === "ascend"
+                    ? "sort=createdTime,asc"
+                    : "sort=createdTime,desc";
+        }
+        if (sort && sort.updatedTime) {
+            sortBy =
+                sort.updatedTime === "ascend"
+                    ? "sort=updatedTime,asc"
+                    : "sort=updatedTime,desc";
+        }
+
+        //mặc định sort theo updated time
+        if (Object.keys(sortBy).length === 0) {
+            temp = `${temp}&sort=updatedTime,desc`;
+        } else {
+            temp = `${temp}&${sortBy}`;
+        }
+
+        return temp;
+    };
+
     return (
         <div>
             <Access permission={ALL_PERMISSIONS.ROLES.GET_PAGINATE}>
-                <DataTable
+                <DataTable<IRole>
                     actionRef={tableRef}
                     headerTitle="Danh sách Roles (Vai Trò)"
                     rowKey="id"
                     loading={isFetching}
                     columns={columns}
                     dataSource={roles}
-                    request={async (params, sort, filter) => {
+                    request={async (params, sort, filter): Promise<any> => {
                         const query = buildQuery(params, sort, filter);
                         dispatch(fetchRole({ query }));
                     }}
@@ -147,7 +218,7 @@ const RoleManage = () => {
                         },
                     }}
                     rowSelection={false}
-                    toolBarRender={(_action, _rows) => {
+                    toolBarRender={(_action, _rows): any => {
                         return (
                             <Button
                                 icon={<PlusOutlined />}
@@ -166,7 +237,7 @@ const RoleManage = () => {
                 reloadTable={reloadTable}
             />
         </div>
-    )
-}
+    );
+};
 
-export default RoleManage
+export default RolePage;

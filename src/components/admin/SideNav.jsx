@@ -118,21 +118,34 @@ const SideNav = (props) => {
             <span className="label">Tables Film</span>
           </NavLink>
         </Menu.Item>
-        <Menu.Item className="menu-item-header" key="5">
-          Account Pages
-        </Menu.Item>
-        <Menu.Item key="6">
-          <NavLink to="/profile" className={({ isActive }) => isActive ? 'active' : ''}>
+        <Menu.Item key="4">
+          <NavLink to="/admin/table-role" className={({ isActive }) => isActive ? 'active' : ''}>
             <span
               className="icon"
               style={{
-                background: page === "profile" ? color : "",
+                background: page === "table-role" ? color : "",
               }}
             >
-              {profile}
+              {tables}
             </span>
-            <span className="label">Profile</span>
+            <span className="label">Tables Film</span>
           </NavLink>
+        </Menu.Item>
+        <Menu.Item key="5">
+          <NavLink to="/admin/table-permission" className={({ isActive }) => isActive ? 'active' : ''}>
+            <span
+              className="icon"
+              style={{
+                background: page === "table-permission" ? color : "",
+              }}
+            >
+              {tables}
+            </span>
+            <span className="label">Tables Film</span>
+          </NavLink>
+        </Menu.Item>
+        <Menu.Item className="menu-item-header" key="6">
+          Account Pages
         </Menu.Item>
 
       </Menu>

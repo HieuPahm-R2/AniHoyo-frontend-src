@@ -7,14 +7,11 @@ import {
 } from "antd";
 import signinbg from "../../assets/images/login-intro1.jpg";
 import {
-  DribbbleOutlined,
-  TwitterOutlined,
-  InstagramOutlined,
-  GithubOutlined,
+  DribbbleOutlined, TwitterOutlined, InstagramOutlined, GithubOutlined,
 } from "@ant-design/icons";
-import { loginAPI } from "../../services/api-handle";
+import { loginAPI } from "../../config/api-handle";
 import { useState } from "react";
-import { runLoginAction } from "../../context/account/accountSlice";
+import { runLoginAction } from "../../context/slice/accountSlice";
 
 const { Title } = Typography;
 const { Header, Footer, Content } = Layout;

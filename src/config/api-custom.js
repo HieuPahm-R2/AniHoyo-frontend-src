@@ -1,5 +1,4 @@
 import axios from "axios";
-import { useDispatch } from "react-redux";
 
 const baseURL = import.meta.env.VITE_BACKEND_URL;
 const NO_RETRY_HEADER = 'x-no-retry';

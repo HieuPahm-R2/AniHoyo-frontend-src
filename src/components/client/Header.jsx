@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link, useNavigate } from "react-router-dom";
-import { runLogoutAction } from '../../context/account/accountSlice';
+import { runLogoutAction } from '../../context/slice/accountSlice';
 import { LogoutAPI } from '../../services/api-handle';
 import { Avatar, Dropdown, message, Space } from 'antd';
 import { DownOutlined } from '@ant-design/icons';

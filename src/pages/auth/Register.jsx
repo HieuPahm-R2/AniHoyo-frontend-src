@@ -5,7 +5,7 @@ import logo3 from "../../assets/images/Google__G__Logo.svg.png";
 
 import { Link, useNavigate } from "react-router-dom";
 import { DribbbleOutlined, TwitterOutlined, InstagramOutlined, GithubOutlined } from "@ant-design/icons";
-import { registerAPI } from "../../services/api-handle";
+import { registerAPI } from "../../config/api-handle";
 import { useState } from "react";
 
 const { Title } = Typography;

@@ -6,13 +6,14 @@ import SingInPage from "../../pages/auth/SignIn";
 import RegisterPage from "../../pages/auth/Register";
 import AdminHome from "../../pages/admin/AdminHomepage";
 import UserManage from "../../pages/admin/UserManage";
-import ProductManage from "../../pages/admin/ProductManage";
-import MadContent from "../layout/admin/MadContent";
+import ProductManage from "../../pages/admin/product.table";
+import MadContent from "../layout/admin/layout.admin";
 import "../../assets/styles/mainClient.scss"
 import Layout from "../layout/client/layout";
 import Error404 from "../errors/404-page";
 import ClientHome from "../../pages/client/ClientHomepage";
 import ProtectedRoute from "../protected";
+import RolePage from "@/pages/admin/role.table";
 
 const router = createBrowserRouter([
   {
@@ -49,6 +50,18 @@ const router = createBrowserRouter([
       },
       {
         path: "table-users",
+        element: <ProtectedRoute>
+          <UserManage />
+        </ProtectedRoute>
+      },
+      {
+        path: "table-role",
+        element: <ProtectedRoute>
+          <RolePage />
+        </ProtectedRoute>
+      },
+      {
+        path: "table-permission",
         element: <ProtectedRoute>
           <UserManage />
         </ProtectedRoute>

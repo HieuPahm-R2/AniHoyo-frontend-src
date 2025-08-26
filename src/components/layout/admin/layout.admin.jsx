@@ -68,15 +68,12 @@ const MadContent = (props) => {
         </Sider>
       }
 
-
       <Layout>
-
         <Affix>
           <AntHeader className={`${"ant-header-fixed"}`}>
             <HeaderAdmin
               onPress={openDrawer}
               name={pathname}
-              subName={pathname}
               handleSidenavColor={handleSidenavColor}
               handleFixedNavbar={handleFixedNavbar}
             />
