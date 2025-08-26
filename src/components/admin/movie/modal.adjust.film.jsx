@@ -4,8 +4,9 @@ import React, { useEffect, useState } from 'react'
 import { FORMAT_DATE_DISPLAY } from '../../services/constant-date';
 import { DeleteTwoTone, EditTwoTone, EyeOutlined, PlusOutlined, ReloadOutlined } from "@ant-design/icons";
 import { fetchSeasonsOfFilmAPI } from '../../services/api-handle';
-import ModalEpisodeUpload from './ModalEpisodeUpload';
-import ModalEpisodeList from './ModalEpisodeList';
+import ModalEpisodeUpload from '../ModalEpisodeUpload';
+import ModalEpisodeList from '../ModalEpisodeList';
+import ModalCreateSeason from '../modal.create.season';
 
 const ModalAdjustFilm = (props) => {
     const { openViewDetail, setOpenViewDetail, dataDetail, setDataDetail } = props;
@@ -82,7 +83,7 @@ const ModalAdjustFilm = (props) => {
                 return (
                     <Image.PreviewGroup>
                         <Image className="shape-avatar" width={50}
-                            src={`${import.meta.env.VITE_BACKEND_URL}/storage/visual/haha.jpg`} alt="" />
+                            src={`${import.meta.env.VITE_BACKEND_URL}/storage/visual/${record.thumb}`} alt="" />
                         <div className="avatar-info" style={{ display: "inline-block", marginLeft: "5px", cursor: "pointer" }}>
                             <Title level={5}>{record.seasonName || 'No Name'}</Title>
                         </div>
@@ -226,7 +227,9 @@ const ModalAdjustFilm = (props) => {
             <ModalEpisodeUpload modalAddEpisode={modalAddEpisode}
                 setModalAddEpisode={setModalAddEpisode}
                 dataSeason={dataSeason} />
-            <modalAddSeason modalAddSeason={modalAddEpisode} />
+            <ModalCreateSeason modalAddSeason={modalAddSeason}
+                dataDetail={dataDetail}
+                setModalAddSeason={setModalAddSeason} refetchData={refetchData} />
 
         </div>
     )

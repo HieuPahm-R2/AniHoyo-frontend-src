@@ -1,44 +1,47 @@
 import { InboxOutlined } from '@ant-design/icons'
 import { Input, InputNumber, message, Modal } from 'antd'
 import Dragger from 'antd/es/upload/Dragger'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { createEpisodeAPI, uploadVideoAPI } from '../../services/api-handle'
 import ModalEpisodeList from './ModalEpisodeList'
 
 const ModalEpisodeUpload = (props) => {
-    const { modalAddEpisode, setModalAddEpisode, dataSeason } = props
+    const { modalAddEpisode, setModalAddEpisode, selectedSeason } = props
     const [urlVideo, setUrlVideo] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
     const [titleEpisode, setTitleEpisode] = useState("");
     const [contentType, setContentType] = useState("");
     const [dataEpisode, setDataEpisode] = useState([]);
 
+
     const handleSubmit = async () => {
-        const { title } = values;
         if (!urlVideo) {
             message.error("Vui lòng upload tập phim!");
             return;
         }
-        const res = await createEpisodeAPI(titleEpisode, urlVideo, contentType, dataSeason?.id);
+        setIsLoading(true);
+        const res = await createEpisodeAPI(titleEpisode, urlVideo, contentType, selectedSeason?.id);
         if (res && res.data) {
             notification.success({
                 description: `Tải lên tập phim thành công`,
-                message: "Upload Done!",
+                message: "Upload Done!", s
             })
             setModalAddEpisode(false)
+            setIsLoading(false)
             setDataEpisode(res)
+            window.location.reload();
         } else {
             notification.error({
                 description: res.message,
                 message: "Đã có lỗi xảy ra",
             })
             setModalAddEpisode(false)
+            setIsLoading(false)
         }
     }
     const setTitleInput = (value) => {
         setTitleEpisode(value);
-        console.log(titleEpisode)
     }
-
     const propsUpload = {
         name: 'file',
         multiple: false,
@@ -80,6 +83,7 @@ const ModalEpisodeUpload = (props) => {
             title="Thêm tập phim"
             centered
             open={modalAddEpisode}
+            loading={isLoading}
             onOk={() => handleSubmit()}
             onCancel={() => setModalAddEpisode(false)}
         >
