@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Col, Divider, message, Form, Input, InputNumber, Modal, notification, Row, Select, Upload } from "antd";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
-import { callCreateFilmAPI, callUploadImage, fetchFilmCategory, fetchFilmTags } from '@/config/api-handle';
+import { callCreateFilmAPI, callUploadImage, fetchFilmCategory, fetchFilmTags } from '@/config/api.handle';
 import { v4 as uuidv4 } from 'uuid';
 const ModalCreate = (props) => {
     const { openModalCreate, setOpenModalCreate, refetchData } = props;

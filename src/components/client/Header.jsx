@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link, useNavigate } from "react-router-dom";
 import { runLogoutAction } from '../../context/slice/accountSlice';
-import { LogoutAPI } from '@/config/api-handle';
+import { LogoutAPI } from '@/config/api.handle';
 import { Avatar, Dropdown, message, Space } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';

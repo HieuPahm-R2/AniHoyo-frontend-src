@@ -24,7 +24,7 @@ export const accountSlice = createSlice({
         runLoginAction: (state, action) => {
             state.isAuthenticated = true;
             state.isLoading = false;
-            state.user = action.payload.user;
+            state.user = action.payload;
         },
         runGetAccountAction: (state, action) => {
             // Redux Toolkit allows us to write "mutating" logic in reducers.

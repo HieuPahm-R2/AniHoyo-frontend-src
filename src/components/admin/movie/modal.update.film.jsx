@@ -1,7 +1,7 @@
 import { Col, Divider, Form, Input, InputNumber, Modal, notification, Row, Select, Upload } from "antd";
 import { useEffect, useState } from "react";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
-import { callCreateFilmAPI, callUpdateFilmAPI, callUploadImage, fetchFilmCategory, fetchFilmTags } from '@/config/api-handle';
+import { callCreateFilmAPI, callUpdateFilmAPI, callUploadImage, fetchFilmCategory, fetchFilmTags } from '@/config/api.handle';
 import { v4 as uuidv4 } from 'uuid';
 
 const ModalUpdate = (props) => {

@@ -2,7 +2,7 @@ import { RouterProvider } from "react-router-dom";
 import router from "./components/routes/index.jsx";
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from "react";
-import { callFetchAccountAPI } from "./config/api-handle.js";
+import { callFetchAccountAPI } from "./config/api.handle.js";
 import { runGetAccountAction, runLoginAction } from './context/slice/accountSlice.js';
 import Loading from "./components/share/reloading/Loading.jsx";
 

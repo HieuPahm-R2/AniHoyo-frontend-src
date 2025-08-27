@@ -4,17 +4,18 @@ import DetailsPage from "../../pages/client/DetailsPage";
 import SocialForum from "../../pages/client/SocialForum";
 import SingInPage from "../../pages/auth/SignIn";
 import RegisterPage from "../../pages/auth/Register";
-import AdminHome from "../../pages/admin/AdminHomepage";
-import UserManage from "../../pages/admin/UserManage";
+import AdminHome from "../../pages/admin/admin.dashboard";
+import UserManage from "../../pages/admin/user.table";
 import ProductManage from "../../pages/admin/product.table";
 import MadContent from "../layout/admin/layout.admin";
 import "../../assets/styles/mainClient.scss"
 import Layout from "../layout/client/layout";
 import Error404 from "../errors/404-page";
-import ClientHome from "../../pages/client/ClientHomepage";
+import ClientHome from "../../pages/client/client.home";
 
 import RolePage from "@/pages/admin/role.table";
 import ProtectedRoute from "../share/protected";
+import PermissionPage from "@/pages/admin/permission.table";
 
 const router = createBrowserRouter([
   {
@@ -64,7 +65,7 @@ const router = createBrowserRouter([
       {
         path: "table-permission",
         element: <ProtectedRoute>
-          <UserManage />
+          <PermissionPage />
         </ProtectedRoute>
       },
       {

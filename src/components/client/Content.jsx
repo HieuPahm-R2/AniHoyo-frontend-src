@@ -3,7 +3,7 @@ import { Col, Divider, Pagination, Rate, Row, Select, Tabs } from "antd";
 import { FilterTwoTone, ReloadOutlined, StarFilled, ClockCircleOutlined, CalendarOutlined } from "@ant-design/icons";
 import { IoIosPlayCircle } from "react-icons/io";
 import './Content.css';
-import { fetchFilmCategory, fetchFilmTags } from '@/config/api-handle';
+import { fetchFilmCategory, fetchFilmTags } from '@/config/api.handle';
 
 
 const Content = (props) => {

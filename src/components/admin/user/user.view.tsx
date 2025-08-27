@@ -1,20 +1,20 @@
-import { IPermission } from "@/types/backend";
-import { Descriptions, Drawer } from "antd";
+import { IUser } from "@/types/backend";
+import { Badge, Descriptions, Drawer } from "antd";
 import dayjs from "dayjs";
 
 interface IProps {
     onClose: (v: boolean) => void;
     open: boolean;
-    dataInit: IPermission | null;
+    dataInit: IUser | null;
     setDataInit: (v: any) => void;
 }
-const ViewDetailPermission = (props: IProps) => {
+const ViewDetailUser = (props: IProps) => {
     const { onClose, open, dataInit, setDataInit } = props;
 
     return (
         <>
             <Drawer
-                title="Thông Tin Permission"
+                title="Thông Tin User"
                 placement="right"
                 onClose={() => {
                     onClose(false);
@@ -25,19 +25,15 @@ const ViewDetailPermission = (props: IProps) => {
                 maskClosable={false}
             >
                 <Descriptions title="" bordered column={2} layout="vertical">
-                    <Descriptions.Item label="Tên Permission">
-                        {dataInit?.name}
+                    <Descriptions.Item label="Tên hiển thị">
+                        {dataInit?.fullName}
                     </Descriptions.Item>
-                    <Descriptions.Item label="API Path">
-                        {dataInit?.apiPath}
+                    <Descriptions.Item label="Email">{dataInit?.email}</Descriptions.Item>
+
+                    <Descriptions.Item label="Vai trò">
+                        <Badge status="processing" text={<>{dataInit?.role}</>} />
                     </Descriptions.Item>
 
-                    <Descriptions.Item label="Method">
-                        {dataInit?.method}
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Thuộc Module">
-                        {dataInit?.module}
-                    </Descriptions.Item>
 
                     <Descriptions.Item label="Ngày tạo">
                         {dataInit && dataInit.createdTime
@@ -55,4 +51,4 @@ const ViewDetailPermission = (props: IProps) => {
     );
 };
 
-export default ViewDetailPermission;
+export default ViewDetailUser;
