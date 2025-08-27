@@ -74,6 +74,7 @@ const MadContent = (props) => {
             <HeaderAdmin
               onPress={openDrawer}
               name={pathname}
+              subName={pathname}
               handleSidenavColor={handleSidenavColor}
               handleFixedNavbar={handleFixedNavbar}
             />

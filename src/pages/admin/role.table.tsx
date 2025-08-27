@@ -1,6 +1,6 @@
 import DataTable from "@/components/admin/data.table";
 import { useAppDispatch, useAppSelector } from "@/context/hooks";
-import { IRole } from "@/types/backend";
+import { IRole, IModelPaginate } from "@/types/backend";
 import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
 import { ActionType, ProColumns } from "@ant-design/pro-components";
 import { Button, Popconfirm, Space, Tag, message, notification } from "antd";
@@ -150,7 +150,7 @@ const RolePage = () => {
     const buildQuery = (params: any, sort: any, filter: any) => {
         const clone = { ...params };
         const q: any = {
-            page: params.current,
+            page: (params.current || 1) - 1,
             size: params.pageSize,
             filter: "",
         };
@@ -198,13 +198,19 @@ const RolePage = () => {
                     loading={isFetching}
                     columns={columns}
                     dataSource={roles}
-                    request={async (params, sort, filter): Promise<any> => {
+                    request={async (params, sort, filter) => {
                         const query = buildQuery(params, sort, filter);
-                        dispatch(fetchRole({ query }));
+                        const res = await dispatch(fetchRole({ query })).unwrap();
+                        const page = res.data as IModelPaginate<IRole> | undefined;
+                        return {
+                            data: page?.result ?? [],
+                            total: page?.meta?.total ?? 0,
+                            success: true,
+                        };
                     }}
                     scroll={{ x: true }}
                     pagination={{
-                        current: meta.page,
+                        current: (meta.page || 0) + 1,
                         pageSize: meta.pageSize,
                         showSizeChanger: true,
                         total: meta.total,

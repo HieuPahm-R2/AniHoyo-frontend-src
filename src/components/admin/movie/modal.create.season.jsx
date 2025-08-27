@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { AddSeasonAPI, callUploadImage, fetchFilmCategory, fetchFilmTags } from '../../services/api-handle';
+import { AddSeasonAPI, callUploadImage, fetchFilmCategory, fetchFilmTags } from '@/config/api-handle';
 import { Col, Divider, Form, Input, InputNumber, Modal, notification, Row, Select, Upload } from 'antd';
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 import { v4 as uuidv4 } from 'uuid';

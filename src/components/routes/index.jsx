@@ -12,8 +12,9 @@ import "../../assets/styles/mainClient.scss"
 import Layout from "../layout/client/layout";
 import Error404 from "../errors/404-page";
 import ClientHome from "../../pages/client/ClientHomepage";
-import ProtectedRoute from "../protected";
+
 import RolePage from "@/pages/admin/role.table";
+import ProtectedRoute from "../share/protected";
 
 const router = createBrowserRouter([
   {

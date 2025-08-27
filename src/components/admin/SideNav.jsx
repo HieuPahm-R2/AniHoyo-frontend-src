@@ -128,7 +128,7 @@ const SideNav = (props) => {
             >
               {tables}
             </span>
-            <span className="label">Tables Film</span>
+            <span className="label">Tables Roles</span>
           </NavLink>
         </Menu.Item>
         <Menu.Item key="5">
@@ -141,7 +141,7 @@ const SideNav = (props) => {
             >
               {tables}
             </span>
-            <span className="label">Tables Film</span>
+            <span className="label">Tables Authority</span>
           </NavLink>
         </Menu.Item>
         <Menu.Item className="menu-item-header" key="6">

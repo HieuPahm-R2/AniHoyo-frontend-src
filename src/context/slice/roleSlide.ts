@@ -35,7 +35,7 @@ const initialState: IState = {
     isFetching: true,
     isFetchSingle: true,
     meta: {
-        page: 1,
+        page: 0,
         pageSize: 10,
         pages: 0,
         total: 0

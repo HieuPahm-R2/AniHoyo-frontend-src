@@ -3,7 +3,7 @@ import { ProFormSwitch } from '@ant-design/pro-components';
 import { grey } from '@ant-design/colors';
 import { colorMethod } from '@/config/utils';
 import { IPermission } from '@/types/backend';
-import 'styles/reset.scss';
+import '@/assets/styles/reset.scss';
 import type { ProFormInstance } from '@ant-design/pro-components';
 
 const { Panel } = Collapse;

@@ -1,5 +1,6 @@
+import Error403 from "@/components/errors/403-page"
 import { useSelector } from "react-redux"
-import Error403 from "../errors/403-page"
+
 
 const RoleCheck = (props) => {
     const isAdmin = window.location.pathname.startsWith("/admin")
