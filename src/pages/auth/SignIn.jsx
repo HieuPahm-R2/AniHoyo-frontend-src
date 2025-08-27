@@ -9,7 +9,7 @@ import signinbg from "../../assets/images/login-intro1.jpg";
 import {
   DribbbleOutlined, TwitterOutlined, InstagramOutlined, GithubOutlined,
 } from "@ant-design/icons";
-import { loginAPI } from "../../config/api-handle";
+import { loginAPI } from "../../config/api.handle";
 import { useState } from "react";
 import { runLoginAction } from "../../context/slice/accountSlice";
 

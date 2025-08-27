@@ -13,6 +13,19 @@ export interface IModelPaginate<T> {
   };
   result: T[];
 }
+export interface IUser{
+  id?: string;
+  fullName: string;
+  email: string;
+  password?: string;
+  role?: {
+    id: string;
+    name: string;
+  };
+  createdBy?: string;
+  createdTime?: string;
+  updatedTime?: string;
+}
 export interface IPermission {
   id?: string;
   name?: string;

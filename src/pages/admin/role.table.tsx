@@ -184,7 +184,6 @@ const RolePage = () => {
         } else {
             temp = `${temp}&${sortBy}`;
         }
-
         return temp;
     };
 
@@ -210,10 +209,9 @@ const RolePage = () => {
                     }}
                     scroll={{ x: true }}
                     pagination={{
-                        current: (meta.page || 0) + 1,
-                        pageSize: meta.pageSize,
+
                         showSizeChanger: true,
-                        total: meta.total,
+
                         showTotal: (total, range) => {
                             return (
                                 <div>

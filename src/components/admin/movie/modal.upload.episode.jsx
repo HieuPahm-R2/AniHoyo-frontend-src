@@ -2,7 +2,7 @@ import { InboxOutlined } from '@ant-design/icons'
 import { Input, InputNumber, message, Modal } from 'antd'
 import Dragger from 'antd/es/upload/Dragger'
 import React, { useEffect, useState } from 'react'
-import { createEpisodeAPI, uploadVideoAPI } from '@/config/api-handle'
+import { createEpisodeAPI, uploadVideoAPI } from '@/config/api.handle'
 import ModalEpisodeList from './modal.view.episode'
 
 const ModalEpisodeUpload = (props) => {
