@@ -2,6 +2,7 @@ import { Col, Row } from 'antd'
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import React from 'react'
+import { HistoryOutlined } from '@ant-design/icons';
 
 
 const responsive = {
@@ -27,8 +28,13 @@ const CommingSoon = () => {
         <section class="section">
             <div class="container">
                 <Row class="row">
+
                     <Col span={6}>
-                        <h2 class="section__title">Phim Sắp Chiếu</h2>
+                        <div className="section__header">
+                            <HistoryOutlined />
+                            <h2 class="section__title">Phim Sắp Chiếu</h2>
+                        </div>
+
                     </Col>
 
                     <Col span={24}>

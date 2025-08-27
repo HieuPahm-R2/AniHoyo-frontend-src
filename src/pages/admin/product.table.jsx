@@ -1,16 +1,15 @@
-import {
-  Row, Col, Card, Table, Upload, message, Progress, Button, Typography, Image, Popconfirm
-} from "antd";
+import { Row, Col, Card, Table, Upload, message, Progress, Button, Typography, Image, Popconfirm } from "antd";
 import moment from "moment";
 import { DeleteTwoTone, EditTwoTone, PlusOutlined, ReloadOutlined, ToTopOutlined } from "@ant-design/icons";
 import "../../assets/styles/main.scss";
 import "../../assets/styles/responsive.scss";
 import { useEffect, useState } from "react";
-import ModalCreate from "../../components/admin/ModalCreate";
-import { fetchDataFilmsAPI } from "../../services/api-handle";
-import { FORMAT_DATE_DISPLAY } from "../../services/constant-date";
-import ModalUpdate from "../../components/admin/ModalUpdate";
-import ModalAdjustFilm from "../../components/admin/ModalAdjustFilm";
+
+import { fetchDataFilmsAPI } from "@/config/api-handle";
+import { FORMAT_DATE_DISPLAY } from "@/config/constant-date";
+import ModalUpdate from "@/components/admin/movie/modal.update.film";
+import ModalAdjustFilm from "@/components/admin/movie/modal.adjust.film";
+import ModalCreate from "@/components/admin/movie/modal.create.film";
 const ProductManage = () => {
   const { Title } = Typography;
 
@@ -28,7 +27,6 @@ const ProductManage = () => {
   const [total, setTotal] = useState(0);
   const [sortQuery, setSortQuery] = useState("");
   const [filter, setFilter] = useState("");
-
 
   useEffect(() => {
     refetchData()

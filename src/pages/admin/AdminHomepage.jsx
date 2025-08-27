@@ -20,7 +20,7 @@ import {
   RightOutlined,
 } from "@ant-design/icons";
 import Paragraph from "antd/lib/typography/Paragraph";
-import LineChart from '../../components/chart/lineChart';
+import LineChart from '../../components/admin/chart/lineChart';
 
 import ava1 from "../../assets/images/logo-shopify.svg";
 import ava2 from "../../assets/images/logo-atlassian.svg";

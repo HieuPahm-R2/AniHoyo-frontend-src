@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Col, Divider, message, Form, Input, InputNumber, Modal, notification, Row, Select, Upload } from "antd";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
-import { callCreateFilmAPI, callUploadImage, fetchFilmCategory, fetchFilmTags } from '../../services/api-handle';
+import { callCreateFilmAPI, callUploadImage, fetchFilmCategory, fetchFilmTags } from '@/config/api-handle';
 import { v4 as uuidv4 } from 'uuid';
 const ModalCreate = (props) => {
     const { openModalCreate, setOpenModalCreate, refetchData } = props;
@@ -60,11 +60,11 @@ const ModalCreate = (props) => {
             })
             return;
         }
-        const { name, studio, description, tag, releaseYear, category } = values;
+        const { name, studio, tag, category } = values;
         const thumbnail = dataThumbnail[0].name;
         const slider = dataSlider[0].name;
         setIsSubmit(true);
-        const res = await callCreateFilmAPI(thumbnail, slider, name, studio, description, releaseYear, tag, category);
+        const res = await callCreateFilmAPI(thumbnail, slider, name, studio, tag, category);
         if (res && res.data) {
             notification.success({
                 message: 'Thành công',
@@ -204,16 +204,7 @@ const ModalCreate = (props) => {
                                 <Input />
                             </Form.Item>
                         </Col>
-                        <Col span={12}>
-                            <Form.Item
-                                labelCol={{ span: 24 }}
-                                label="Mô tả / Giới Thiệu"
-                                name="description"
-                                rules={[{ required: true, message: 'Không giới thiệu phim à??!' }]}
-                            >
-                                <Input.TextArea rows={3} />
-                            </Form.Item>
-                        </Col>
+
 
                         <Col span={6}>
                             <Form.Item
@@ -305,16 +296,7 @@ const ModalCreate = (props) => {
                                 </Upload>
                             </Form.Item>
                         </Col>
-                        <Col span={6}>
-                            <Form.Item
-                                labelCol={{ span: 24 }}
-                                label="Năm Phát Hành"
-                                name="releaseYear"
-                                rules={[{ required: true, message: 'Vui lòng nhập thông tin!' }]}
-                            >
-                                <InputNumber min={1} style={{ width: '100%' }} />
-                            </Form.Item>
-                        </Col>
+
 
 
                     </Row>

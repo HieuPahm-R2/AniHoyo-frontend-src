@@ -68,9 +68,7 @@ const MadContent = (props) => {
         </Sider>
       }
 
-
       <Layout>
-
         <Affix>
           <AntHeader className={`${"ant-header-fixed"}`}>
             <HeaderAdmin

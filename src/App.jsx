@@ -2,9 +2,9 @@ import { RouterProvider } from "react-router-dom";
 import router from "./components/routes/index.jsx";
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from "react";
-import { callFetchAccountAPI } from "./services/api-handle.js";
-import { runGetAccountAction, runLoginAction } from './context/account/accountSlice';
-import Loading from "./components/reloading/index.jsx";
+import { callFetchAccountAPI } from "./config/api-handle.js";
+import { runGetAccountAction, runLoginAction } from './context/slice/accountSlice.js';
+import Loading from "./components/share/reloading/Loading.jsx";
 
 function App() {
   const dispatch = useDispatch()
@@ -12,7 +12,7 @@ function App() {
 
   const fetchAccount = async () => {
     if (window.location.pathname == "/login" || window.location.pathname == "/sign-up") return;
-    
+
     // Chỉ gọi API account khi có access token
     const accessToken = localStorage.getItem('access_token');
     if (!accessToken) {
@@ -20,7 +20,7 @@ function App() {
       window.location.href = '/login';
       return;
     }
-    
+
     try {
       const res = await callFetchAccountAPI();
       if (res.data) {

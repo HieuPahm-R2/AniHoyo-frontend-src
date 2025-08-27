@@ -7,6 +7,7 @@ const instance = axios.create({
     withCredentials: true
 });
 
+
 // sending bearer token with axios
 instance.defaults.headers.common = { 'Authorization': `Bearer ${localStorage.getItem('access_token')}` }
 
@@ -29,14 +30,14 @@ instance.interceptors.request.use(function (config) {
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
     }
-    
+
     // Nếu là request login hoặc refresh thì xóa Authorization header
-    if (config.url && (config.url.includes('/api/v1/auth/login') )) {
+    if (config.url && (config.url.includes('/api/v1/auth/login'))) {
         if (config.headers && config.headers['Authorization']) {
             delete config.headers['Authorization'];
         }
     }
-   return config;
+    return config;
 }, function (error) {
     // Do something with request error
     return Promise.reject(error);
@@ -53,7 +54,7 @@ instance.interceptors.response.use(function (response) {
         && +error.response.status === 401
         && !error.config.headers[NO_RETRY_HEADER]
         && !(error.config.url && (error.config.url.includes('/api/v1/auth/login') || error.config.url.includes('/api/v1/auth/refresh')))
-      ) {
+    ) {
         const access_token = await handleRefreshToken();
         error.config.headers[NO_RETRY_HEADER] = 'true'
         if (access_token) {
@@ -65,12 +66,14 @@ instance.interceptors.response.use(function (response) {
     // handle logic when refresh token and accesstoken expired
     if (error.config && error.response
         && +error.response.status === 400
-        && error.config.url === '/api/v1/auth/refresh') {
+        && error.config.url === '/api/v1/auth/refresh'
+        && location.pathname.startsWith("/admin")) {
         window.location.href = '/login';
-      
+        //dispatch redux action
+        const message = error?.response?.data?.error ?? "Có lỗi xảy ra, vui lòng login.";
+        // useDispatch(setRefreshTokenAction({ status: true, message }));
     }
     // Do something with response error
     return error.response.data ?? Promise.reject(error);
 });
 export default instance
-//  

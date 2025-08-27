@@ -14,7 +14,7 @@ import {
   FacebookFilled,
   DownOutlined,
 } from "@ant-design/icons";
-import avtar from "../../assets/images/team-2.jpg";
+
 import { NavLink, Link } from "react-router-dom";
 import { useSelector } from 'react-redux';
 
