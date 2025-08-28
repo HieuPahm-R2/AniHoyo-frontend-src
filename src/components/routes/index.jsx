@@ -1,9 +1,9 @@
 import { createBrowserRouter } from "react-router-dom";
 import App from "../../App";
-import DetailsPage from "../../pages/client/DetailsPage";
+import DetailsPage from "../../pages/client/film.detail";
 import SocialForum from "../../pages/client/SocialForum";
-import SingInPage from "../../pages/auth/SignIn";
-import RegisterPage from "../../pages/auth/Register";
+import SingInPage from "../../pages/auth/login.page";
+import RegisterPage from "../../pages/auth/register.page";
 import AdminHome from "../../pages/admin/admin.dashboard";
 import UserManage from "../../pages/admin/user.table";
 import ProductManage from "../../pages/admin/product.table";

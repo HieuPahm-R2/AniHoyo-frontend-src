@@ -53,7 +53,6 @@ export const accountSlice = createSlice({
         doUpdateUserAction: (state, action) => {
             state.user.avatar = action.payload.avatar;
             state.user.name = action.payload.name;
-            state.user.phone = action.payload.phone
         }
     },
     extraReducers: (builder) => {

@@ -59,6 +59,23 @@ const ProductManage = () => {
       title: "Film/Movie Name",
       dataIndex: "name",
       width: "32%",
+      render: (text, record, index) => {
+        return (
+          <Image.PreviewGroup>
+            <Image className="shape-avatar" width={50}
+              src={`${import.meta.env.VITE_BACKEND_URL}/storage/thumbnail/${record.thumbnail}`} alt="" />
+            <div className="avatar-info" style={{ display: "inline-block", marginLeft: "5px", cursor: "pointer" }}
+              onClick={
+                () => {
+                  setDataDetail(film);
+                  setOpenViewDetail(true);
+                }
+              }>
+              <Title level={5}>{record.name || 'No Name'}</Title>
+            </div>
+          </Image.PreviewGroup>
+        )
+      }
     },
     {
       title: "Studio Production",
@@ -79,77 +96,38 @@ const ProductManage = () => {
       }
     },
     {
-      title: "COMPLETION",
-      dataIndex: "completion",
+      title: "Actions",
+      key: "action",
       render: (_, record) => {
         return (
           <>
-            <div className="ant-progress-project">
-              <Progress percent={20} size="small" />
-              <Popconfirm
-                placement="leftTop"
-                title={"Xác nhận xóa"}
-                description={"Bạn chắc chắn muốn xóa phim này ?"}
-                // onConfirm={() => handleDeleteBook(record._id)}
-                okText="OK"
-                cancelText="Hủy"
-              >
-                <span style={{ cursor: "pointer", margin: "0 20px" }}>
-                  <DeleteTwoTone twoToneColor="#ff4d4f" />
-                </span>
-              </Popconfirm>
 
-              <EditTwoTone
-                twoToneColor="#f57800" style={{ cursor: "pointer" }}
-                onClick={() => {
-                  setOpenModalUpdate(true);
-                  console.log("TRINH LA GIF", record)
-                  setDataUpdate(record);
-                }}
-              />
-            </div>
+            <Popconfirm
+              placement="leftTop"
+              title={"Xác nhận xóa"}
+              description={"Bạn chắc chắn muốn xóa phim này ?"}
+              // onConfirm={() => handleDeleteBook(record._id)}
+              okText="OK"
+              cancelText="Hủy"
+            >
+              <span style={{ cursor: "pointer", margin: "0 20px" }}>
+                <DeleteTwoTone twoToneColor="#ff4d4f" />
+              </span>
+            </Popconfirm>
 
+            <EditTwoTone
+              twoToneColor="#f57800" style={{ cursor: "pointer" }}
+              onClick={() => {
+                setOpenModalUpdate(true);
+                setDataUpdate(record);
+              }}
+            />
           </>
         )
       }
     },
   ].filter(item => !item.hidden);
   // Tạo dataproject động từ dataFilm, đảm bảo dataFilm luôn là mảng
-  const dataproject = Array.isArray(dataFilm) ? dataFilm.map((film, idx) => ({
-    // key: film.id || idx,
-    name: (
-      <>
-        <Image.PreviewGroup>
-          <Image className="shape-avatar" width={50}
-            src={`${import.meta.env.VITE_BACKEND_URL}/storage/thumbnail/${film.thumbnail}`} alt="" />
-          <div className="avatar-info" style={{ display: "inline-block", marginLeft: "5px", cursor: "pointer" }}
-            onClick={
-              () => {
-                setDataDetail(film);
-                setOpenViewDetail(true);
-              }
-            }>
-            <Title level={5}>{film.name || 'No Name'}</Title>
-          </div>
-        </Image.PreviewGroup>
-      </>
-    ),
-    studio: (
-      <>
-        <div className="semibold">{film.studio || '---'}</div>
-      </>
-    ),
-    releaseYear: (
-      <>
-        <div className="text-sm">{film.releaseYear || '@-@-@'}</div>
-      </>
-    ),
-    uploadTime: (
-      <>
-        <div className="text-sm">{film.uploadDate || '---'}</div>
-      </>
-    ),
-  })) : [];
 
   const onChange = (pagination, filters, sorter) => {
     if (pagination.current !== current && pagination) {
@@ -189,7 +167,7 @@ const ProductManage = () => {
           <div className="table-responsive">
             <Table
               columns={project}
-              dataSource={dataproject}
+              dataSource={dataFilm}
               rowKey="id"
               loading={isLoading}
               onChange={onChange}

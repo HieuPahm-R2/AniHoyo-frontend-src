@@ -49,7 +49,8 @@ const ModalUpdate = (props) => {
     }, [])
 
     useEffect(() => {
-        if (dataUpdate?._id) {
+        console.log(dataUpdate)
+        if (dataUpdate?.id) {
             const arrThumbnail = [{
                 uid: uuidv4(),
                 name: dataUpdate.thumbnail,
@@ -62,14 +63,20 @@ const ModalUpdate = (props) => {
                 status: 'done',
                 url: `${import.meta.env.VITE_BACKEND_URL}/storage/slider/${dataUpdate.slider}`,
             }]
+            const nameTag = dataUpdate.tags.map((item) => ({
+                label: item.name,
+                value: item.id
+            }))
+            const nameCate = dataUpdate.categories.map((item) => ({
+                label: item.name,
+                value: item.id
+            }))
             const initialVal = {
                 id: dataUpdate.id,
                 name: dataUpdate.name,
                 studio: dataUpdate.studio,
-                description: dataUpdate.description,
-                releaseYear: dataUpdate.releaseYear,
-                tag: dataUpdate.tag,
-                category: dataUpdate.category,
+                tag: nameTag,
+                category: nameCate,
                 thumbnail: {
                     fileList: arrThumbnail
                 },
@@ -104,11 +111,10 @@ const ModalUpdate = (props) => {
         setIsSubmit(true);
         const thumbnail = dataThumbnail[0].name;
         const slider = dataSlider[0].name;
-        const { id, name, studio, description, tag, releaseYear, category } = values;
+        const { id, name, studio, tag, category } = values;
         console.log(values);
         const res = await callUpdateFilmAPI(
-            id, thumbnail, slider, name, studio, description, tag, releaseYear, category
-        );
+            id, thumbnail, slider, name, studio, tag, category);
         if (res && res.data) {
             setOpenModalUpdate(false);
             setInitForm(null);
@@ -259,16 +265,6 @@ const ModalUpdate = (props) => {
                                 <Input />
                             </Form.Item>
                         </Col>
-                        <Col span={12}>
-                            <Form.Item
-                                labelCol={{ span: 24 }}
-                                label="Mô tả / Giới Thiệu"
-                                name="description"
-                                rules={[{ required: true, message: 'Không giới thiệu phim à??!' }]}
-                            >
-                                <Input.TextArea rows={3} />
-                            </Form.Item>
-                        </Col>
 
                         <Col span={6}>
                             <Form.Item
@@ -318,6 +314,7 @@ const ModalUpdate = (props) => {
                                     beforeUpload={beforeUpload}
                                     onRemove={file => handleRemoveFile(file, 'thumbnail')}
                                     onPreview={handlePreview}
+                                    defaultFileList={initForm?.thumbnail?.fileList ?? []}
                                     showUploadList={{
                                         showPreviewIcon: true,
                                         showRemoveIcon: true,
@@ -348,6 +345,7 @@ const ModalUpdate = (props) => {
                                     onRemove={file => handleRemoveFile(file, 'slider')}
                                     onPreview={handlePreview}
                                     customRequest={handleUploadSlider}
+                                    defaultFileList={initForm?.slider?.fileList ?? []}
                                     showUploadList={{
                                         showPreviewIcon: true,
                                         showRemoveIcon: true,
@@ -360,17 +358,6 @@ const ModalUpdate = (props) => {
                                 </Upload>
                             </Form.Item>
                         </Col>
-                        <Col span={6}>
-                            <Form.Item
-                                labelCol={{ span: 24 }}
-                                label="Năm Phát Hành"
-                                name="releaseYear"
-                                rules={[{ required: true, message: 'Vui lòng nhập thông tin!' }]}
-                            >
-                                <InputNumber min={1} style={{ width: '100%' }} />
-                            </Form.Item>
-                        </Col>
-
 
                     </Row>
                 </Form>
