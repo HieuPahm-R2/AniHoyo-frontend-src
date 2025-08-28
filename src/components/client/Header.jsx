@@ -2,11 +2,12 @@ import React from 'react'
 import { Link, useNavigate } from "react-router-dom";
 import { runLogoutAction } from '../../context/slice/accountSlice';
 import { LogoutAPI } from '@/config/api.handle';
-import { Avatar, Dropdown, message, Space } from 'antd';
-import { DownOutlined } from '@ant-design/icons';
+import { Avatar, Dropdown, Menu, message, Space } from 'antd';
+import { AppstoreOutlined, DownOutlined, MailOutlined, SettingOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
+import { VscSearchFuzzy } from 'react-icons/vsc';
 
-const Header = () => {
+const Header = (props) => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const isAuthenticated = useSelector(state => state.account.isAuthenticated);
@@ -20,6 +21,68 @@ const Header = () => {
         {
             label: <label>Đăng xuất</label>,
             key: 'logout',
+        },
+    ];
+    const items2 = [
+        {
+            label: 'Dạng Anime',
+            key: 'mail',
+            icon: <MailOutlined />,
+            children: [
+                {
+                    type: 'group',
+                    label: 'Item 1',
+                    children: [
+                        { label: 'Option 1', key: 'setting:1' },
+                        { label: 'Option 2', key: 'setting:2' },
+                    ],
+                },
+                {
+                    type: 'group',
+                    label: 'Item 2',
+                    children: [
+                        { label: 'Option 3', key: 'setting:3' },
+                        { label: 'Option 4', key: 'setting:4' },
+                    ],
+                },
+            ],
+        },
+        {
+            label: 'TOP ANIME THEO MÙA',
+            key: 'app',
+            icon: <AppstoreOutlined />,
+            disabled: true,
+        },
+        {
+            label: 'THỂ LOẠI / MÙA PHIM',
+            key: 'SubMenu',
+            icon: <SettingOutlined />,
+            children: [
+                {
+                    type: 'group',
+                    label: 'Item 1',
+                    children: [
+                        { label: 'Option 1', key: 'setting:1' },
+                        { label: 'Option 2', key: 'setting:2' },
+                    ],
+                },
+                {
+                    type: 'group',
+                    label: 'Item 2',
+                    children: [
+                        { label: 'Option 3', key: 'setting:3' },
+                        { label: 'Option 4', key: 'setting:4' },
+                    ],
+                },
+            ],
+        },
+        {
+            key: 'alipay',
+            label: (
+                <a href="https://ant.design" target="_blank" rel="noopener noreferrer">
+                    about us
+                </a>
+            ),
         },
     ];
 
@@ -59,47 +122,17 @@ const Header = () => {
                                 <img src="/CloverWorks.svg" alt="Movies & TV Shows, Online cinema" />
                             </a>
 
-                            <ul class="header__nav">
-                                <li class="header__nav-item">
-                                    <a class="header__nav-link" href="#" role="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Trang chủ </a>
-                                </li>
-                                <li class="header__nav-item">
-                                    <a class="header__nav-link" href="#" role="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Thể Loại Phim </a>
-
-                                    <ul class="dropdown-menu header__nav-menu" aria-labelledby="dropdownMenu1">
-                                        <li><a href="catalog.html">Catalog</a></li>
-                                        <li class="dropdown-submenu">
-                                            <a class="dropdown-item" href="#" role="button" id="dropdownMenuSub" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Catalog dropdown <svg width="4" height="4" viewBox="0 0 4 4" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1.93893 3.30334C1.08141 3.30334 0.384766 2.60669 0.384766 1.75047C0.384766 0.894254 1.08141 0.196308 1.93893 0.196308C2.79644 0.196308 3.49309 0.894254 3.49309 1.75047C3.49309 2.60669 2.79644 3.30334 1.93893 3.30334Z" /></svg></a>
-                                            <ul class="dropdown-menu header__nav-menu" aria-labelledby="dropdownMenuSub">
-                                                <li><a href="category.html">Actions</a></li>
-                                                <li><a href="category.html">Biography</a></li>
-                                                <li><a href="category.html">Documentary</a></li>
-                                                <li><a href="category.html">Horror</a></li>
-                                            </ul>
-                                        </li>
-                                        <li><a href="category.html">Category style 1</a></li>
-                                        <li><a href="category2.html">Category style 2</a></li>
-                                        <li><a href="details.html">Details style 1</a></li>
-                                    </ul>
-                                </li>
-                                <li class="header__nav-item">
-                                    <a class="header__nav-link header__nav-link--live" href="live.html">Phim sắp chiếu<svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="6" cy="4" r="4" fill="#EB5757" fill-opacity="0.5" /><g filter="url(#filter0_d)"><circle cx="6" cy="4" r="2" fill="#EB5757" /></g><defs><filter id="filter0_d" x="0" y="0" width="12" height="12" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix" /><feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" /><feOffset dy="2" /><feGaussianBlur stdDeviation="2" /><feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.3 0" /><feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow" /><feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow" result="shape" /></filter></defs></svg></a>
-                                </li>
-                                <li class="header__nav-item">
-                                    <a class="header__nav-link header__nav-link--live" href="live.html">Social Forum<svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="6" cy="4" r="4" fill="#EB5757" fill-opacity="0.5" /><g filter="url(#filter0_d)"><circle cx="6" cy="4" r="2" fill="#EB5757" /></g><defs><filter id="filter0_d" x="0" y="0" width="12" height="12" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix" /><feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" /><feOffset dy="2" /><feGaussianBlur stdDeviation="2" /><feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.3 0" /><feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow" /><feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow" result="shape" /></filter></defs></svg></a>
-                                </li>
-
-                                <li class="header__nav-item">
-                                    <a class="header__nav-link header__nav-link--more" href="#" role="button" id="dropdownMenu3" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <svg width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6.93893 14.3033C6.08141 14.3033 5.38477 13.6067 5.38477 12.7505C5.38477 11.8943 6.08141 11.1963 6.93893 11.1963C7.79644 11.1963 8.49309 11.8943 8.49309 12.7505C8.49309 13.6067 7.79644 14.3033 6.93893 14.3033Z" /><path d="M12.7501 14.3033C11.8926 14.3033 11.1959 13.6067 11.1959 12.7505C11.1959 11.8943 11.8926 11.1963 12.7501 11.1963C13.6076 11.1963 14.3042 11.8943 14.3042 12.7505C14.3042 13.6067 13.6076 14.3033 12.7501 14.3033Z" /><path d="M18.5608 14.3033C17.7032 14.3033 17.0066 13.6067 17.0066 12.7505C17.0066 11.8943 17.7032 11.1963 18.5608 11.1963C19.4183 11.1963 20.1149 11.8943 20.1149 12.7505C20.1149 13.6067 19.4183 14.3033 18.5608 14.3033Z" /></svg>
-                                    </a>
-
-                                    <ul class="dropdown-menu header__nav-menu header__nav-menu--scroll" aria-labelledby="dropdownMenu3">
-                                        <li><a href="about.html">About us</a></li>
-                                        <li><a href="privacy.html">Privacy policy</a></li>
-                                    </ul>
-                                </li>
-                            </ul>
+                            <Menu mode="horizontal" items={items2} />;
+                            <div className='page-header__logo'>
+                                <span className='logo' onClick={() => navigate('/')}>
+                                    <VscSearchFuzzy className='icon-search' />
+                                </span>
+                                <input
+                                    className="input-search" type={'text'}
+                                    placeholder="Bạn xem gì hôm nay..."
+                                    onChange={(e) => props.setSearchTerm(e.target.value)}
+                                />
+                            </div>
 
                             <div class="header__actions">
 
