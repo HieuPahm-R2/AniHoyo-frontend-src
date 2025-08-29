@@ -6,7 +6,7 @@ import "../../assets/styles/responsive.scss";
 import { useEffect, useState } from "react";
 
 import { fetchDataFilmsAPI } from "@/config/api.handle";
-import { FORMAT_DATE_DISPLAY } from "@/config/constant-date";
+import { FORMAT_DATE_DISPLAY } from "@/config/constant.date";
 import ModalUpdate from "@/components/admin/movie/modal.update.film";
 import ModalAdjustFilm from "@/components/admin/movie/modal.adjust.film";
 import ModalCreate from "@/components/admin/movie/modal.create.film";

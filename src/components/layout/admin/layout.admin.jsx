@@ -3,7 +3,7 @@ import { useLocation, Outlet } from "react-router-dom";
 import { Layout, Drawer, Affix } from "antd";
 import HeaderAdmin from "../../admin/Header";
 import FooterAdmin from "../../admin/Footer";
-import SideNav from "../../admin/SideNav";
+import SideNav from "../../admin/side.nav";
 import { useSelector } from "react-redux";
 
 const { Header: AntHeader, Content, Sider } = Layout;

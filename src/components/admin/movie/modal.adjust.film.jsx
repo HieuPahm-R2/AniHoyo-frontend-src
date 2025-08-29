@@ -1,7 +1,7 @@
 import { Badge, Button, Col, Descriptions, Drawer, Image, Popconfirm, Row, Table, Typography } from 'antd'
 import moment from 'moment';
 import React, { useEffect, useState } from 'react'
-import { FORMAT_DATE_DISPLAY } from '@/config/constant-date';
+import { FORMAT_DATE_DISPLAY } from '@/config/constant.date';
 import { DeleteTwoTone, EditTwoTone, EyeOutlined, PlusOutlined, ReloadOutlined } from "@ant-design/icons";
 import { fetchSeasonsOfFilmAPI } from '@/config/api.handle';
 import ModalEpisodeUpload from './modal.upload.episode';

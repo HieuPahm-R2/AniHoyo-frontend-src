@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { Col, Divider, Pagination, Rate, Row, Select, Spin, Tabs } from "antd";
 import { FilterTwoTone, ReloadOutlined, StarFilled, ClockCircleOutlined, CalendarOutlined } from "@ant-design/icons";
-import { IoIosPlayCircle } from "react-icons/io";
+
 import '@/assets/styles/Content.css';
 import { fetchAllSeasons, fetchFilmCategory, fetchFilmTags } from '@/config/api.handle';
-import Loading from '../share/reloading/Loading';
 import WaitingContent from '../share/reloading/skeleton.load';
 
 // Dữ liệu mẫu cho bảng xếp hạng
@@ -254,7 +253,6 @@ const Content = (props) => {
                                                 </div>
                                             )
                                         })}
-
 
                                     </Row>
                                     <div style={{ marginTop: 30 }}></div>

@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { runLogoutAction } from '../../context/slice/accountSlice';
 import { LogoutAPI } from '@/config/api.handle';
 import { Avatar, Dropdown, Menu, message, Space } from 'antd';
-import { AppstoreOutlined, DownOutlined, MailOutlined, SettingOutlined } from '@ant-design/icons';
+import { AppstoreOutlined, ControlOutlined, DownOutlined, MailOutlined, SettingOutlined, VideoCameraAddOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { VscSearchFuzzy } from 'react-icons/vsc';
 
@@ -25,9 +25,9 @@ const Header = (props) => {
     ];
     const items2 = [
         {
-            label: 'Dạng Anime',
+            label: 'DẠNG Anime',
             key: 'mail',
-            icon: <MailOutlined />,
+            icon: <VideoCameraAddOutlined />,
             children: [
                 {
                     type: 'group',
@@ -56,7 +56,7 @@ const Header = (props) => {
         {
             label: 'THỂ LOẠI / MÙA PHIM',
             key: 'SubMenu',
-            icon: <SettingOutlined />,
+            icon: <ControlOutlined />,
             children: [
                 {
                     type: 'group',
@@ -122,7 +122,7 @@ const Header = (props) => {
                                 <img src="/CloverWorks.svg" alt="Movies & TV Shows, Online cinema" />
                             </a>
 
-                            <Menu mode="horizontal" items={items2} />;
+                            <Menu mode="horizontal" items={items2} theme='dark' />;
                             <div className='page-header__logo'>
                                 <span className='logo' onClick={() => navigate('/')}>
                                     <VscSearchFuzzy className='icon-search' />

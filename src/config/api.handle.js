@@ -78,3 +78,6 @@ export const AddSeasonAPI = (thumb, seasonName, description, type, releaseYear, 
 export const fetchAllSeasons = (query) => {
     return instance.get(`/api/v1/seasons?${query}`)
 }
+export const fetchSeasonById = (id) => {
+    return instance.get(`/api/v1/season/${id}`)
+}

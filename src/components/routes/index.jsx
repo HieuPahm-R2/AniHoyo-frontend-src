@@ -1,7 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import App from "../../App";
-import DetailsPage from "../../pages/client/film.detail";
-import SocialForum from "../../pages/client/SocialForum";
+import DetailsPage from "../../pages/client/film.detail.fixed";
 import SingInPage from "../../pages/auth/login.page";
 import RegisterPage from "../../pages/auth/register.page";
 import AdminHome from "../../pages/admin/admin.dashboard";
@@ -16,6 +15,7 @@ import ClientHome from "../../pages/client/client.home";
 import RolePage from "@/pages/admin/role.table";
 import ProtectedRoute from "../share/protected";
 import PermissionPage from "@/pages/admin/permission.table";
+import FilmWatching from "@/pages/client/film.watching";
 
 const router = createBrowserRouter([
   {
@@ -34,8 +34,8 @@ const router = createBrowserRouter([
         </ProtectedRoute>
       },
       {
-        path: "social-community",
-        element: <SocialForum />
+        path: "/watching",
+        element: <FilmWatching />
       },
     ]
   },

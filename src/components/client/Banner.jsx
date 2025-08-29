@@ -1,7 +1,7 @@
 import React from 'react'
 import { FaStar } from "react-icons/fa";
 import { IoIosPlayCircle } from "react-icons/io";
-import './Banner.css';
+import '@/assets/styles/Banner.css';
 
 const Banner = () => {
     return (
