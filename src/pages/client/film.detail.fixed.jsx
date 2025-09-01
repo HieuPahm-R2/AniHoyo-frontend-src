@@ -3,6 +3,7 @@ import { Col, Divider, Rate, Row, Tabs } from "antd";
 import { useLocation, useNavigate } from 'react-router-dom';
 import { fetchSeasonById } from '@/config/api.handle';
 import { useDispatch, useSelector } from 'react-redux';
+import { convertSlug } from '@/config/utils';
 
 const DetailsPage = () => {
   const [seasonData, setSeasonData] = React.useState([]);
@@ -22,14 +23,10 @@ const DetailsPage = () => {
     };
   }, []);
   useEffect(() => {
-    console.log(id)
     const fetchFilmById = async () => {
       const res = await fetchSeasonById(id);
-      console.log(res)
       if (res && res.data) {
         let rawData = res.data;
-        rawData.items = getFormImage(res.data);
-
         setTimeout(() => {
           setSeasonData(rawData);
         }, 1000);
@@ -37,21 +34,10 @@ const DetailsPage = () => {
     }
     fetchFilmById();
   }, [id]);
-  const getFormImage = (data) => {
-    const images = [];
-    if (data.visual) {
-      images.push({
-        original: `${import.meta.env.VITE_BACKEND_URL}/storage/visual/${data.visual}`,
-        thumbnail: `${import.meta.env.VITE_BACKEND_URL}/storage/visual/${data.visual}`,
-        originalClass: "original-image",
-        thumbnailClass: "thumbnail-image"
-      })
-    }
-    return images;
-  }
+
   const handleRedirect = (ss) => {
     const slug = convertSlug(ss.seasonName);
-    navigate(`/watching/${slug}?id=${book.id}`)
+    navigate(`/watching/${slug}?id=${ss.id}`)
   }
   return (
     <section className="section section--head section--head-fixed section--gradient section--details-bg">
@@ -81,46 +67,38 @@ const DetailsPage = () => {
 
             {/* Right Column - Video Player */}
             <Col span={24} xl={8}>
-              <div style={{
+              <div onClick={() => handleRedirect(seasonData)} style={{
                 position: 'relative',
                 borderRadius: '12px',
                 overflow: 'hidden',
                 boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
-                maxWidth: '270px',
+                maxWidth: '220px',
                 margin: '0 auto'
               }}>
-                <div style={{ position: 'relative' }}>
+                <div style={{ position: 'relative' }} >
                   <img
                     src={`${import.meta.env.VITE_BACKEND_URL}/storage/visual/${seasonData.thumb}`}
                     style={{
                       width: '100%',
-                      height: '400px',
+                      height: '320px',
                       objectFit: 'cover',
                       display: 'block',
                       borderRadius: '12px'
                     }}
                     alt={seasonData.seasonName}
+
                   />
 
                   {/* Follow Button */}
                   <button
                     style={{
                       position: 'absolute',
-                      top: '12px',
-                      left: '12px',
+                      top: '12px', left: '12px',
                       background: 'rgba(0,0,0,0.7)',
-                      border: 'none',
-                      borderRadius: '6px',
-                      padding: '6px 10px',
-                      color: 'white',
-                      fontSize: '12px',
-                      fontWeight: '500',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '4px',
-                      backdropFilter: 'blur(10px)',
-                      transition: 'all 0.3s ease'
+                      border: 'none', borderRadius: '6px',
+                      padding: '6px 10px', color: 'white',
+                      fontSize: '12px', fontWeight: '500', cursor: 'pointer',
+                      display: 'flex', alignItems: 'center', gap: '4px', backdropFilter: 'blur(10px)', transition: 'all 0.3s ease'
                     }}
                     onMouseEnter={(e) => e.target.style.background = 'rgba(0,0,0,0.9)'}
                     onMouseLeave={(e) => e.target.style.background = 'rgba(0,0,0,0.7)'}
@@ -135,16 +113,12 @@ const DetailsPage = () => {
                   <div
                     style={{
                       position: 'absolute',
-                      top: '50%',
-                      left: '50%',
+                      top: '50%', left: '50%',
                       transform: 'translate(-50%, -50%)',
-                      width: '60px',
-                      height: '60px',
+                      width: '60px', height: '60px',
                       background: 'rgba(255,255,255,0.9)',
                       borderRadius: '50%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
                       cursor: 'pointer',
                       border: '2px solid rgba(0,0,0,0.2)',
                       transition: 'all 0.3s ease',
@@ -158,7 +132,7 @@ const DetailsPage = () => {
                       e.target.style.background = 'rgba(255,255,255,0.9)';
                       e.target.style.transform = 'translate(-50%, -50%) scale(1)';
                     }}
-                    onClick={() => handleRedirect}
+
                   >
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="#000">
                       <path d="M8,5.14V19.14L19,12.14L8,5.14Z" />
@@ -169,25 +143,16 @@ const DetailsPage = () => {
                   <button
                     style={{
                       position: 'absolute',
-                      bottom: '15px',
-                      left: '50%',
-                      transform: 'translateX(-50%)',
+                      bottom: '15px', left: '50%', transform: 'translateX(-50%)',
                       background: 'linear-gradient(135deg, #ff4757, #ff3742)',
-                      border: 'none',
-                      borderRadius: '6px',
-                      padding: '10px 20px',
-                      color: 'white',
-                      fontSize: '14px',
-                      fontWeight: 'bold',
-                      cursor: 'pointer',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.5px',
-                      boxShadow: '0 4px 15px rgba(255,71,87,0.4)',
+                      border: 'none', borderRadius: '6px', padding: '10px 20px',
+                      color: 'white', fontSize: '14px', fontWeight: 'bold',
+                      cursor: 'pointer', textTransform: 'uppercase',
+                      letterSpacing: '0.5px', boxShadow: '0 4px 15px rgba(255,71,87,0.4)',
                       transition: 'all 0.3s ease',
                       minWidth: '240px'
                     }}
                     onMouseEnter={(e) => {
-
                       e.target.style.transform = 'translateX(-50%) translateY(-2px)';
                     }}
                     onMouseLeave={(e) => {
@@ -208,7 +173,7 @@ const DetailsPage = () => {
                 <iframe
                   width={700}
                   height={400}
-                  src="https://www.youtube.com/embed/bUtDhdVhUkI?si=9ozadE4oMP5oJZQ8"
+                  src={seasonData.trailer}
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                   referrerPolicy="strict-origin-when-cross-origin"
                   allowFullScreen
@@ -221,11 +186,8 @@ const DetailsPage = () => {
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21,14a1,1,0,0,0-1,1v4a1,1,0,0,1-1,1H5a1,1,0,0,1-1-1V15a1,1,0,0,0-2,0v4a3,3,0,0,0,3,3H19a3,3,0,0,0,3-3V15A1,1,0,0,0,21,14Zm-9.71,1.71a1,1,0,0,0,.33.21.94.94,0,0,0,.76,0,1,1,0,0,0,.33-.21l4-4a1,1,0,0,0-1.42-1.42L13,12.59V3a1,1,0,0,0-2,0v9.59l-2.29-2.3a1,1,0,1,0-1.42,1.42Z" /></svg>
                 Trailer Film:
                 <a href="#" download="#">1080p</a>
-                <a href="#" download="#">FHD | SD</a>
+                <a href="#" download="#">FHD | SD | VietSub</a>
               </div>
-              <button className="article__favorites" type="button">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M16,2H8A3,3,0,0,0,5,5V21a1,1,0,0,0,.5.87,1,1,0,0,0,1,0L12,18.69l5.5,3.18A1,1,0,0,0,18,22a1,1,0,0,0,.5-.13A1,1,0,0,0,19,21V5A3,3,0,0,0,16,2Zm1,17.27-4.5-2.6a1,1,0,0,0-1,0L7,19.27V5A1,1,0,0,1,8,4h8a1,1,0,0,1,1,1Z"></path></svg> Add to favorites
-              </button>
             </div>
           </Row>
 
@@ -235,10 +197,11 @@ const DetailsPage = () => {
             {/* Sidebar - Categories and Share */}
             <Col span={24} xl={8}>
               <div className="categories">
-                <h3 className="categories__title">Genres</h3>
-                <a href="category.html" className="categories__item">Action</a>
-                <a href="category.html" className="categories__item">Thriller</a>
-                <a href="category.html" className="categories__item">Crime</a>
+                <h3 className="categories__title">Thể Loại:</h3>
+
+                {seasonData?.film?.categories?.map((category) => (
+                  <a href="category.html" className="categories__item">{category.name}</a>
+                ))}
               </div>
 
               <div className="share">
@@ -253,11 +216,7 @@ const DetailsPage = () => {
                     <path d="M7.55075 3.19219L7.58223 3.71122L7.05762 3.64767C5.14804 3.40404 3.47978 2.57782 2.06334 1.1902L1.37085 0.501686L1.19248 1.01013C0.814766 2.14353 1.05609 3.34048 1.843 4.14552C2.26269 4.5904 2.16826 4.65396 1.4443 4.38914C1.19248 4.3044 0.972149 4.24085 0.951164 4.27263C0.877719 4.34677 1.12953 5.31069 1.32888 5.69202C1.60168 6.22165 2.15777 6.74068 2.76631 7.04787L3.28043 7.2915L2.67188 7.30209C2.08432 7.30209 2.06334 7.31268 2.12629 7.53512C2.33613 8.22364 3.16502 8.95452 4.08833 9.2723L4.73884 9.49474L4.17227 9.8337C3.33289 10.321 2.34663 10.5964 1.36036 10.6175C0.888211 10.6281 0.5 10.6705 0.5 10.7023C0.5 10.8082 1.78005 11.4014 2.52499 11.6344C4.75983 12.3229 7.41435 12.0264 9.40787 10.8506C10.8243 10.0138 12.2408 8.35075 12.9018 6.74068C13.2585 5.88269 13.6152 4.315 13.6152 3.56293C13.6152 3.07567 13.6467 3.01212 14.2343 2.42953C14.5805 2.09056 14.9058 1.71983 14.9687 1.6139C15.0737 1.41264 15.0632 1.41264 14.5281 1.59272C13.6362 1.91049 13.5103 1.86812 13.951 1.39146C14.2762 1.0525 14.6645 0.438131 14.6645 0.258058C14.6645 0.22628 14.5071 0.279243 14.3287 0.374576C14.1398 0.480501 13.7202 0.639389 13.4054 0.734722L12.8388 0.914795L12.3247 0.565241C12.0414 0.374576 11.6427 0.162725 11.4329 0.0991699C10.8978 -0.0491255 10.0794 -0.0279404 9.59673 0.14154C8.2852 0.618204 7.45632 1.84694 7.55075 3.19219Z" />
                   </svg> tweet
                 </a>
-                <a href="#" className="share__link share__link--vk">
-                  <svg width="16" height="9" viewBox="0 0 16 9" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M8.78479 8.92255C8.78479 8.92255 9.07355 8.89106 9.22145 8.73512C9.35684 8.59224 9.35214 8.32262 9.35214 8.32262C9.35214 8.32262 9.33414 7.06361 9.92967 6.87771C10.5166 6.69489 11.2702 8.09524 12.07 8.63372C12.6741 9.04085 13.1327 8.95174 13.1327 8.95174L15.2699 8.92255C15.2699 8.92255 16.3874 8.85495 15.8576 7.99231C15.8137 7.92164 15.5485 7.35397 14.269 6.1879C12.9284 4.9673 13.1084 5.16472 14.7221 3.05305C15.705 1.76715 16.0978 0.982093 15.975 0.646407C15.8584 0.325317 15.1353 0.410582 15.1353 0.410582L12.7297 0.425177C12.7297 0.425177 12.5513 0.401365 12.419 0.478949C12.2899 0.554996 12.2061 0.732441 12.2061 0.732441C12.2061 0.732441 11.8258 1.72721 11.3179 2.57372C10.2466 4.35892 9.81855 4.4534 9.64326 4.34279C9.23554 4.08392 9.33727 3.30424 9.33727 2.75039C9.33727 1.01973 9.60491 0.298431 8.81687 0.111769C8.5555 0.0495478 8.36299 0.00883541 7.6939 0.00192196C6.83543 -0.00652779 6.10921 0.00499461 5.69758 0.202411C5.42369 0.333767 5.2124 0.627203 5.34152 0.644103C5.50038 0.664843 5.86036 0.739354 6.0513 0.994383C6.29781 1.32392 6.2892 2.06289 6.2892 2.06289C6.2892 2.06289 6.43084 4.10005 5.95818 4.35277C5.6342 4.52638 5.1897 4.17226 4.2342 2.55221C3.7451 1.7226 3.37573 0.805416 3.37573 0.805416C3.37573 0.805416 3.30451 0.634117 3.17696 0.541938C3.02279 0.430555 2.80759 0.395987 2.80759 0.395987L0.521729 0.410582C0.521729 0.410582 0.178185 0.4198 0.0521924 0.566519C-0.0597138 0.696338 0.0435842 0.965961 0.0435842 0.965961C0.0435842 0.965961 1.8333 5.07638 3.86013 7.1481C5.71871 9.04699 7.8285 8.92255 7.8285 8.92255H8.78479Z" />
-                  </svg> share
-                </a>
+
               </div>
             </Col>
           </Row>
@@ -305,31 +264,6 @@ const DetailsPage = () => {
                       </li>
                     </ul>
 
-                    <div className="catalog__paginator-wrap catalog__paginator-wrap--comments">
-                      <span className="catalog__pages">5 from 16</span>
-                      <ul className="catalog__paginator">
-                        <li>
-                          <a href="#">
-                            <svg width="14" height="11" viewBox="0 0 14 11" fill="none" xmlns="http://www.w3.org/2000/svg">
-                              <path d="M0.75 5.36475L13.1992 5.36475" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
-                              <path d="M5.771 10.1271L0.749878 5.36496L5.771 0.602051" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
-                            </svg>
-                          </a>
-                        </li>
-                        <li className="active"><a href="#">1</a></li>
-                        <li><a href="#">2</a></li>
-                        <li><a href="#">3</a></li>
-                        <li><a href="#">4</a></li>
-                        <li>
-                          <a href="#">
-                            <svg width="14" height="11" viewBox="0 0 14 11" fill="none" xmlns="http://www.w3.org/2000/svg">
-                              <path d="M13.1992 5.3645L0.75 5.3645" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
-                              <path d="M8.17822 0.602051L13.1993 5.36417L8.17822 10.1271" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
-                            </svg>
-                          </a>
-                        </li>
-                      </ul>
-                    </div>
 
                     <form action="#" className="comments__form">
                       <div className="sign__group">
@@ -344,6 +278,7 @@ const DetailsPage = () => {
 
 
           </Row>
+
         </div>
       </div>
     </section>

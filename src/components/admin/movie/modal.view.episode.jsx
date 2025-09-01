@@ -90,6 +90,7 @@ const ModalEpisodeList = (props) => {
 
     const fetchEpisodes = async () => {
         if (selectedSeason?.id) {
+
             try {
                 const res = await fetchAllEpisodeBySeason(selectedSeason.id)
                 if (res && res.data) {

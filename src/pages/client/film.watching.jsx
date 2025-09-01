@@ -1,74 +1,39 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
-import Hls from 'hls.js'
 import {
     Breadcrumb, Button, Card, Col, Divider, Dropdown, Flex,
-    Image, List, Menu, Row, Select, Space, Tabs, Tag, Typography, ConfigProvider,
-    message,
+    Image, List, Menu, Row, Space, Tag, Typography, ConfigProvider, message,
 } from 'antd'
 import {
     PlayCircleOutlined, ShareAltOutlined, HeartOutlined,
     SaveOutlined, ThunderboltOutlined, ClockCircleOutlined, HomeOutlined, AppstoreOutlined,
 } from '@ant-design/icons'
-import { MediaPlayer, MediaProvider } from '@vidstack/react'
+import { MediaPlayer, MediaPlayerInstance, MediaProvider } from '@vidstack/react'
 import { DefaultVideoLayout, defaultLayoutIcons } from '@vidstack/react/player/layouts/default';
-
+import { useLocation, useNavigate } from 'react-router-dom'
+import { fetchAllEpisodeBySeason, fetchFilmByIdAPI, fetchSeasonById, checkView } from '@/config/api.handle';
+import Carousel from "react-multi-carousel";
+import "react-multi-carousel/lib/styles.css";
+import { convertSlug } from '@/config/utils';
+import { v4 as uuidv4 } from 'uuid';
+import instance from '@/config/api.custom';
 
 const { Title, Text, Paragraph } = Typography
 
-const mockEpisodes = Array.from({ length: 12 }, (_, i) => ({
-    index: i + 1,
-    name: `Tập ${i + 1}`,
-}))
-
-const mockRelated = Array.from({ length: 6 }, (_, i) => ({
-    id: i + 1,
-    title: `Gợi ý #${i + 1}`,
-    poster: `/public/violet-movie.jpg`,
-}))
-
-const seriesInfo = {
-    title: 'Dandadan 2nd Season',
-    altTitle: 'Dandadan Season 2',
-    year: 2025,
-    status: 'Đang phát sóng',
-    genres: ['Hành động', 'Hài hước', 'Siêu nhiên'],
-    studios: ['Science SARU'],
-    poster: '/public/summer2025.jpg',
-    description:
-        'Dandadan theo chân những cuộc phiêu lưu siêu nhiên, pha trộn hành động, hài hước và cảm xúc. Phần 2 tiếp nối với nhịp độ nhanh, mở rộng thế giới và nhân vật.',
-}
-
-const sourcesByServer = {
-    VIP: {
-        label: 'VIP',
-        qualities: {
-            '1080p': '/storage/videos_hls/Tap1/master.m3u8',
-            '720p': '/storage/videos_hls/tap2/master.m3u8',
-            '360p': '/storage/videos_hls/Tap1/master.m3u8',
-        },
-    },
-    CDN: {
-        label: 'CDN',
-        qualities: {
-            '1080p': '/storage/videos_hls/Tap1/master.m3u8',
-            '720p': '/storage/videos_hls/tap2/master.m3u8',
-            '360p': '/storage/videos_hls/Tap1/master.m3u8',
-        },
-    },
-}
 
 const FilmWatching = () => {
-    const videoRef = useRef(null)
-    const hlsRef = useRef(null)
     const [currentEpisode, setCurrentEpisode] = useState(1)
-    const [currentServer, setCurrentServer] = useState('VIP')
-    const [currentQuality, setCurrentQuality] = useState('1080p')
+    const [videoId, setVideoId] = useState("");
+    const [episodeList, setEpisodeList] = useState([]);
+    const [selectedSeason, setSelectedSeason] = useState(null);
+    const [listRelated, setListRelated] = useState([])
+    const [hasSentView, setHasSentView] = useState(false);
+    const videoRef = useRef(null);
 
-    const currentSource = useMemo(() => {
-        const server = sourcesByServer[currentServer]
-        if (!server) return ''
-        return server.qualities[currentQuality] || ''
-    }, [currentServer, currentQuality])
+    const navigate = useNavigate();
+
+    let location = useLocation();
+    let params = new URLSearchParams(location.search);
+    const id = params?.get("id");
 
     useEffect(() => {
         document.body.classList.add("client-theme");
@@ -76,41 +41,155 @@ const FilmWatching = () => {
             document.body.classList.remove("client-theme");
         };
     }, []);
-
     useEffect(() => {
-        if (!videoRef.current || !currentSource) return
-        const video = videoRef.current
 
-        if (Hls.isSupported()) {
-            if (hlsRef.current) {
-                hlsRef.current.destroy()
+        const player = videoRef.current;
+        if (!player) return;
+
+        const handleTimeUpdate = () => {
+            const duration = player.duration ?? 0;
+            const currentTime = player.currentTime ?? 0;
+
+            if (duration > 0) {
+                const percentageWatched = currentTime / duration;
+                if (!hasSentView && percentageWatched >= 0.1) {
+                    const sessionId = getSessionId();
+                    console.log("Sending view with sessionId:", sessionId, "videoId:", videoId);
+                    checkView(videoId, sessionId)
+                        .then(() => setHasSentView(true))
+                        .catch(err => console.error("Error updating view", err));
+                }
             }
-            const hls = new Hls({ enableWorker: true })
-            hlsRef.current = hls
-            hls.loadSource(currentSource)
-            hls.attachMedia(video)
-            hls.on(Hls.Events.MANIFEST_PARSED, () => {
-                video.play().catch(() => { })
-            })
-            return () => {
-                hls.destroy()
-                hlsRef.current = null
-            }
-        } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-            video.src = currentSource
-            video.play().catch(() => { })
+        };
+
+        player.addEventListener("time-update", handleTimeUpdate);
+
+        return () => {
+            player.removeEventListener("time-update", handleTimeUpdate);
         }
-    }, [currentSource, currentEpisode])
+    }
+        , [videoId, hasSentView]);
+    useEffect(() => {
+        const fetchFilmById = async () => {
+            const res = await fetchSeasonById(id);
+            console.log('fetchSeasonById response:', res);
+            if (res && res.data) {
+                let rawData = res.data;
+                setSelectedSeason({ ...rawData }); // Tạo object mới để đảm bảo re-render
+                console.log('setSelectedSeason called with:', rawData);
+            } else {
+                console.log('No data returned from fetchSeasonById');
+            }
+        }
+        fetchFilmById();
+    }, [id]);
+    useEffect(() => {
+        if (selectedSeason) {
+            fetchEpisodes();
+            fetchRelated();
+        } else {
+            console.log('useEffect selectedSeason is null or falsy');
+        }
+    }, [selectedSeason]);
 
-    const qualityMenu = (
-        <Menu
-            items={Object.keys(sourcesByServer[currentServer].qualities).map((q) => ({
-                key: q,
-                label: q,
-                onClick: () => setCurrentQuality(q),
-            }))}
-        />
-    )
+    const getSessionId = () => {
+        let id = localStorage.getItem('movieSessionId');
+        if (!id) {
+            id = uuidv4();
+            localStorage.setItem('movieSessionId', id);
+        }
+        return id;
+    };
+    const responsive = {
+        superLargeDesktop: {
+            breakpoint: { max: 4000, min: 3000 },
+            items: 5
+        },
+        desktop: {
+            breakpoint: { max: 3000, min: 1024 },
+            items: 4
+        },
+        tablet: {
+            breakpoint: { max: 1024, min: 464 },
+            items: 2
+        },
+        mobile: {
+            breakpoint: { max: 464, min: 0 },
+            items: 1
+        }
+    };
+    const mockEpisodes = Array.from({ length: episodeList.length }, (_, i) => ({
+        index: i,
+        name: `Tập ${i + 1}`,
+    }))
+
+    const mockRelated = Array.from({ length: 6 }, (_, i) => ({
+        id: i + 1,
+        title: `Gợi ý #${i + 1}`,
+        poster: `/public/violet-movie.jpg`,
+    }))
+    const handleRedirect = (item) => {
+        const slug = convertSlug(item.seasonName);
+        navigate(`/detail/${slug}?id=${item.id}`)
+    }
+
+    const fetchEpisodes = async () => {
+        if (selectedSeason?.id) {
+            try {
+                const res = await fetchAllEpisodeBySeason(selectedSeason?.id)
+                console.log('API response:', res);
+                if (res && res.data) {
+                    console.log('API response data:', res.data);
+                    const accept = res.data.result.map((item) => ({
+                        videoId: item.id,
+                        title: item.title,
+                    }))
+                    setEpisodeList(accept)
+                    if (accept.length > 0) {
+                        const targetEpisodeIndex = 0;
+                        setCurrentEpisode(targetEpisodeIndex);
+                        setVideoId(accept[targetEpisodeIndex].videoId);
+                        console.log(`Set initial episode: ${targetEpisodeIndex}, videoId: ${accept[targetEpisodeIndex].videoId}`);
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching episodes:', error);
+            }
+        } else {
+            console.log('No selectedSeason or selectedSeason.id is missing');
+        }
+    }
+    const fetchRelated = async () => {
+        if (selectedSeason?.id) {
+            try {
+                const res = await fetchFilmByIdAPI(selectedSeason?.id)
+                if (res && res.data) {
+                    console.log('API response data:', res.data);
+                    const accept = res.data.seasons.map((item) => ({
+                        title: item.ordinal,
+                        id: item.id,
+                        seasonName: item.seasonName
+                    }))
+                    setListRelated(accept)
+                }
+            } catch (error) {
+                console.error('Error fetching episodes:', error);
+            }
+        } else {
+            console.log('No selectedSeason or selectedSeason.id is missing');
+        }
+    }
+
+    // Handle episode change
+    const handleEpisodeChange = (episodeIndex) => {
+        const episode = episodeList[episodeIndex];
+        if (episode) {
+            setCurrentEpisode(episodeIndex);
+            setVideoId(episode.videoId);
+            message.success(`Đang chuyển sang ${episode.title}`);
+        }
+    };
+
 
     return (
         <ConfigProvider
@@ -130,7 +209,7 @@ const FilmWatching = () => {
                     items={[
                         { href: '/', title: <HomeOutlined /> },
                         { href: '/phim', title: <><AppstoreOutlined /> <span style={{ marginLeft: 6 }}>Phim</span></> },
-                        { title: seriesInfo.title },
+                        { title: `${selectedSeason?.seasonName}` },
                         { title: `Tập ${currentEpisode}` },
                     ]}
                 />
@@ -140,12 +219,12 @@ const FilmWatching = () => {
                         <Card bordered={false} bodyStyle={{ padding: 0 }}>
                             <div style={{ position: 'relative', background: '#000' }}>
                                 <MediaPlayer
-                                    src={`http://localhost:8083/api/v1/10/master.m3u8`}
+                                    ref={videoRef}
+                                    src={`http://localhost:8083/api/v1/${videoId}/master.m3u8`}
                                     viewType='video'
                                     streamType='on-demand'
                                     onError={(e) => {
                                         message.error('Lỗi phát video');
-
                                     }}
                                     style={{ width: '100%', height: 'auto' }}
                                 >
@@ -158,8 +237,8 @@ const FilmWatching = () => {
                             <div style={{ padding: 16 }}>
                                 <Flex align="center" justify="space-between" wrap>
                                     <Space direction="vertical" size={4}>
-                                        <Title level={4} style={{ margin: 0 }}>{seriesInfo.title}</Title>
-                                        <Text type="success">{`Tập ${currentEpisode}`} • <ThunderboltOutlined /> {seriesInfo.status}</Text>
+                                        <Title level={4} style={{ margin: 0 }}>{selectedSeason?.seasonName}</Title>
+                                        <Text type="success">{`Tập ${currentEpisode}`} • <ThunderboltOutlined /> {selectedSeason?.status}</Text>
                                     </Space>
                                     <Space wrap>
                                         <Button icon={<HeartOutlined />}>Yêu thích</Button>
@@ -172,14 +251,6 @@ const FilmWatching = () => {
 
                                 <Flex align="center" gap={12} wrap>
 
-                                    <Tabs
-                                        activeKey={currentServer}
-                                        onChange={setCurrentServer}
-                                        items={Object.keys(sourcesByServer).map((k) => ({ key: k, label: k }))}
-                                    />
-                                    <Dropdown overlay={qualityMenu} trigger={['click']}>
-                                        <Button>{currentQuality}</Button>
-                                    </Dropdown>
                                     <Space>
                                         <Button type="primary" icon={<PlayCircleOutlined />}>Tiếp tục xem</Button>
                                         <Button icon={<ClockCircleOutlined />}>Xem sau</Button>
@@ -191,11 +262,11 @@ const FilmWatching = () => {
                         <Card bordered={false} style={{ marginTop: 16 }}>
                             <Space direction="vertical" size={8} style={{ width: '100%' }}>
                                 <Title level={5} style={{ margin: 0 }}>Giới thiệu</Title>
-                                <Paragraph style={{ marginBottom: 8 }}>{seriesInfo.description}</Paragraph>
+                                <Paragraph style={{ marginBottom: 8 }}>{selectedSeason?.description}</Paragraph>
                                 <Space wrap>
-                                    <Tag color="blue">{seriesInfo.year}</Tag>
-                                    <Tag color="green">{seriesInfo.status}</Tag>
-                                    {seriesInfo.genres.map((g) => (<Tag key={g}>{g}</Tag>))}
+                                    <Tag color="blue">{selectedSeason?.releaseYear}</Tag>
+                                    <Tag color="green">{selectedSeason?.status}</Tag>
+                                    {(selectedSeason?.film?.categories || []).map((g) => (<Tag >{g.name}</Tag>))}
                                 </Space>
                             </Space>
                         </Card>
@@ -228,52 +299,44 @@ const FilmWatching = () => {
                                     width={96}
                                     height={128}
                                     style={{ objectFit: 'cover', borderRadius: 8 }}
-                                    src={seriesInfo.poster}
+                                    src={`${import.meta.env.VITE_BACKEND_URL}/storage/visual/${selectedSeason?.thumb}`}
                                     preview={false}
                                 />
                                 <Space direction="vertical" size={4} style={{ flex: 1 }}>
-                                    <Title level={5} style={{ margin: 0 }}>{seriesInfo.title}</Title>
+                                    <Title level={5} style={{ margin: 0 }}>{selectedSeason?.seasonName}</Title>
                                     <Space wrap>
-                                        {seriesInfo.genres.map((g) => (<Tag color="geekblue" key={g}>{g}</Tag>))}
+                                        {(selectedSeason?.film?.categories || []).map((g) => (<Tag color="geekblue">{g.name}</Tag>))}
 
                                     </Space>
-                                    <ConfigProvider
-                                        theme={{
-                                            token: {
-                                                colorBgContainer: '#ffffff',
-                                                colorText: '#141414',
-                                                colorBorder: '#d9d9d9',
-                                            },
-                                            components: {
-                                                Select: {
-                                                    colorBgContainer: '#ffffff',
-                                                    colorText: '#141414',
-                                                },
-                                            },
-                                        }}
-                                    >
-                                        <Select
-                                            size={36}
-                                            defaultValue="SEASON/OVA/ MOVIE"
-                                            style={{ width: 200, marginTop: "10px" }}
-                                            dropdownStyle={{ background: '#ffffff' }}
-                                        />
-                                    </ConfigProvider>
+                                    <p>XEM THÊM  SEASON/ OVA/ MOVIE</p>
+
+                                    <Carousel
+                                        removeArrowOnDeviceType={["tablet", "mobile"]} responsive={responsive}>
+
+                                        {listRelated.map((g) =>
+                                        (<div onClick={() => handleRedirect(g)} style={{
+                                            display: "flex", justifyContent: "center", cursor: "pointer", borderRadius: "3px",
+                                            width: "50px", height: "20px", background: "#8FBC8F", padding: "5px"
+                                        }
+                                        }>{g.title}</div>))}
+
+                                    </Carousel>
+
                                 </Space>
                             </Flex>
                             <Divider />
                             <Flex justify="space-between" wrap>
                                 <Space direction="vertical" size={0}>
                                     <Text type="danger">Năm</Text>
-                                    <Text success>{seriesInfo.year}</Text>
+                                    <Text success>{selectedSeason?.releaseYear}</Text>
                                 </Space>
                                 <Space direction="vertical" size={0}>
                                     <Text type="success">Tình trạng</Text>
-                                    <Text>{seriesInfo.status}</Text>
+                                    <Text>{selectedSeason?.status}</Text>
                                 </Space>
                                 <Space direction="vertical" size={0}>
-                                    <Text type="warning">Studio</Text>
-                                    <Text>{seriesInfo.studios.join(', ')}</Text>
+                                    <Text type="warning">Views </Text>
+                                    <Text>{selectedSeason?.viewCount.toLocaleString()}</Text>
                                 </Space>
                             </Flex>
                         </Card>
@@ -284,13 +347,14 @@ const FilmWatching = () => {
                                     <Button
                                         key={e.index}
                                         type={e.index === currentEpisode ? 'primary' : 'default'}
-                                        onClick={() => setCurrentEpisode(e.index)}
+                                        onClick={() => handleEpisodeChange(e.index)}
                                     >
                                         {e.name}
                                     </Button>
                                 ))}
                             </Space>
                         </Card>
+
 
                         <Card bordered={false} style={{ marginTop: 16 }} title="Có thể bạn cũng thích">
                             <List

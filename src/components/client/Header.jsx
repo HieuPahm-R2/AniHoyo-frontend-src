@@ -1,17 +1,37 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from "react-router-dom";
 import { runLogoutAction } from '../../context/slice/accountSlice';
-import { LogoutAPI } from '@/config/api.handle';
+import { fetchAllSeasons, LogoutAPI } from '@/config/api.handle';
 import { Avatar, Dropdown, Menu, message, Space } from 'antd';
-import { AppstoreOutlined, ControlOutlined, DownOutlined, MailOutlined, SettingOutlined, VideoCameraAddOutlined } from '@ant-design/icons';
+import { AppstoreOutlined, CloseOutlined, ControlOutlined, DownOutlined, MailOutlined, SettingOutlined, VideoCameraAddOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { VscSearchFuzzy } from 'react-icons/vsc';
+import { sfLike } from 'spring-filter-query-builder';
 
 const Header = (props) => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const [search, setSearch] = useState("")
+    const [searchTerm, setSearchTerm] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
     const isAuthenticated = useSelector(state => state.account.isAuthenticated);
     const user = useSelector(state => state.account.user);
+
+    useEffect(() => {
+        const fetchFilms = async () => {
+            setIsLoading(true);
+            let queryString = ``;
+            if (search) {
+                queryString += `${sfLike('seasonName', search)}`
+                const res = await fetchAllSeasons(queryString);
+                if (res && res.data) {
+                    setSearchTerm(res.data.result);
+                }
+            }
+            setIsLoading(false);
+        }
+        fetchFilms();
+    }, [search]);
 
     let items = [
         {
@@ -99,11 +119,14 @@ const Header = (props) => {
     }
     const handleLogout = async () => {
         await LogoutAPI();
-        console.log("Logout clicked");
         dispatch(runLogoutAction());
         message.success("Logout successfully");
         navigate("/")
 
+    }
+    const handleOnClose = () => {
+        setSearch('')
+        setSearchTerm([])
     }
     // link to access avatar
     const urlAvatarTemp = `${import.meta.env.VITE_BACKEND_URL}/storage/temp/user33.svg`;
@@ -123,15 +146,37 @@ const Header = (props) => {
                             </a>
 
                             <Menu mode="horizontal" items={items2} theme='dark' />;
-                            <div className='page-header__logo'>
-                                <span className='logo' onClick={() => navigate('/')}>
-                                    <VscSearchFuzzy className='icon-search' />
-                                </span>
-                                <input
-                                    className="input-search" type={'text'}
-                                    placeholder="Bạn xem gì hôm nay..."
-                                    onChange={(e) => props.setSearchTerm(e.target.value)}
-                                />
+                            <div className='search_section'>
+                                <div className='search_input_div'>
+                                    <span className='search_icon'>
+                                        {search === "" ? <VscSearchFuzzy /> : <CloseOutlined onClick={() => handleOnClose()} />}
+
+
+                                    </span>
+                                    <input
+                                        className="search_input" type='text'
+                                        placeholder="Bạn xem gì hôm nay..."
+                                        onChange={(e) => setSearch(e.target.value)}
+                                    />
+                                </div>
+
+                                <div className='search_result'>
+                                    {searchTerm.length > 0 && (
+                                        <>
+                                            {searchTerm.map((data, index) => (
+                                                <div key={index} className='search_suggestion_line_custom'>
+                                                    <img className='search_thumb_custom' src={`${import.meta.env.VITE_BACKEND_URL}/storage/visual/${data.thumb}`} alt='' />
+                                                    <div className='search_info_custom'>
+                                                        <div className='search_title_custom'>{data.seasonName}</div>
+                                                        <div className='search_sub_custom'>Tập {data.releaseYear || '??'} VietSub</div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                            <div className='search_enter_custom'>Enter để tìm kiếm</div>
+                                        </>
+                                    )}
+                                </div>
+
                             </div>
 
                             <div class="header__actions">

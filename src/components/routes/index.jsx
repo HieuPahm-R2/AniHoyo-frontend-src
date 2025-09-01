@@ -34,7 +34,7 @@ const router = createBrowserRouter([
         </ProtectedRoute>
       },
       {
-        path: "/watching",
+        path: "/watching/:slug",
         element: <FilmWatching />
       },
     ]

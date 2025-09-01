@@ -55,6 +55,9 @@ export const callUpdateFilmAPI = (id, thumbnail, slider, name, studio, tag, cate
 export const fetchDataFilmsAPI = (query) => {
     return instance.get(`/api/v1/films?${query}`);
 }
+export const fetchFilmByIdAPI = (id) => {
+    return instance.get(`/api/v1/film/${id}`)
+}
 // authentication
 export const registerAPI = (fullName, email, password) => {
     return instance.post(`/api/v1/auth/register`, { fullName, email, password })
@@ -80,4 +83,7 @@ export const fetchAllSeasons = (query) => {
 }
 export const fetchSeasonById = (id) => {
     return instance.get(`/api/v1/season/${id}`)
+}
+export const checkView = (videoId, sessionId) => {
+    return instance.post(`/api/v1/${videoId}/view`, { sessionId })
 }

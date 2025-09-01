@@ -418,33 +418,118 @@ body {
   }
 }
 
-.page-header__logo {
+.search_section {
   display: flex;
-  width: 150px;
+  flex-direction: column;
+  height: 40px;
   align-items: center;
-  gap: 10px;
+  position: relative;
+  padding: 20px 0;
 }
 
-.logo {
-  color: #61dafb;
+.search_icon {
+  background-color: rgb(75, 136, 216);
+  padding: 0 15px;
+  height: 100%;
+  display: flex;
+  align-items: center;
   cursor: pointer;
+}
+
+.search_input_div {
+  background-color: rgb(225, 219, 219);
+  border-radius: 10px;
+  width: 250px;
+  min-height: 40px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.search_input {
+  flex: 1;
+  padding: 0 10px;
+  font-size: 15px;
+  background-color: transparent;
+  border: none;
+}
+
+.search_result {
+  background: rgb(42, 40, 40);
+  width: 250px;
+  margin-top: 10px;
+  position: absolute;
+  top: 70px;
+}
+
+.search_result::-webkit-scrollbar {
+  display: none;
+}
+
+.search_suggestion_line {
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 18px;
   display: block;
 
-  .icon-search {
-    position: relative;
-    left: 35px;
-    margin-bottom: -10px;
-  }
-
 }
 
-.input-search {
-  height: 25px;
-  outline: none;
-  padding: 5px 30px;
-  border-radius: 6px;
-  border: 1px solid #ddd;
-  flex: 1;
+.search_suggestion_line:hover {
+  background: rgb(227, 227, 227);
+}
+
+
+.search_suggestion_line_custom {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.search_suggestion_line_custom:last-child {
+  border-bottom: none;
+}
+
+.search_suggestion_line_custom:hover {
+  background: #2c2c38;
+}
+
+.search_thumb_custom {
+  width: 48px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 4px;
+  margin-right: 12px;
+}
+
+.search_info_custom {
+  display: flex;
+  flex-direction: column;
+}
+
+.search_title_custom {
+  font-weight: bold;
+  color: #fff;
+  font-size: 1rem;
+  margin-bottom: 4px;
+}
+
+.search_sub_custom {
+  color: #bdbdbd;
+  font-size: 0.95rem;
+}
+
+.search_enter_custom {
+  background: #ff2e2e;
+  color: #fff;
+  text-align: center;
+  padding: 10px 0;
+  font-weight: bold;
+  border-radius: 0 0 8px 8px;
+  cursor: pointer;
+  margin-top: 4px;
 }
 
 @media (min-width: 1200px) {
