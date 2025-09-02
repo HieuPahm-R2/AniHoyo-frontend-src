@@ -174,7 +174,7 @@ body {
 
     p {
       font-size: 12px;
-      width: 350px;
+      width: 550px;
       word-break: break-all;
     }
 
@@ -428,7 +428,8 @@ body {
 }
 
 .search_icon {
-  background-color: rgb(75, 136, 216);
+  background-color: rgb(28, 56, 91);
+  color: #43b1f6;
   padding: 0 15px;
   height: 100%;
   display: flex;
@@ -437,8 +438,8 @@ body {
 }
 
 .search_input_div {
-  background-color: rgb(225, 219, 219);
-  border-radius: 10px;
+  background-color: rgb(250, 246, 246);
+  border-radius: 5px;
   width: 250px;
   min-height: 40px;
   overflow: hidden;
@@ -1577,7 +1578,7 @@ body {
     right: 0;
     display: block;
     z-index: 1;
-    background: linear-gradient(0deg, rgba(21, 31, 48, 0.35) 0%, #131720 100%);
+    background: linear-gradient(0deg, rgba(99, 129, 186, 0.35) 0%, #131720 100%);
   }
 
   .container {
@@ -1598,12 +1599,18 @@ body {
 }
 
 .catalog__select-wrap {
+  background-color: #4ab8fc;
+  border-radius: 5px;
+  color: white;
+  font-size: 18px;
+  font-weight: 600;
+  padding: 8px;
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
   gap: 10px;
   align-items: center;
-  width: 100%;
+  width: 16%;
   position: relative;
   z-index: 2;
 
@@ -2104,6 +2111,28 @@ body {
   .card__rating {
     right: calc(100% - 130px);
   }
+}
+
+.card__overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.45);
+  /* dark blur effect */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.card__year {
+  color: #fff;
+  font-size: 2rem;
+  font-weight: bold;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
+  z-index: 3;
 }
 
 .card__title--subs,
@@ -5677,12 +5706,12 @@ body {
   flex-direction: row;
   justify-content: flex-start;
   align-items: flex-start;
-  background-color: #c5c9d4;
+  background-color: #e9eaee;
   padding: 5px;
   border-radius: 10px;
   margin-top: 5px;
   position: relative;
-  width: 100%;
+  width: 50%;
   z-index: 2;
 }
 

@@ -22,7 +22,7 @@ const Header = (props) => {
             setIsLoading(true);
             let queryString = ``;
             if (search) {
-                queryString += `${sfLike('seasonName', search)}`
+                queryString += `filter=${sfLike('seasonName', search)}`
                 const res = await fetchAllSeasons(queryString);
                 if (res && res.data) {
                     setSearchTerm(res.data.result);
@@ -128,6 +128,13 @@ const Header = (props) => {
         setSearch('')
         setSearchTerm([])
     }
+    const handleChangeVal = (e) => {
+        setSearch(e.target.value)
+        if (e.target.value === '') {
+            setSearch('')
+            setSearchTerm([])
+        }
+    }
     // link to access avatar
     const urlAvatarTemp = `${import.meta.env.VITE_BACKEND_URL}/storage/temp/user33.svg`;
     const urlAvatar = `${import.meta.env.VITE_BACKEND_URL}/storage/avatar/${user?.avatar}`;
@@ -155,8 +162,10 @@ const Header = (props) => {
                                     </span>
                                     <input
                                         className="search_input" type='text'
+                                        autoComplete='off'
                                         placeholder="Bạn xem gì hôm nay..."
-                                        onChange={(e) => setSearch(e.target.value)}
+                                        onChange={handleChangeVal}
+                                        value={search}
                                     />
                                 </div>
 

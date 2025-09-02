@@ -25,6 +25,18 @@
     border-radius: 12px 12px 0 0;
 }
 
+/*  ensure pointer cursor works when  overlay the item */
+.ranking-item::before,
+.ranking-container::after {
+    pointer-events: none; /* decorative overlays shouldn't block pointer or change cursor */
+}
+
+/* Make sure children also show the pointer cursor */
+.ranking-item,
+.ranking-item * {
+    cursor: pointer;
+}
+
 /* Ranking Header */
 .ranking-header {
     display: flex;
@@ -42,9 +54,9 @@
 }
 
 .ranking-icon {
-    color: #00ff88 !important;
+    color: #ff6f00 !important;
     font-size: 20px !important;
-    filter: drop-shadow(0 0 8px rgba(0, 255, 136, 0.5));
+    filter: drop-shadow(0 0 8px rgba(249, 251, 235, 0.5));
 }
 
 .ranking-text {
@@ -113,13 +125,13 @@
     position: absolute;
     top: -8px;
     left: -8px;
-    background: linear-gradient(135deg, #00ff88, #00cc66);
+    background: linear-gradient(135deg, #fafad9, #47ef9b);
     color: #000;
     font-size: 12px;
     font-weight: 800;
     padding: 4px 8px;
     border-radius: 6px;
-    box-shadow: 0 4px 15px rgba(0, 255, 136, 0.4);
+    box-shadow: 0 4px 15px rgba(0, 128, 255, 0.4);
     border: 2px solid rgba(255, 255, 255, 0.2);
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
@@ -164,11 +176,7 @@
 }
 
 .quality-cam {
-    background: linear-gradient(135deg, #ff4444, #cc0000);
-}
-
-.quality-hd {
-    background: linear-gradient(135deg, #ff8800, #cc6600);
+    background: linear-gradient(135deg, #e76565, #cc0000);
 }
 
 .quality-bd {

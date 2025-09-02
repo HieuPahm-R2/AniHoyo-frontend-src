@@ -67,7 +67,7 @@ const ProductManage = () => {
             <div className="avatar-info" style={{ display: "inline-block", marginLeft: "5px", cursor: "pointer" }}
               onClick={
                 () => {
-                  setDataDetail(film);
+                  setDataDetail(record);
                   setOpenViewDetail(true);
                 }
               }>

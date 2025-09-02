@@ -3,89 +3,29 @@ import { Col, Divider, Pagination, Rate, Row, Select, Spin, Tabs } from "antd";
 import { FilterTwoTone, ReloadOutlined, StarFilled, ClockCircleOutlined, CalendarOutlined } from "@ant-design/icons";
 
 import '@/assets/styles/Content.css';
-import { fetchAllSeasons, fetchFilmCategory, fetchFilmTags } from '@/config/api.handle';
+import { fetchAllSeasons, fetchFilmCategory, fetchFilmTags, fetchTopHighViewAPI } from '@/config/api.handle';
 import WaitingContent from '../share/reloading/skeleton.load';
+import { MdNewReleases } from 'react-icons/md';
+import { AiOutlineEye } from 'react-icons/ai';
+import { PiRankingDuotone } from 'react-icons/pi';
+import { sfEqual } from 'spring-filter-query-builder'
 
-// Dữ liệu mẫu cho bảng xếp hạng
-const rankingMovies = [
-    {
-        id: 1,
-        rank: 1,
-        title: "Thanh Gươm Diệt Quỷ: Vô Hạn Thành",
-        originalTitle: "Demon Slayer: Kimetsu no Yaiba - Infinity Castle Arc",
-        rating: 8.2,
-        duration: "01/03",
-        year: 2025,
-        quality: "CAM",
-        thumbnail: "/demon1.webp",
-        genre: "Action, Fantasy"
-    },
-    {
-        id: 2,
-        rank: 2,
-        title: "Kidou Senshi Gundam SEED Freedom",
-        originalTitle: "Mobile Suit Gundam SEED Freedom",
-        rating: 9.4,
-        duration: "124 phút",
-        year: 2024,
-        quality: "HD",
-        thumbnail: "/sug-1.webp",
-        genre: "Mecha, Sci-Fi"
-    },
-    {
-        id: 3,
-        rank: 3,
-        title: "Thanh Gươm Diệt Quỷ: Chuyến Tàu Vô Tận",
-        originalTitle: "Demon Slayer: Kimetsu no Yaiba - Mugen Train",
-        rating: 7.7,
-        duration: "1 giờ 57 phút",
-        year: 2020,
-        quality: "BD",
-        thumbnail: "/demon1.webp",
-        genre: "Action, Fantasy"
-    },
-
-];
 const Content = (props) => {
     const { handleRedirect } = props
-    const [listCategory, setListCategory] = useState([]);
-    const [listTags, setListTags] = useState([]);
     const [listFilm, setListFilm] = useState([]);
-    const [listTop5, setListTop5] = useState(rankingMovies);
+    const [listTop5, setListTop5] = useState([]);
+
     const [current, setCurrent] = useState(0);
     const [pageSize, setPageSize] = useState(10);
     const [total, setTotal] = useState(0);
     const [sortQuery, setSortQuery] = useState("sort=uploadDate,desc");
     const [filter, setFilter] = useState("");
     const [isLoading, setIsLoading] = useState(false);
-    useEffect(() => {
-        const fetchCategories = async () => {
-            const res = await fetchFilmCategory();
-            if (res && res.data) {
-                const accept = res.data.result.map((item) => ({
-                    label: item.name,
-                    value: item.id
-                }))
-                setListCategory(accept);
-            }
-        }
-        const fetchTags = async () => {
-            const res = await fetchFilmTags();
-            if (res && res.data) {
-                const accept = res.data.result.map((item) => ({
-                    label: item.tagName,
-                    value: item.id
-                }))
-                setListTags(accept)
-            }
-        }
-        fetchCategories();
-        fetchTags();
-    }, [])
+
     useEffect(() => {
         const fetchFilms = async () => {
             setIsLoading(true);
-            let queryString = `current=${current}&pageSize=${pageSize}`;
+            let queryString = `page=${current}&size=${pageSize}`;
             if (filter) {
                 queryString += `&${filter}`;
             }
@@ -99,18 +39,35 @@ const Content = (props) => {
             }
             setIsLoading(false);
         }
+        const fetchTop5 = async () => {
+            const res = await fetchTopHighViewAPI()
+            if (res && res.data) {
+                setListTop5(res.data)
+            }
+        }
         fetchFilms();
+        fetchTop5();
     }, [current, pageSize, sortQuery, filter]);
 
     const items = [
         {
-            key: 'sort=-updatedAt',
-            label: `Mới nhất`,
+            key: `sort=uploadDate,desc`,
+            label: `Mới Cập Nhật`,
             children: <></>,
         },
         {
-            key: 'sort=view',
-            label: `Nhiều lượt xem`,
+            key: `filter=${sfEqual('releaseYear', '2025')}`,
+            label: `Anime Mùa Hạ - 2025`,
+            children: <></>,
+        },
+        {
+            key: `filter=${sfEqual('type', 'MOVIE')}`,
+            label: `Anime MOVIE`,
+            children: <></>,
+        },
+        {
+            key: 'filter=',
+            label: `HH Trung Quốc`,
             children: <></>,
         },
     ];
@@ -128,25 +85,14 @@ const Content = (props) => {
             <div className="container" style={{ marginLeft: "10px" }}>
                 <div className="catalog__nav">
                     <div className="catalog__select-wrap">
-                        <Select
-                            showSearch
-                            placeholder="Thể Loại / Tag"
-                            optionFilterProp="Season Film"
-                            options={listCategory}
-                        />
-
-                        <Select
-                            showSearch
-                            placeholder="Season phim"
-                            optionFilterProp="Season Film"
-                            options={listTags}
-                        />
+                        MỚI CẬP NHẬT <MdNewReleases />
                     </div>
 
                     <div className="slider-radio">
                         <Tabs
                             defaultActiveKey="sort=-sold"
                             items={items}
+                            onChange={(value) => { setFilter(value) }}
                             style={{ overflowX: "auto" }}
                         />
                     </div>
@@ -158,7 +104,7 @@ const Content = (props) => {
                             <div className="ranking-container">
                                 <div className="ranking-header">
                                     <span className="ranking-title">
-                                        <FilterTwoTone className="ranking-icon" />
+                                        <PiRankingDuotone className="ranking-icon" />
                                         <span className="ranking-text">
                                             Top Ranking of Weeks
                                         </span>
@@ -167,7 +113,7 @@ const Content = (props) => {
 
                                 {/* Bảng xếp hạng phim */}
                                 <div className="ranking-list">
-                                    {rankingMovies.map((movie, index) => (
+                                    {listTop5.map((movie, index) => (
                                         <div
                                             key={movie.id}
                                             className="ranking-item"
@@ -183,27 +129,26 @@ const Content = (props) => {
                                             {/* Thumbnail */}
                                             <div className="movie-thumbnail">
                                                 <img
-                                                    src={movie.thumbnail}
-                                                    alt={movie.title}
+                                                    src={`${import.meta.env.VITE_BACKEND_URL}/storage/visual/${movie.thumb}`}
                                                     className="thumbnail-image"
                                                 />
                                                 {/* Chất lượng video */}
-                                                <div className={`quality-badge quality-${movie.quality.toLowerCase()}`}>
-                                                    {movie.quality}
+                                                <div className={`quality-badge quality-bd`}>
+                                                    1080p
                                                 </div>
                                             </div>
 
                                             {/* Thông tin phim */}
                                             <div className="movie-info">
-                                                <h4 className="movie-title" title={movie.title}>
-                                                    {movie.title}
+                                                <h4 className="movie-title" title={movie.seasonName}>
+                                                    {movie.seasonName}
                                                 </h4>
 
                                                 {/* Rating */}
                                                 <div className="movie-rating">
-                                                    <StarFilled className="rating-star" />
+                                                    <AiOutlineEye className="rating-star" />
                                                     <span className="rating-score">
-                                                        {movie.rating}
+                                                        {movie.viewCount.toLocaleString()} views
                                                     </span>
                                                 </div>
 
@@ -212,13 +157,13 @@ const Content = (props) => {
                                                     <div className="detail-item">
                                                         <ClockCircleOutlined className="detail-icon" />
                                                         <span className="detail-text">
-                                                            {movie.duration}
+                                                            {movie.status}
                                                         </span>
                                                     </div>
                                                     <div className="detail-item">
                                                         <CalendarOutlined className="detail-icon" />
                                                         <span className="detail-text">
-                                                            {movie.year}
+                                                            {movie.releaseYear}
                                                         </span>
                                                     </div>
                                                 </div>

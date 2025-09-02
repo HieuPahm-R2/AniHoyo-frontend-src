@@ -18,11 +18,10 @@ const ModalCreateSeason = (props) => {
             })
             return;
         }
-
-        const { name, description, type, releaseYear, status } = values;
+        const { name, description, type, releaseYear, status, trailer, ordinal } = values;
         const thumb = dataThumbnail[0].name;
         setIsSubmit(true);
-        const res = await AddSeasonAPI(thumb, name, description, type, releaseYear, status, dataDetail?.id);
+        const res = await AddSeasonAPI(thumb, name, description, type, releaseYear, status, trailer, ordinal, dataDetail?.id);
         if (res && res.data) {
             notification.success({
                 message: 'Thành công',
@@ -218,6 +217,26 @@ const ModalCreateSeason = (props) => {
                             rules={[{ required: true, message: 'Vui lòng nhập thông tin!' }]}
                         >
                             <InputNumber min={1} style={{ width: '100%' }} />
+                        </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                        <Form.Item
+                            labelCol={{ span: 24 }}
+                            label="Trailer/Teaser Link"
+                            name="trailer"
+                            rules={[{ required: true, message: 'Vui lòng nhập thông tin!' }]}
+                        >
+                            <Input />
+                        </Form.Item>
+                    </Col>
+                    <Col span={6}>
+                        <Form.Item
+                            labelCol={{ span: 24 }}
+                            label="Tên ngắn gọn (STT mùa or movie)"
+                            name="ordinal"
+                            rules={[{ required: true, message: 'Vui lòng nhập thông tin!' }]}
+                        >
+                            <Input />
                         </Form.Item>
                     </Col>
 

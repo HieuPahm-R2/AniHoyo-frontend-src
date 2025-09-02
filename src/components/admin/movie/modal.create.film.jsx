@@ -60,11 +60,11 @@ const ModalCreate = (props) => {
             })
             return;
         }
-        const { name, studio, tag, category } = values;
+        const { name, studio, tags, categories } = values;
         const thumbnail = dataThumbnail[0].name;
         const slider = dataSlider[0].name;
         setIsSubmit(true);
-        const res = await callCreateFilmAPI(thumbnail, slider, name, studio, tag, category);
+        const res = await callCreateFilmAPI(thumbnail, slider, name, studio, tags, categories);
         if (res && res.data) {
             notification.success({
                 message: 'Thành công',
@@ -210,7 +210,7 @@ const ModalCreate = (props) => {
                             <Form.Item
                                 labelCol={{ span: 24 }}
                                 label="Thể loại"
-                                name="category"
+                                name="categories"
                                 rules={[{ required: true, message: 'Vui lòng chọn thể loại!' }]}
                             >
                                 <Select
@@ -226,7 +226,7 @@ const ModalCreate = (props) => {
                             <Form.Item
                                 labelCol={{ span: 24 }}
                                 label="Highlight Tag"
-                                name="tag"
+                                name="tags"
                                 rules={[{ required: true, message: 'Vui lòng chọn tag phim!' }]}
                             >
                                 <Select

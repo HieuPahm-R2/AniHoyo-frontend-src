@@ -1,97 +1,54 @@
 import { Col, Divider, Form, Input, InputNumber, Modal, notification, Row, Select, Upload } from "antd";
 import { useEffect, useState } from "react";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
-import { callCreateFilmAPI, callUpdateFilmAPI, callUploadImage, fetchFilmCategory, fetchFilmTags } from '@/config/api.handle';
+import { callCreateFilmAPI, callUpdateFilmAPI, callUploadImage, fetchFilmCategory, fetchFilmTags, UpdateSeasonAPI } from '@/config/api.handle';
 import { v4 as uuidv4 } from 'uuid';
 
-const ModalUpdate = (props) => {
-    const { openModalUpdate, setOpenModalUpdate, dataUpdate, setDataUpdate, refetchData } = props;
+const ModalUpdateSeason = (props) => {
+    const { modalUpdateSeason, setModalUpdateSeason, refetchData, selectedSeason, setSelectedSeason } = props;
     const [form] = Form.useForm();
     const [isLoading, setIsLoading] = useState(false);
-    const [isSliderLoading, setIsSliderLoading] = useState(false);
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState('');
     const [previewTitle, setPreviewTitle] = useState('');
     const [imageUrl, setImageUrl] = useState("");
 
     const [dataThumbnail, setDataThumbnail] = useState([]);
-    const [dataSlider, setDataSlider] = useState([]);
 
     const [initForm, setInitForm] = useState(null);
 
     const [isSubmit, setIsSubmit] = useState(false);
-    const [listCategories, setListCategories] = useState([]);
-    const [listTags, setListTags] = useState([]);
+
 
     useEffect(() => {
-        const fetchCategories = async () => {
-            const res = await fetchFilmCategory();
-            if (res && res.data) {
-                const accept = res.data.result.map((item) => ({
-                    label: item.name,
-                    value: item.id
-                }))
-                setListCategories(accept);
-            }
-        }
-        const fetchTags = async () => {
-            const res = await fetchFilmTags();
-            if (res && res.data) {
-                const accept = res.data.result.map((item) => ({
-                    label: item.tagName,
-                    value: item.id
-                }))
-                setListTags(accept)
-            }
-        }
-        fetchCategories();
-        fetchTags();
-    }, [])
-
-    useEffect(() => {
-        console.log(dataUpdate)
-        if (dataUpdate?.id) {
+        if (selectedSeason?.id) {
             const arrThumbnail = [{
                 uid: uuidv4(),
-                name: dataUpdate.thumbnail,
+                name: selectedSeason.thumb,
                 status: 'done',
-                url: `${import.meta.env.VITE_BACKEND_URL}/storage/thumbnail/${dataUpdate.thumbnail}`,
+                url: `${import.meta.env.VITE_BACKEND_URL}/storage/visual/${selectedSeason.thumb}`,
             }]
-            const arrSlider = [{
-                uid: uuidv4(),
-                name: dataUpdate.slider,
-                status: 'done',
-                url: `${import.meta.env.VITE_BACKEND_URL}/storage/slider/${dataUpdate.slider}`,
-            }]
-            const nameTag = dataUpdate.tags.map((item) => ({
-                label: item.name,
-                value: item.id
-            }))
-            const nameCate = dataUpdate.categories.map((item) => ({
-                label: item.name,
-                value: item.id
-            }))
+
             const initialVal = {
-                id: dataUpdate.id,
-                name: dataUpdate.name,
-                studio: dataUpdate.studio,
-                tag: nameTag,
-                category: nameCate,
-                thumbnail: {
+                id: selectedSeason.id,
+                seasonName: selectedSeason.seasonName,
+                description: selectedSeason.description,
+                type: selectedSeason.type,
+                releaseYear: selectedSeason.releaseYear,
+                status: selectedSeason.status,
+                trailer: selectedSeason.trailer,
+                ordinal: selectedSeason.ordinal,
+                thumb: {
                     fileList: arrThumbnail
                 },
-                slider: {
-                    fileList: arrSlider
-                }
             }
             setInitForm(initialVal);
             setDataThumbnail(arrThumbnail);
-            setDataSlider(arrSlider);
             form.setFieldsValue(initialVal);
         }
         return () => { form.resetFields() };
 
-    }, [dataUpdate]);
+    }, [selectedSeason]);
 
     const onFinish = async (values) => {
         if (dataThumbnail.length === 0) {
@@ -101,25 +58,16 @@ const ModalUpdate = (props) => {
             })
             return;
         }
-        if (dataSlider.length === 0) {
-            notification.error({
-                message: 'Lỗi validate',
-                description: 'Vui lòng upload ảnh slider'
-            })
-            return;
-        }
         setIsSubmit(true);
-        const thumbnail = dataThumbnail[0].name;
-        const slider = dataSlider[0].name;
-        const { id, name, studio, tags, categories } = values;
+        const thumb = dataThumbnail[0].name;
+        const { id, seasonName, description, type, releaseYear, status, trailer, ordinal } = values;
         console.log(values);
-        const res = await callUpdateFilmAPI(
-            id, thumbnail, slider, name, studio, tags, categories);
+        const res = await UpdateSeasonAPI(
+            thumb, seasonName, description, type, releaseYear, status, trailer, ordinal, id);
         if (res && res.data) {
-            setOpenModalUpdate(false);
+            setModalUpdateSeason(false);
             setInitForm(null);
             setDataThumbnail([]);
-            setDataSlider([]);
             form.resetFields();
             await refetchData();
             notification.success({
@@ -150,18 +98,6 @@ const ModalUpdate = (props) => {
             onError("Lỗi tải ảnh!");
         }
     };
-    const handleUploadSlider = async ({ file, onSuccess, onError }) => {
-        const res = await callUploadImage(file, "slider");
-        if (res && res.data) {
-            setDataSlider([{
-                name: res.data.fileName,
-                uid: uuidv4()
-            }]);
-            onSuccess("Tải ảnh thành công!");
-        } else {
-            onError("Lỗi tải ảnh!");
-        }
-    };
 
     const getBase64 = (img, callback) => {
         const reader = new FileReader();
@@ -180,9 +116,6 @@ const ModalUpdate = (props) => {
         if (type === 'thumbnail') {
             setDataThumbnail([])
         }
-        if (type === 'slider') {
-            setDataSlider([]);
-        }
     }
     const beforeUpload = (file) => {
         const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/webp';
@@ -196,14 +129,14 @@ const ModalUpdate = (props) => {
         return isJpgOrPng && isLt3M;
     };
     const handleChange = async (info, type) => {
-        if (info.file.status === 'uploading') {
-            type ? setIsSliderLoading(true) : setIsLoading(true);
+        if (info.file.status === 'uploading' && type) {
+            setIsLoading(true);
             return;
         }
-        if (info.file.status === 'done') {
+        if (info.file.status === 'done' && type) {
             // Get this url from response in real world.
             getBase64(info.file.originFileObj, (url) => {
-                type ? setIsSliderLoading(false) : setIsLoading(false);
+                setIsLoading(false);
                 setImageUrl(url);
             });
         }
@@ -212,14 +145,14 @@ const ModalUpdate = (props) => {
         <>
             <Modal
                 title="Chỉnh sửa thông tin phim"
-                open={openModalUpdate}
+                open={modalUpdateSeason}
                 onOk={() => { form.submit() }}
                 okText={"Cập Nhật"}
                 onCancel={() => {
                     form.resetFields();
                     setInitForm(null)
-                    setOpenModalUpdate(false);
-                    setDataUpdate(null);
+                    setModalUpdateSeason(false);
+                    setSelectedSeason(null);
                 }}
                 cancelText={"Hủy"}
                 confirmLoading={isSubmit}
@@ -240,7 +173,7 @@ const ModalUpdate = (props) => {
                             <Form.Item
                                 hidden
                                 labelCol={{ span: 24 }}
-                                label="ID Film"
+                                label="ID season"
                                 name="id"
                             >
                                 <Input />
@@ -249,9 +182,9 @@ const ModalUpdate = (props) => {
                         <Col span={12}>
                             <Form.Item
                                 labelCol={{ span: 24 }}
-                                label="Tên Phim"
-                                name="name"
-                                rules={[{ required: true, message: 'Vui lòng nhập tên hiển thị!' }]}
+                                label="Tên season"
+                                name="seasonName"
+                                rules={[{ required: true, message: 'Vui lòng nhập tên !' }]}
                             >
                                 <Input />
                             </Form.Item>
@@ -259,55 +192,63 @@ const ModalUpdate = (props) => {
                         <Col span={12}>
                             <Form.Item
                                 labelCol={{ span: 24 }}
-                                style={{ borderRadius: "5px" }}
-                                label="Studio Production"
-                                name="studio"
-                                rules={[{ required: true, message: 'Vui lòng nhập tên xưởng làm phim!' }]}
+                                label="Mô tả / Giới Thiệu"
+                                name="description"
+                                rules={[{ required: true, message: 'Không giới thiệu phim à??!' }]}
                             >
-                                <Input />
+                                <Input.TextArea rows={3} />
                             </Form.Item>
                         </Col>
 
                         <Col span={6}>
                             <Form.Item
                                 labelCol={{ span: 24 }}
-                                label="Thể loại"
-                                name="categories"
-                                rules={[{ required: true, message: 'Vui lòng chọn thể loại!' }]}
+                                label="Highlight"
+                                name="type"
+                                rules={[{ required: true, message: 'Vui lòng chọn dạng phim!' }]}
                             >
                                 <Select
-                                    mode="multiple"
                                     defaultValue={null}
                                     showSearch
                                     allowClear
-                                    options={listCategories}
+                                    options={[
+                                        { value: 'SERIES', label: 'SERIES' },
+                                        { value: 'MOVIE', label: 'MOVIE' },
+                                        { value: 'OVA', label: 'OVA' },
+                                        { value: 'SPECIAL', label: 'SPECIAL' },
+                                    ]}
                                 />
                             </Form.Item>
                         </Col>
                         <Col span={6}>
                             <Form.Item
                                 labelCol={{ span: 24 }}
-                                label="Highlight Tag"
-                                name="tags"
-                                rules={[{ required: true, message: 'Vui lòng chọn tag phim!' }]}
+                                label="Status"
+                                name="status"
+                                rules={[{ required: true, message: 'Vui lòng chọn dạng phim!' }]}
                             >
                                 <Select
-                                    mode="multiple"
                                     defaultValue={null}
                                     showSearch
                                     allowClear
-                                    options={listTags}
+                                    options={[
+                                        { value: 'ON_AIR', label: 'Đang Chiếu' },
+                                        { value: 'CANCEL', label: 'Bị Hủy' },
+                                        { value: 'COMMING_SOON', label: 'Sắp Chiếu' },
+                                        { value: 'DELAY', label: 'Bị Hoãn' },
+                                        { value: 'FINISHED', label: 'Hoàn thành' },
+                                    ]}
                                 />
                             </Form.Item>
                         </Col>
                         <Col span={6}>
                             <Form.Item
                                 labelCol={{ span: 24 }}
-                                label="Ảnh Thumbnail"
-                                name="thumbnail"
+                                label="Key Visual"
+                                name="thumb"
                             >
                                 <Upload
-                                    name="thumbnail"
+                                    name="thumb"
                                     listType="picture-card"
                                     className="avatar-uploader"
                                     maxCount={1}
@@ -315,8 +256,8 @@ const ModalUpdate = (props) => {
                                     customRequest={handleUploadThumbnail}
                                     beforeUpload={beforeUpload}
                                     onRemove={file => handleRemoveFile(file, 'thumbnail')}
+                                    defaultFileList={initForm?.thumb?.fileList ?? []}
                                     onPreview={handlePreview}
-                                    defaultFileList={initForm?.thumbnail?.fileList ?? []}
                                     showUploadList={{
                                         showPreviewIcon: true,
                                         showRemoveIcon: true,
@@ -330,34 +271,35 @@ const ModalUpdate = (props) => {
                             </Form.Item>
 
                         </Col>
+
                         <Col span={6}>
                             <Form.Item
                                 labelCol={{ span: 24 }}
-                                label="Ảnh Slider"
-                                name="slider"
+                                label="Năm Phát Hành"
+                                name="releaseYear"
+                                rules={[{ required: true, message: 'Vui lòng nhập thông tin!' }]}
                             >
-                                <Upload
-                                    name="slider"
-                                    listType="picture-card"
-                                    className="avatar-uploader"
-                                    maxCount={1}
-                                    multiple={false}
-                                    beforeUpload={beforeUpload}
-                                    onChange={info => handleChange(info, 'slider')}
-                                    onRemove={file => handleRemoveFile(file, 'slider')}
-                                    onPreview={handlePreview}
-                                    customRequest={handleUploadSlider}
-                                    defaultFileList={initForm?.slider?.fileList ?? []}
-                                    showUploadList={{
-                                        showPreviewIcon: true,
-                                        showRemoveIcon: true,
-                                    }}
-                                >
-                                    <div>
-                                        <PlusOutlined />
-                                        <div style={{ marginTop: 8 }}>Upload</div>
-                                    </div>
-                                </Upload>
+                                <InputNumber min={1} style={{ width: '100%' }} />
+                            </Form.Item>
+                        </Col>
+                        <Col span={12}>
+                            <Form.Item
+                                labelCol={{ span: 24 }}
+                                label="Trailer/Teaser Link"
+                                name="trailer"
+                                rules={[{ required: true, message: 'Vui lòng nhập thông tin!' }]}
+                            >
+                                <Input />
+                            </Form.Item>
+                        </Col>
+                        <Col span={6}>
+                            <Form.Item
+                                labelCol={{ span: 24 }}
+                                label="Tên ngắn gọn (STT mùa or movie)"
+                                name="ordinal"
+                                rules={[{ required: true, message: 'Vui lòng nhập thông tin!' }]}
+                            >
+                                <Input />
                             </Form.Item>
                         </Col>
 
@@ -372,4 +314,4 @@ const ModalUpdate = (props) => {
     )
 }
 
-export default ModalUpdate
+export default ModalUpdateSeason

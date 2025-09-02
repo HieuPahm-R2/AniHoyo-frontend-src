@@ -46,11 +46,11 @@ export const fetchFilmCategory = () => {
 export const fetchFilmTags = () => {
     return instance.get("/api/v1/tags");
 }
-export const callCreateFilmAPI = (thumbnail, slider, name, studio, description, releaseYear, tag, category) => {
-    return instance.post('/api/v1/add-film', { thumbnail, slider, name, studio, description, releaseYear, tag, category })
+export const callCreateFilmAPI = (thumbnail, slider, name, studio, tags, categories) => {
+    return instance.post('/api/v1/add-film', { thumbnail, slider, name, studio, tags, categories })
 }
-export const callUpdateFilmAPI = (id, thumbnail, slider, name, studio, tag, category) => {
-    return instance.put(`/api/v1/update-film`, { id, thumbnail, slider, name, studio, tag, category })
+export const callUpdateFilmAPI = (id, thumbnail, slider, name, studio, tags, categories) => {
+    return instance.put(`/api/v1/update-film`, { id, thumbnail, slider, name, studio, tags, categories })
 }
 export const fetchDataFilmsAPI = (query) => {
     return instance.get(`/api/v1/films?${query}`);
@@ -75,9 +75,15 @@ export const LogoutAPI = () => {
 export const fetchSeasonsOfFilmAPI = (id, query) => {
     return instance.get(`/api/v1/seasons/by-film/${id}?${query}`)
 }
-export const AddSeasonAPI = (thumb, seasonName, description, type, releaseYear, status, filmId) => {
-    return instance.post(`/api/v1/add-season`, { thumb, seasonName, description, type, releaseYear, status, film: { "id": filmId } })
+export const AddSeasonAPI = (thumb, seasonName, description, type, releaseYear, status, trailer, ordinal, filmId) => {
+    return instance.post(`/api/v1/add-season`,
+        { thumb, seasonName, description, type, releaseYear, status, trailer, ordinal, film: { "id": filmId } })
 }
+export const UpdateSeasonAPI = (thumb, seasonName, description, type, releaseYear, status, trailer, ordinal, id) => {
+    return instance.put(`/api/v1/update-season`,
+        { thumb, seasonName, description, type, releaseYear, status, trailer, ordinal, id })
+}
+
 export const fetchAllSeasons = (query) => {
     return instance.get(`/api/v1/seasons?${query}`)
 }
@@ -86,4 +92,10 @@ export const fetchSeasonById = (id) => {
 }
 export const checkView = (videoId, sessionId) => {
     return instance.post(`/api/v1/${videoId}/view`, { sessionId })
+}
+export const callDeleteSeasonAPI = (id) => {
+    return instance.delete(`/api/v1/delete-season/${id}`)
+}
+export const fetchTopHighViewAPI = () => {
+    return instance.get(`/api/v1/seasons/top-views`)
 }
