@@ -1,20 +1,23 @@
-import React, { useEffect } from 'react'
-import { Col, Divider, Rate, Row, Tabs } from "antd";
+import React, { useEffect, useState } from 'react'
+import { Col, Divider, Flex, message, Rate, Row, Tag } from "antd";
 import { useLocation, useNavigate } from 'react-router-dom';
-import { fetchSeasonById } from '@/config/api.handle';
+import { fetchAveragePointAPI, fetchRatingAPI, fetchSeasonById } from '@/config/api.handle';
 import { useDispatch, useSelector } from 'react-redux';
 import { convertSlug } from '@/config/utils';
+import CommentList from '@/components/client/comment.list';
 
 const DetailsPage = () => {
-  const [seasonData, setSeasonData] = React.useState([]);
+  const [seasonData, setSeasonData] = useState([]);
+  const [rating, setRating] = useState(0);
+  const [avgRating, setAvgRating] = useState(0);
 
   let location = useLocation();
   let params = new URLSearchParams(location.search);
   const id = params?.get("id"); // film id
   const navigate = useNavigate();
 
-  const isAuthenticated = useSelector(state => state.account.isAuthenticated);
-  const dispatch = useDispatch();
+  const userId = useSelector(state => state.account.user.id);
+  const username = useSelector(state => state.account.user.name);
 
   useEffect(() => {
     document.body.classList.add("client-theme");
@@ -32,6 +35,12 @@ const DetailsPage = () => {
         }, 1000);
       }
     }
+    fetchAveragePointAPI(id)
+      .then(res => {
+        setAvgRating(res?.data);
+        setRating(res?.data);
+      })
+      .catch((res) => { console.log(res) });
     fetchFilmById();
   }, [id]);
 
@@ -39,6 +48,16 @@ const DetailsPage = () => {
     const slug = convertSlug(ss.seasonName);
     navigate(`/watching/${slug}?id=${ss.id}`)
   }
+  const handleChange = (value) => {
+    setRating(value);
+    fetchRatingAPI(userId, id, value)
+      .then(() => {
+        message.success("Đánh giá thành công!");
+        return fetchAveragePointAPI(id);
+      })
+      .then(res => setAvgRating(res.data))
+      .catch(() => message.error("Lỗi khi đánh giá"));
+  };
   return (
     <section className="section section--head section--head-fixed section--gradient section--details-bg">
       <div className="section__bg" style={{ background: `url(${import.meta.env.VITE_BACKEND_URL}/storage/slider/${seasonData?.film?.slider}) center top / cover no-repeat` }}>
@@ -49,17 +68,29 @@ const DetailsPage = () => {
           <Row gutter={[15, 10]}>
             {/* Left Column - Main Content */}
             <Col span={24} xl={16}>
-
               <div className="article__content">
-                <h1>{seasonData.seasonName}</h1>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <h1>{seasonData.seasonName}</h1>
+                  <div style={{ display: "flex", flexDirection: "column", marginLeft: "10px" }}>
+                    <h6 style={{ height: "5px" }}>Đánh giá bộ phim:</h6>
+                    <Rate
+                      onChange={handleChange}
+                      count={10}
+                      allowHalf
+                      value={Number(rating)}
+                      style={{ background: "white", padding: "5px", borderRadius: "5px" }}
+                    />
+                    <p style={{ height: "10px", marginTop: "-10px" }}>Điểm trung bình:  {avgRating} / 10</p>
+                  </div>
+                </div>
 
-                <ul className="list">
-                  <li> 9.7</li>
-                  <li>Action</li>
-                  <li>2021</li>
-                  <li>1 h 42 min</li>
-                  <li>16+</li>
-                </ul>
+
+                <div style={{ display: "flex", alignItems: "center", }} >
+                  <Tag color='cyan'> 9.7</Tag>
+                  <Tag color='cyan'>Action</Tag>
+                  <Tag color='cyan'>1 h 42 min</Tag>
+                  <Tag color='cyan'>16+</Tag>
+                </div>
 
                 <p>{seasonData.description}</p>
               </div>
@@ -68,12 +99,9 @@ const DetailsPage = () => {
             {/* Right Column - Video Player */}
             <Col span={24} xl={8}>
               <div onClick={() => handleRedirect(seasonData)} style={{
-                position: 'relative',
-                borderRadius: '12px',
-                overflow: 'hidden',
-                boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
-                maxWidth: '220px',
-                margin: '0 auto'
+                position: 'relative', borderRadius: '12px',
+                overflow: 'hidden', boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
+                maxWidth: '220px', margin: '0 auto'
               }}>
                 <div style={{ position: 'relative' }} >
                   <img
@@ -86,7 +114,6 @@ const DetailsPage = () => {
                       borderRadius: '12px'
                     }}
                     alt={seasonData.seasonName}
-
                   />
 
                   {/* Follow Button */}
@@ -230,48 +257,12 @@ const DetailsPage = () => {
                   <li className="nav-item">
                     <a className="nav-link active" data-toggle="tab" href="#tab-1" role="tab" aria-controls="tab-1" aria-selected="true">
                       <h4>Comments</h4>
-                      <span>5</span>
                     </a>
                   </li>
                 </ul>
 
                 <div className="tab-content">
-                  <div className="tab-pane fade show active" id="tab-1" role="tabpanel">
-                    <ul className="comments__list">
-                      <li className="comments__item">
-                        <div className="comments__autor">
-                          <span className="comments__name">Brian Cranston</span>
-                          <span className="comments__time">30.08.2021, 17:53</span>
-                        </div>
-                        <p className="comments__text">There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text.</p>
-                        <div className="comments__actions">
-                          <div className="comments__rate">
-                            <button type="button">
-                              <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M11 7.3273V14.6537" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
-                                <path d="M14.6667 10.9905H7.33333" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
-                                <path fillRule="evenodd" clipRule="evenodd" d="M15.6857 1H6.31429C3.04762 1 1 3.31208 1 6.58516V15.4148C1 18.6879 3.0381 21 6.31429 21H15.6857C18.9619 21 21 18.6879 21 15.4148V6.58516C21 3.31208 18.9619 1 15.6857 1Z" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
-                              </svg> 12
-                            </button>
-                            <button type="button">7
-                              <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M14.6667 10.9905H7.33333" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
-                                <path fillRule="evenodd" clipRule="evenodd" d="M15.6857 1H6.31429C3.04762 1 1 3.31208 1 6.58516V15.4148C1 18.6879 3.0381 21 6.31429 21H15.6857C18.9619 21 21 18.6879 21 15.4148V6.58516C21 3.31208 18.9619 1 15.6857 1Z" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
-                              </svg>
-                            </button>
-                          </div>
-                        </div>
-                      </li>
-                    </ul>
-
-
-                    <form action="#" className="comments__form">
-                      <div className="sign__group">
-                        <textarea id="text" name="text" className="sign__textarea" placeholder="Add comment"></textarea>
-                      </div>
-                      <button type="button" className="sign__btn">Send</button>
-                    </form>
-                  </div>
+                  <CommentList seasonId={id} userId={userId} username={username} />
                 </div>
               </div>
             </Col>

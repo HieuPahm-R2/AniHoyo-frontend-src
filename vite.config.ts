@@ -16,6 +16,13 @@ export default defineConfig(({ command, mode }) => {
       port: Number(env.PORT) || Number(process.env.PORT) || 5173,
       strictPort: true
     },
+    optimizeDeps: {
+    esbuildOptions: {
+      define: {
+        global: 'window', // Define 'global' as 'window' for browser compatibility
+      },
+    },
+  },
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src/"),

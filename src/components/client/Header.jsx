@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from "react-router-dom";
 import { runLogoutAction } from '../../context/slice/accountSlice';
 import { fetchAllSeasons, LogoutAPI } from '@/config/api.handle';
-import { Avatar, Dropdown, Menu, message, Space } from 'antd';
+import { Avatar, Dropdown, Menu, message, Space, Tag } from 'antd';
 import { AppstoreOutlined, CloseOutlined, ControlOutlined, DownOutlined, MailOutlined, SettingOutlined, VideoCameraAddOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { VscSearchFuzzy } from 'react-icons/vsc';
@@ -20,7 +20,7 @@ const Header = (props) => {
     useEffect(() => {
         const fetchFilms = async () => {
             setIsLoading(true);
-            let queryString = ``;
+            let queryString = `page=0&size=5&`;
             if (search) {
                 queryString += `filter=${sfLike('seasonName', search)}`
                 const res = await fetchAllSeasons(queryString);
@@ -158,7 +158,6 @@ const Header = (props) => {
                                     <span className='search_icon'>
                                         {search === "" ? <VscSearchFuzzy /> : <CloseOutlined onClick={() => handleOnClose()} />}
 
-
                                     </span>
                                     <input
                                         className="search_input" type='text'
@@ -177,7 +176,7 @@ const Header = (props) => {
                                                     <img className='search_thumb_custom' src={`${import.meta.env.VITE_BACKEND_URL}/storage/visual/${data.thumb}`} alt='' />
                                                     <div className='search_info_custom'>
                                                         <div className='search_title_custom'>{data.seasonName}</div>
-                                                        <div className='search_sub_custom'>Tập {data.releaseYear || '??'} VietSub</div>
+                                                        <Tag style={{ width: "27%" }} color="cyan"> {data.releaseYear || '??'} | VietSub</Tag>
                                                     </div>
                                                 </div>
                                             ))}

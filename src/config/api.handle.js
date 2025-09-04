@@ -99,3 +99,22 @@ export const callDeleteSeasonAPI = (id) => {
 export const fetchTopHighViewAPI = () => {
     return instance.get(`/api/v1/seasons/top-views`)
 }
+export const fetchRatingAPI = (userId, seasonId, stars) => {
+    return instance.post(`/api/v1/ratings?userId=${userId}&seasonId=${seasonId}&stars=${stars}`)
+}
+export const fetchAveragePointAPI = (seasonId) => {
+    return instance.get(`/api/v1/ratings/average/${seasonId}`)
+}
+// comment & notifi
+export const fecthCommentsAPI = (seasonId) => {
+    return instance.get(`/api/v1/comments/${seasonId}`)
+}
+export const postCommentAPI = (seasonId, newContent) => {
+    return instance.post(`/api/v1/comments/post/${seasonId}`, { content: newContent })
+}
+export const replyCommentAPI = (seasonId, parentId, content) => {
+    return instance.post(`/api/v1/comments/${seasonId}/${parentId}/reply`, { content })
+}
+export const reactCommentAPI = () => {
+    return instance.post(`/api/v1/comments/${commentId}/like`)
+}
