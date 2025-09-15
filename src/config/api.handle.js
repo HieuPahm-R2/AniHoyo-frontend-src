@@ -58,9 +58,18 @@ export const fetchDataFilmsAPI = (query) => {
 export const fetchFilmByIdAPI = (id) => {
     return instance.get(`/api/v1/film/${id}`)
 }
+//user
+export const callUpdateAccountUserAPI = (id,) => {
+
+}
 // authentication
-export const registerAPI = (fullName, email, password) => {
-    return instance.post(`/api/v1/auth/register`, { fullName, email, password })
+export const registerAPI = (fullName, email, password, roleId) => {
+    return instance.post(`/api/v1/auth/register`, {
+        fullName, email, password,
+        role: {
+            "id": roleId
+        }
+    })
 }
 export const loginAPI = (username, password) => {
     return instance.post(`/api/v1/auth/login`, { username, password })
@@ -109,12 +118,18 @@ export const fetchAveragePointAPI = (seasonId) => {
 export const fecthCommentsAPI = (seasonId) => {
     return instance.get(`/api/v1/comments/${seasonId}`)
 }
-export const postCommentAPI = (seasonId, newContent) => {
-    return instance.post(`/api/v1/comments/post/${seasonId}`, { content: newContent })
+export const postCommentAPI = (seasonId, newContent, userId) => {
+    return instance.post(`/api/v1/comments/post/${seasonId}`, { content: newContent, user: { "id": userId } })
 }
 export const replyCommentAPI = (seasonId, parentId, content) => {
     return instance.post(`/api/v1/comments/${seasonId}/${parentId}/reply`, { content })
 }
-export const reactCommentAPI = () => {
+export const reactCommentAPI = (commentId) => {
     return instance.post(`/api/v1/comments/${commentId}/like`)
+}
+export const getNotification = (userId) => {
+    return instance.get(`/api/v1/notifications/user/${userId}`)
+}
+export const markAsReadNotifi = (id) => {
+    return instance.put(`/api/v1/notifications/${id}/read`)
 }

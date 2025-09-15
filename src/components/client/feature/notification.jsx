@@ -3,6 +3,7 @@ import { Badge, Dropdown, List } from "antd";
 import axios from "axios";
 import SockJS from "sockjs-client";
 import { over } from "stompjs";
+import { getNotification, markAsReadNotifi } from "@/config/api.handle";
 
 let stompClient = null;
 
@@ -11,7 +12,7 @@ export default function NotificationBell({ userId }) {
 
     // Load từ API
     const loadNotifications = async () => {
-        const res = await axios.get(`/api/notifications/user/${userId}`);
+        const res = await getNotification(userId);
         setNotifications(res.data);
     };
 
@@ -34,18 +35,18 @@ export default function NotificationBell({ userId }) {
     }, [userId]);
 
     const markAsRead = async (id) => {
-        await axios.put(`/api/notifications/${id}/read`);
+        await markAsReadNotifi(id);
         loadNotifications();
     };
 
     return (
         <Dropdown
             overlay={
-                <List
+                <List style={{ background: "#e6f7ff", padding: "5px" }}
                     dataSource={notifications}
                     renderItem={(n) => (
                         <List.Item
-                            style={{ background: n.isRead ? "#fff" : "#e6f7ff" }}
+                            style={{ background: n.isRead ? "#fff" : "#e6f7", padding: "10px", borderRadius: "5px", margin: "5px" }}
                             onClick={() => markAsRead(n.id)}
                         >
                             <span>{n.message}</span>
@@ -56,7 +57,7 @@ export default function NotificationBell({ userId }) {
             trigger={['click']}
         >
             <Badge count={notifications.filter(n => !n.isRead).length}>
-                <span style={{ cursor: "pointer", fontSize: 20 }}>🔔</span>
+                <span style={{ cursor: "pointer", fontSize: 20, marginLeft: "10px" }}>🔔</span>
             </Badge>
         </Dropdown>
     );

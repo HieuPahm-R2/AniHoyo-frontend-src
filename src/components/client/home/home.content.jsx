@@ -4,7 +4,7 @@ import { FilterTwoTone, ReloadOutlined, StarFilled, ClockCircleOutlined, Calenda
 
 import '@/assets/styles/Content.css';
 import { fetchAllSeasons, fetchFilmCategory, fetchFilmTags, fetchTopHighViewAPI } from '@/config/api.handle';
-import WaitingContent from '../share/reloading/skeleton.load';
+import WaitingContent from '../../share/reloading/skeleton.load';
 import { MdNewReleases } from 'react-icons/md';
 import { AiOutlineEye } from 'react-icons/ai';
 import { PiRankingDuotone } from 'react-icons/pi';

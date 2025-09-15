@@ -32,7 +32,7 @@ instance.interceptors.request.use(function (config) {
     }
 
     // Nếu là request login hoặc refresh thì xóa Authorization header
-    if (config.url && (config.url.includes('/api/v1/auth/login'))) {
+    if (config.url && (config.url.includes('/api/v1/auth/login')) || config.url.includes('/api/v1/auth/register')) {
         if (config.headers && config.headers['Authorization']) {
             delete config.headers['Authorization'];
         }
@@ -53,7 +53,8 @@ instance.interceptors.response.use(function (response) {
     if (error.config && error.response
         && +error.response.status === 401
         && !error.config.headers[NO_RETRY_HEADER]
-        && !(error.config.url && (error.config.url.includes('/api/v1/auth/login') || error.config.url.includes('/api/v1/auth/refresh')))
+        && !(error.config.url && (error.config.url.includes('/api/v1/auth/login') || error.config.url.includes('/api/v1/auth/refresh')
+            || error.config.url.includes('/api/v1/auth/register')))
     ) {
         const access_token = await handleRefreshToken();
         error.config.headers[NO_RETRY_HEADER] = 'true'

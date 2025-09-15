@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { fetchAveragePointAPI, fetchRatingAPI, fetchSeasonById } from '@/config/api.handle';
 import { useDispatch, useSelector } from 'react-redux';
 import { convertSlug } from '@/config/utils';
-import CommentList from '@/components/client/comment.list';
+import CommentList from '@/components/client/feature/comment.list';
 
 const DetailsPage = () => {
   const [seasonData, setSeasonData] = useState([]);

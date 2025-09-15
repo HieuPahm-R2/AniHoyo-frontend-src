@@ -5,7 +5,7 @@ import { useSelector } from "react-redux"
 const RoleCheck = (props) => {
     const isAdmin = window.location.pathname.startsWith("/admin")
     const user = useSelector(state => state.account.user)
-    const userRole = user?.role.name
+    const userRole = user?.role?.name
     if (isAdmin && userRole === 'ADMIN' || !isAdmin && (userRole === 'USER' || userRole === 'ADMIN')) {
         return (<>{props.children}</>)
     } else {

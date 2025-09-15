@@ -62,7 +62,7 @@ const RegisterPage = () => {
   const onFinish = async (values) => {
     const { fullName, email, password } = values;
     setIsSumbit(true);
-    const result = await registerAPI(fullName, email, password);
+    const result = await registerAPI(fullName, email, password, 2);
     setIsSumbit(false)
     if (result.data.id) {
       message.success('Đăng ký thành công');

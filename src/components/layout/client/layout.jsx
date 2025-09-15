@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Outlet } from "react-router-dom";
-import Header from '../../client/Header';
-import Footer from '../../client/Footer';
+import Header from '../../client/home/home.header';
+import Footer from '../../client/home/home.footer';
 
 const Layout = () => {
   const [searchTerm, setSearchTerm] = useState("");

@@ -2,6 +2,8 @@ import { Avatar, Tooltip, Button, Input } from "antd";
 import { LikeOutlined, LikeFilled } from "@ant-design/icons";
 import { Comment } from '@ant-design/compatible';
 import { useState } from "react";
+import moment from "moment";
+import { FORMAT_DATE_DISPLAY } from "@/config/constant.date";
 
 const { TextArea } = Input;
 
@@ -23,7 +25,7 @@ const CommentItem = ({ comment, onReply, onLike }) => {
             author={comment.fullName}
             avatar={<Avatar src={`${import.meta.env.VITE_BACKEND_URL}/storage/temp/user33.svg`} />}
             content={<p>{comment.content}</p>}
-            datetime={comment.createdAt}
+            datetime={moment(comment.createdAt).format(FORMAT_DATE_DISPLAY)}
             actions={[
                 <span onClick={() => { setLiked(!liked); onLike(comment.id); }}>
                     {liked ? <LikeFilled /> : <LikeOutlined />} {comment.likeCount}

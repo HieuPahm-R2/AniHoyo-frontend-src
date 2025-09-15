@@ -1,4 +1,4 @@
-import { Row, Col, Card, Table, Upload, message, Progress, Button, Typography, Image, Popconfirm } from "antd";
+import { Row, Col, Card, Table, Upload, message, Button, Typography, Image, Popconfirm } from "antd";
 import moment from "moment";
 import { DeleteTwoTone, EditTwoTone, PlusOutlined, ReloadOutlined, ToTopOutlined } from "@ant-design/icons";
 import "../../assets/styles/main.scss";

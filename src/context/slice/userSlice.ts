@@ -21,7 +21,6 @@ export const fetchUser = createAsyncThunk(
     }
 )
 
-
 const initialState: IState = {
     isFetching: true,
     meta: {
@@ -37,7 +36,6 @@ const initialState: IState = {
 export const userSlice = createSlice({
     name: 'user',
     initialState,
-    // The `reducers` field lets us define reducers and generate associated actions
     reducers: {
         // Use the PayloadAction type to declare the contents of `action.payload`
         setActiveMenu: (state, action) => {
@@ -49,12 +47,12 @@ export const userSlice = createSlice({
         // Add reducers for additional action types here, and handle loading state as needed
         builder.addCase(fetchUser.pending, (state, action) => {
             state.isFetching = true;
-           
+
         })
 
         builder.addCase(fetchUser.rejected, (state, action) => {
             state.isFetching = false;
-           
+
         })
 
         builder.addCase(fetchUser.fulfilled, (state, action) => {

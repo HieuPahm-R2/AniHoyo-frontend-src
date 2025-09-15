@@ -1,8 +1,8 @@
 import { useEffect } from "react";
-import Banner from "../../components/client/Banner";
-import CommingSoon from "../../components/client/CommingSoon";
-import Content from "../../components/client/Content";
-import Featured from "../../components/client/Featured";
+import Banner from "../../components/client/home/home.banner";
+import CommingSoon from "../../components/client/home/comming.soon";
+import Content from "../../components/client/home/home.content";
+import Featured from "../../components/client/home/home.featured";
 import { convertSlug } from "../../config/utils";
 import { useNavigate } from "react-router-dom";
 
