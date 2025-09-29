@@ -15,7 +15,7 @@ import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import { convertSlug } from '@/config/utils';
 import { v4 as uuidv4 } from 'uuid';
-import instance from '@/config/api.custom';
+import instance from '@/config/axios.customize';
 
 const { Title, Text, Paragraph } = Typography
 

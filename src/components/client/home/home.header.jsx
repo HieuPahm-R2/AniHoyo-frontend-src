@@ -211,7 +211,6 @@ const Header = (props) => {
                                         </Dropdown>
                                         <NotificationBell userId={user?.id} />
                                     </div>
-
                                 }
                             </div>
                         </div>

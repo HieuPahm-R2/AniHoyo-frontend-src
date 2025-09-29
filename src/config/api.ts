@@ -1,4 +1,4 @@
-import instance from './api.custom';
+import instance from './axios.customize';
 import { IBackendRes, IModelPaginate, IPermission, IRole, IUser } from '@/types/backend';
 
 export const callCreateRole = (role: IRole): Promise<IBackendRes<IRole>> => {
@@ -38,7 +38,7 @@ export const callFetchPermission = (query: string): Promise<IBackendRes<IModelPa
  * 
 Module User
  */
-export const callCreateUser = (user: IUser) : Promise<IBackendRes<IUser>> => {
+export const callCreateUser = (user: IUser): Promise<IBackendRes<IUser>> => {
     return instance.post('/api/v1/add-user', { ...user })
 }
 
@@ -46,11 +46,11 @@ export const callUpdateUser = (user: IUser): Promise<IBackendRes<IUser>> => {
     return instance.put(`/api/v1/update-user`, { ...user })
 }
 
-export const callDeleteUser = (id: string) : Promise<IBackendRes<IUser>>=> {
+export const callDeleteUser = (id: string): Promise<IBackendRes<IUser>> => {
     return instance.delete(`/api/v1/delete-user/${id}`);
 }
 
-export const callFetchUser = (query: string) : Promise<IBackendRes<IModelPaginate<IUser>>> => {
+export const callFetchUser = (query: string): Promise<IBackendRes<IModelPaginate<IUser>>> => {
     return instance.get(`/api/v1/users?${query}`);
 }
 

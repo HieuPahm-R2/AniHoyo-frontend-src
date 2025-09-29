@@ -1,4 +1,4 @@
-import instance from "./api.custom";
+import instance from "./axios.customize";
 
 export const callUploadImage = (file, folder) => {
     const bodyFormData = new FormData();

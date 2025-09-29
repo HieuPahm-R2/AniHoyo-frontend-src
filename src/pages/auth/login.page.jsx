@@ -1,9 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import {
-  Layout, Menu, Button, Row, Col, Typography, Form, Input, Switch,
-  message,
-  notification,
+  Layout, Menu, Button, Row, Col, Typography, Form, Input, Switch, message, notification,
 } from "antd";
 import signinbg from "../../assets/images/login-intro1.jpg";
 import {
@@ -11,7 +9,7 @@ import {
 } from "@ant-design/icons";
 import { loginAPI } from "../../config/api.handle";
 import { useState } from "react";
-import { runLoginAction } from "../../context/slice/accountSlice";
+import { runLoginAction, setRefreshTokenAction } from "../../context/slice/accountSlice";
 
 const { Title } = Typography;
 const { Header, Footer, Content } = Layout;

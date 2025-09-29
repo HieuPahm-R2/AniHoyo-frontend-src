@@ -5,7 +5,8 @@ import '@/assets/styles/Banner.css';
 import { Carousel } from 'antd';
 import { fetchAllSeasons } from '@/config/api.handle';
 
-const Banner = () => {
+const Banner = (props) => {
+    const { handleRedirect } = props
     const [current, setCurrent] = useState(0);
     const [pageSize, setPageSize] = useState(5);
     const [sortQuery, setSortQuery] = useState("sort=uploadDate,desc");
@@ -43,8 +44,8 @@ const Banner = () => {
                                     <span>IDMB</span><FaStar /> 9.6
                                 </h3>
                             </div>
-                            <div className="btn-action">
-                                <a href="#">
+                            <div className="btn-action" onClick={() => handleRedirect(movie)}>
+                                <a>
                                     <IoIosPlayCircle className="play-btn" />
                                     <span> Xem ngay</span>
                                 </a>

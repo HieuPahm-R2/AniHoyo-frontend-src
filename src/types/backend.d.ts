@@ -4,6 +4,8 @@ export interface IBackendRes<T> {
   statusCode: number | string;
   data?: T;
 }
+
+
 export interface IModelPaginate<T> {
   meta: {
     page: number;
@@ -13,7 +15,7 @@ export interface IModelPaginate<T> {
   };
   result: T[];
 }
-export interface IUser{
+export interface IUser {
   id?: string;
   fullName: string;
   email: string;
@@ -34,7 +36,7 @@ export interface IPermission {
   module?: string;
 
   createdBy?: string;
-  
+
   createdTime?: string;
   updatedTime?: string;
 }

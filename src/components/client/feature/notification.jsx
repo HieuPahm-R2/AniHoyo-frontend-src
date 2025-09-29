@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Badge, Dropdown, List } from "antd";
-import axios from "axios";
 import SockJS from "sockjs-client";
 import { over } from "stompjs";
 import { getNotification, markAsReadNotifi } from "@/config/api.handle";
@@ -19,7 +18,7 @@ export default function NotificationBell({ userId }) {
     useEffect(() => {
         loadNotifications();
 
-        const socket = new SockJS("http://localhost:8080/ws");
+        const socket = new SockJS("http://localhost:8083/ws");
         stompClient = over(socket);
 
         stompClient.connect({}, () => {
@@ -30,7 +29,9 @@ export default function NotificationBell({ userId }) {
         });
 
         return () => {
-            stompClient.disconnect();
+            if (stompClient && stompClient.connected) {
+                stompClient.disconnect();
+            }
         };
     }, [userId]);
 

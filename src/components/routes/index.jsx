@@ -16,11 +16,12 @@ import RolePage from "@/pages/admin/role.table";
 import ProtectedRoute from "../share/protected";
 import PermissionPage from "@/pages/admin/permission.table";
 import FilmWatching from "@/pages/client/film.watching";
+import LayoutApp from "../share/layout.app";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Layout />,
+    element: <LayoutApp><Layout /></LayoutApp>,
     errorElement: <Error404 />,
     children: [
       {
@@ -41,7 +42,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/admin",
-    element: <MadContent />,
+    element: <LayoutApp><MadContent /></LayoutApp>,
     errorElement: <Error404 />,
     children: [
       {
