@@ -1,23 +1,9 @@
-import React from 'react'
 import { useState } from "react";
 
-import {
-  Card,
-  Col,
-  Row,
-  Typography,
-  Tooltip,
-  Progress,
-  Upload,
-  message,
-  Button,
-  Timeline,
-  Radio,
-} from "antd";
+import { Card, Col, Row, Typography, Tooltip, Progress, Button, Timeline, Radio } from "antd";
 import {
   ToTopOutlined,
   MenuUnfoldOutlined,
-  RightOutlined,
 } from "@ant-design/icons";
 import Paragraph from "antd/lib/typography/Paragraph";
 import LineChart from '../../components/admin/chart/lineChart';
@@ -30,7 +16,7 @@ import team1 from "../../assets/images/team-1.jpg";
 import team2 from "../../assets/images/team-2.jpg";
 import team3 from "../../assets/images/team-3.jpg";
 import team4 from "../../assets/images/team-4.jpg";
-import card from "../../assets/images/info-card-1.jpg";
+
 
 const AdminHome = () => {
   const { Title, Text } = Typography;

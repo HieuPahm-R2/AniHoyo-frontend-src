@@ -1,5 +1,4 @@
 import { createBrowserRouter } from "react-router-dom";
-import App from "../../App";
 import DetailsPage from "../../pages/client/film.detail.fixed";
 import SingInPage from "../../pages/auth/login.page";
 import RegisterPage from "../../pages/auth/register.page";

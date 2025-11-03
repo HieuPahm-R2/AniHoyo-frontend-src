@@ -84,6 +84,7 @@ const MadContent = (props) => {
         <Content className="content-ant">
           <Outlet />
         </Content>
+
         {isAdminRoute && userRole === 'ADMIN' &&
           <FooterAdmin />
         }
