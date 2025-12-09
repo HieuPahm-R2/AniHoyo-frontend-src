@@ -204,8 +204,6 @@ const ModalCreate = (props) => {
                                 <Input />
                             </Form.Item>
                         </Col>
-
-
                         <Col span={6}>
                             <Form.Item
                                 labelCol={{ span: 24 }}
@@ -296,9 +294,6 @@ const ModalCreate = (props) => {
                                 </Upload>
                             </Form.Item>
                         </Col>
-
-
-
                     </Row>
                 </Form>
             </Modal>

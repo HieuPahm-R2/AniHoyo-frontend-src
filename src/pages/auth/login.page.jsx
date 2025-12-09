@@ -9,7 +9,7 @@ import {
 } from "@ant-design/icons";
 import { loginAPI } from "../../config/api.handle";
 import { useState } from "react";
-import { runLoginAction, setRefreshTokenAction } from "../../context/slice/accountSlice";
+import { runLoginAction } from "../../context/slice/accountSlice";
 
 const { Title } = Typography;
 const { Header, Footer, Content } = Layout;

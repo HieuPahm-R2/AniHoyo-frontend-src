@@ -8,14 +8,13 @@ import {
 } from "antd";
 import styled from "styled-components";
 import {
-  SearchOutlined,
   StarOutlined,
   TwitterOutlined,
   FacebookFilled,
   DownOutlined,
 } from "@ant-design/icons";
 
-import { NavLink, Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { useSelector } from 'react-redux';
 
 const ButtonContainer = styled.div`

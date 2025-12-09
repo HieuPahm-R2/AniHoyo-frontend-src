@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate } from "react-router-dom";
 import { runLogoutAction } from '../../../context/slice/accountSlice';
 import { fetchAllSeasons, LogoutAPI } from '@/config/api.handle';
 import { Avatar, Dropdown, Menu, message, Space, Tag } from 'antd';
-import { AppstoreOutlined, CloseOutlined, ControlOutlined, DownOutlined, MailOutlined, SettingOutlined, VideoCameraAddOutlined } from '@ant-design/icons';
+import { AppstoreOutlined, CloseOutlined, ControlOutlined, DownOutlined, VideoCameraAddOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { VscSearchFuzzy } from 'react-icons/vsc';
 import { sfLike } from 'spring-filter-query-builder';
