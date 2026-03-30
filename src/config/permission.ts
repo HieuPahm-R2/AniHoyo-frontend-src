@@ -41,4 +41,8 @@ export const ALL_PERMISSIONS = {
         UPDATE: { method: "PUT", apiPath: '/api/v1/update-user', module: "USERS" },
         DELETE: { method: "DELETE", apiPath: '/api/v1/delete-user/{id}', module: "USERS" },
     },
+    RATINGS: {
+        GET_AVERAGE: { method: "GET", apiPath: '/api/v1/ratings/average/{seasonId}', module: "RATINGS" },
+        CREATE: { method: "POST", apiPath: '/api/v1/ratings', module: "RATINGS" },
+    },
 }

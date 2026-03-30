@@ -156,6 +156,7 @@ const ModalAdjustFilm = (props) => {
                         />
                         <CloudUploadOutlined twoToneColor="green" style={{ cursor: "pointer", margin: "0 10px", color: "green" }}
                             onClick={() => {
+                                setSelectedSeason(record);
                                 setModalAddEpisode(true);
                             }} />
                         <EyeOutlined twoToneColor="yellow" style={{ cursor: "pointer", margin: "0 10px" }}
@@ -243,7 +244,8 @@ const ModalAdjustFilm = (props) => {
                 onSeasonSelect={setSelectedSeason} />
             <ModalEpisodeUpload modalAddEpisode={modalAddEpisode}
                 setModalAddEpisode={setModalAddEpisode}
-                dataSeason={dataSeason} />
+                dataSeason={dataSeason}
+                selectedSeason={selectedSeason} />
             <ModalCreateSeason modalAddSeason={modalAddSeason}
                 dataDetail={dataDetail}
                 setModalAddSeason={setModalAddSeason} refetchData={refetchData} />

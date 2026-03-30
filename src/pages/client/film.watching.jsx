@@ -1,21 +1,19 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
-    Breadcrumb, Button, Card, Col, Divider, Dropdown, Flex,
-    Image, List, Menu, Row, Space, Tag, Typography, ConfigProvider, message,
+    Breadcrumb, Button, Card, Col, Divider, Flex, Image, List, Row, Space, Tag, Typography, ConfigProvider, message,
 } from 'antd'
 import {
-    PlayCircleOutlined, ShareAltOutlined, HeartOutlined,
+    ShareAltOutlined, HeartOutlined,
     SaveOutlined, ThunderboltOutlined, ClockCircleOutlined, HomeOutlined, AppstoreOutlined,
 } from '@ant-design/icons'
 import { MediaPlayer, MediaPlayerInstance, MediaProvider } from '@vidstack/react'
 import { DefaultVideoLayout, defaultLayoutIcons } from '@vidstack/react/player/layouts/default';
 import { useLocation, useNavigate } from 'react-router-dom'
-import { fetchAllEpisodeBySeason, fetchFilmByIdAPI, fetchSeasonById, checkView } from '@/config/api.handle';
+import { fetchAllEpisodeBySeason, fetchRelatedSeasonsAPI, fetchSeasonById, checkView } from '@/config/api.handle';
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import { convertSlug } from '@/config/utils';
 import { v4 as uuidv4 } from 'uuid';
-import instance from '@/config/axios.customize';
 
 const { Title, Text, Paragraph } = Typography
 
@@ -24,6 +22,7 @@ const FilmWatching = () => {
     const [currentEpisode, setCurrentEpisode] = useState(1)
     const [videoId, setVideoId] = useState("");
     const [episodeList, setEpisodeList] = useState([]);
+    const [episodesLoaded, setEpisodesLoaded] = useState(false);
     const [selectedSeason, setSelectedSeason] = useState(null);
     const [listRelated, setListRelated] = useState([])
     const [hasSentView, setHasSentView] = useState(false);
@@ -123,11 +122,6 @@ const FilmWatching = () => {
         name: `Tập ${i + 1}`,
     }))
 
-    const mockRelated = Array.from({ length: 6 }, (_, i) => ({
-        id: i + 1,
-        title: `Gợi ý #${i + 1}`,
-        poster: `/public/violet-movie.jpg`,
-    }))
     const handleRedirect = (item) => {
         const slug = convertSlug(item.seasonName);
         navigate(`/detail/${slug}?id=${item.id}`)
@@ -137,46 +131,40 @@ const FilmWatching = () => {
         if (selectedSeason?.id) {
             try {
                 const res = await fetchAllEpisodeBySeason(selectedSeason?.id)
-                console.log('API response:', res);
                 if (res && res.data) {
-                    console.log('API response data:', res.data);
                     const accept = res.data.result.map((item) => ({
                         videoId: item.id,
                         title: item.title,
                     }))
                     setEpisodeList(accept)
                     if (accept.length > 0) {
-                        const targetEpisodeIndex = 0;
-                        setCurrentEpisode(targetEpisodeIndex);
-                        setVideoId(accept[targetEpisodeIndex].videoId);
-                        console.log(`Set initial episode: ${targetEpisodeIndex}, videoId: ${accept[targetEpisodeIndex].videoId}`);
+                        setCurrentEpisode(0);
+                        setVideoId(accept[0].videoId);
                     }
                 }
             } catch (error) {
                 console.error('Error fetching episodes:', error);
+            } finally {
+                setEpisodesLoaded(true);
             }
-        } else {
-            console.log('No selectedSeason or selectedSeason.id is missing');
         }
     }
     const fetchRelated = async () => {
         if (selectedSeason?.id) {
             try {
-                const res = await fetchFilmByIdAPI(selectedSeason?.id)
+                const res = await fetchRelatedSeasonsAPI(selectedSeason?.id)
                 if (res && res.data) {
-                    console.log('API response data:', res.data);
-                    const accept = res.data.seasons.map((item) => ({
-                        title: item.ordinal,
+                    const accept = res.data.map((item) => ({
                         id: item.id,
-                        seasonName: item.seasonName
+                        seasonName: item.seasonName,
+                        ordinal: item.ordinal,
+                        poster: item.thumb,
                     }))
                     setListRelated(accept)
                 }
             } catch (error) {
-                console.error('Error fetching episodes:', error);
+                console.error('Error fetching related seasons:', error);
             }
-        } else {
-            console.log('No selectedSeason or selectedSeason.id is missing');
         }
     }
 
@@ -195,7 +183,7 @@ const FilmWatching = () => {
         <ConfigProvider
             theme={{
                 token: {
-                    colorBgContainer: '#141414',
+                    colorBgContainer: '#26364f',
                     colorBgElevated: 'cyan',
                     colorBorder: '#262626',
                     colorText: '#e8e8e8',
@@ -206,39 +194,53 @@ const FilmWatching = () => {
         >
             <Space direction="vertical" size={16} style={{ width: '100%' }}>
                 <Breadcrumb
+                    style={{ backgroundColor: "#504747", maxWidth: '50%', borderRadius: "5px" }}
                     items={[
                         { href: '/', title: <HomeOutlined /> },
                         { href: '/phim', title: <><AppstoreOutlined /> <span style={{ marginLeft: 6 }}>Phim</span></> },
                         { title: `${selectedSeason?.seasonName}` },
-                        { title: `Tập ${currentEpisode}` },
+                        { title: `Tập ${currentEpisode + 1}` },
                     ]}
                 />
 
                 <Row gutter={[16, 16]}>
                     <Col xs={24} lg={16}>
                         <Card bordered={false} bodyStyle={{ padding: 0 }}>
-                            <div style={{ position: 'relative', background: '#000' }}>
-                                <MediaPlayer
-                                    ref={videoRef}
-                                    src={`http://localhost:8083/api/v1/${videoId}/master.m3u8`}
-                                    viewType='video'
-                                    streamType='on-demand'
-                                    onError={(e) => {
-                                        message.error('Lỗi phát video');
-                                    }}
-                                    style={{ width: '100%', height: 'auto' }}
-                                >
-                                    <MediaProvider />
-                                    <DefaultVideoLayout
-                                        icons={defaultLayoutIcons}
-                                    />
-                                </MediaPlayer>
+                            <div style={{ position: 'relative', background: '#524848' }}>
+                                {episodesLoaded && episodeList.length === 0 ? (
+                                    <Flex
+                                        align="center"
+                                        justify="center"
+                                        style={{ minHeight: 360, flexDirection: 'column', gap: 12 }}
+                                    >
+                                        <ClockCircleOutlined style={{ fontSize: 48, color: '#bfbfbf' }} />
+                                        <Text style={{ fontSize: 16, color: '#bfbfbf' }}>
+                                            Series chưa được cập nhật, vui lòng chờ thêm.
+                                        </Text>
+                                    </Flex>
+                                ) : (
+                                    <MediaPlayer
+                                        ref={videoRef}
+                                        src={`http://localhost:8083/api/v1/${videoId}/master.m3u8`}
+                                        viewType='video'
+                                        streamType='on-demand'
+                                        onError={(e) => {
+                                            message.error('Lỗi phát video');
+                                        }}
+                                        style={{ width: '100%', height: 'auto' }}
+                                    >
+                                        <MediaProvider />
+                                        <DefaultVideoLayout
+                                            icons={defaultLayoutIcons}
+                                        />
+                                    </MediaPlayer>
+                                )}
                             </div>
                             <div style={{ padding: 16 }}>
                                 <Flex align="center" justify="space-between" wrap>
                                     <Space direction="vertical" size={4}>
                                         <Title level={4} style={{ margin: 0 }}>{selectedSeason?.seasonName}</Title>
-                                        <Text type="success">{`Tập ${currentEpisode}`} • <ThunderboltOutlined /> {selectedSeason?.status}</Text>
+                                        <Text type="success">{`Tập ${currentEpisode + 1}`} • <ThunderboltOutlined /> {selectedSeason?.status}</Text>
                                     </Space>
                                     <Space wrap>
                                         <Button icon={<HeartOutlined />}>Yêu thích</Button>
@@ -247,15 +249,7 @@ const FilmWatching = () => {
                                     </Space>
                                 </Flex>
 
-                                <Divider style={{ margin: '12px 0' }} />
 
-                                <Flex align="center" gap={12} wrap>
-
-                                    <Space>
-                                        <Button type="primary" icon={<PlayCircleOutlined />}>Tiếp tục xem</Button>
-                                        <Button icon={<ClockCircleOutlined />}>Xem sau</Button>
-                                    </Space>
-                                </Flex>
                             </div>
                         </Card>
 
@@ -269,26 +263,6 @@ const FilmWatching = () => {
                                     {(selectedSeason?.film?.categories || []).map((g) => (<Tag >{g.name}</Tag>))}
                                 </Space>
                             </Space>
-                        </Card>
-
-                        <Card bordered={false} style={{ marginTop: 16 }} title="Bình luận">
-                            <List
-                                itemLayout="vertical"
-                                dataSource={[1, 2, 3].map((i) => ({
-                                    id: i,
-                                    user: `Người dùng ${i}`,
-                                    content: 'Hay quá! Tập này căng thẳng mà vui nữa.',
-                                }))}
-                                renderItem={(item) => (
-                                    <List.Item key={item.id}>
-                                        <List.Item.Meta
-                                            title={<Text strong>{item.user}</Text>}
-                                            description={<Text type="warning">vừa xong</Text>}
-                                        />
-                                        <Text>{item.content}</Text>
-                                    </List.Item>
-                                )}
-                            />
                         </Card>
                     </Col>
 
@@ -308,17 +282,17 @@ const FilmWatching = () => {
                                         {(selectedSeason?.film?.categories || []).map((g) => (<Tag color="geekblue">{g.name}</Tag>))}
 
                                     </Space>
-                                    <p>XEM THÊM  SEASON/ OVA/ MOVIE</p>
+                                    <p>Xem thêm các series khác</p>
 
                                     <Carousel
                                         removeArrowOnDeviceType={["tablet", "mobile"]} responsive={responsive}>
 
                                         {listRelated.map((g) =>
-                                        (<div onClick={() => handleRedirect(g)} style={{
+                                        (<div key={g.id} onClick={() => handleRedirect(g)} style={{
                                             display: "flex", justifyContent: "center", cursor: "pointer", borderRadius: "3px",
-                                            width: "50px", height: "20px", background: "#8FBC8F", padding: "5px"
+                                            width: "50px", height: "20px", background: "#7a9b7a", padding: "5px"
                                         }
-                                        }>{g.title}</div>))}
+                                        }>{g.ordinal || g.seasonName}</div>))}
 
                                     </Carousel>
 
@@ -359,13 +333,13 @@ const FilmWatching = () => {
                         <Card bordered={false} style={{ marginTop: 16 }} title="Có thể bạn cũng thích">
                             <List
                                 itemLayout="horizontal"
-                                dataSource={mockRelated}
+                                dataSource={listRelated}
                                 renderItem={(item) => (
-                                    <List.Item key={item.id}>
+                                    <List.Item key={item.id} onClick={() => handleRedirect(item)} style={{ cursor: 'pointer' }}>
                                         <List.Item.Meta
-                                            avatar={<Image src={item.poster} width={56} height={80} style={{ objectFit: 'cover' }} preview={false} />}
-                                            title={<a href="#">{item.title}</a>}
-                                            description={<Text type="warning">TV • 12 tập</Text>}
+                                            avatar={<Image src={`${import.meta.env.VITE_BACKEND_URL}/storage/visual/${item.poster}`} width={56} height={80} style={{ objectFit: 'cover' }} preview={false} />}
+                                            title={<a>{item.seasonName}</a>}
+                                            description={<Text type="warning">{item.ordinal}</Text>}
                                         />
                                     </List.Item>
                                 )}

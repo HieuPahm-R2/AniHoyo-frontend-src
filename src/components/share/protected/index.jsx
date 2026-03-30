@@ -1,11 +1,11 @@
 import Error403 from "@/components/errors/403-page"
-import { useSelector } from "react-redux"
+import { useAppSelector } from "@/context/hooks"
 import { Navigate } from "react-router-dom"
 
 
 const RoleCheck = (props) => {
     const isAdmin = window.location.pathname.startsWith("/admin")
-    const user = useSelector(state => state.account.user)
+    const user = useAppSelector(state => state.account.user)
     const userRole = user?.role?.name
     if (isAdmin && userRole === 'ADMIN' || !isAdmin && (userRole === 'USER' || userRole === 'ADMIN')) {
         return (<>{props.children}</>)
@@ -15,7 +15,7 @@ const RoleCheck = (props) => {
 }
 
 const ProtectedRoute = (props) => {
-    const isAuthenticated = useSelector(state => state.account.isAuthenticated)
+    const isAuthenticated = useAppSelector(state => state.account.isAuthenticated)
     return (
         <>
             {isAuthenticated === true ?

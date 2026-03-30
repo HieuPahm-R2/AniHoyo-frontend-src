@@ -1,8 +1,9 @@
 import { Col, Row } from 'antd'
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { HistoryOutlined } from '@ant-design/icons';
+import { fetchAllSeasons } from '@/config/api.handle';
 
 
 const responsive = {

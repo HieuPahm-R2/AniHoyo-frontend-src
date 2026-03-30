@@ -1,5 +1,5 @@
-import { Drawer, message, List, Avatar, Button, Space, Dropdown } from 'antd'
-import React, { useEffect, useState, useCallback } from 'react'
+import { Drawer, message, List, Avatar } from 'antd'
+import React, { useEffect, useState } from 'react'
 
 import { fetchAllEpisodeBySeason } from '@/config/api.handle';
 import { MediaPlayer } from '@vidstack/react';

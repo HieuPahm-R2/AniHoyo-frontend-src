@@ -4,13 +4,20 @@ import { IoIosPlayCircle } from "react-icons/io";
 import '@/assets/styles/Banner.css';
 import { Carousel } from 'antd';
 import { fetchAllSeasons } from '@/config/api.handle';
+import { convertSlug } from '@/config/utils';
+import { useNavigate } from 'react-router-dom';
 
-const Banner = (props) => {
-    const { handleRedirect } = props
+const Banner = () => {
     const [current, setCurrent] = useState(0);
     const [pageSize, setPageSize] = useState(5);
     const [sortQuery, setSortQuery] = useState("sort=uploadDate,desc");
     const [listFilm, setListFilm] = useState([])
+    const navigate = useNavigate();
+
+    const handleRedirect = (item) => {
+        const slug = convertSlug(item.seasonName);
+        navigate(`/detail/${slug}?id=${item.id}`)
+    }
 
     useEffect(() => {
         const fetchFilms = async () => {
@@ -45,7 +52,7 @@ const Banner = (props) => {
                                 </h3>
                             </div>
                             <div className="btn-action" onClick={() => handleRedirect(movie)}>
-                                <a>
+                                <a >
                                     <IoIosPlayCircle className="play-btn" />
                                     <span> Xem ngay</span>
                                 </a>

@@ -1,21 +1,21 @@
 import { createBrowserRouter } from "react-router-dom";
-import DetailsPage from "../../pages/client/film.detail.fixed";
-import SingInPage from "../../pages/auth/login.page";
-import RegisterPage from "../../pages/auth/register.page";
-import AdminHome from "../../pages/admin/admin.dashboard";
-import UserManage from "../../pages/admin/user.table";
-import ProductManage from "../../pages/admin/product.table";
-import MadContent from "../layout/admin/layout.admin";
-import "../../assets/styles/mainClient.scss"
-import Layout from "../layout/client/layout";
-import Error404 from "../errors/404-page";
-import ClientHome from "../../pages/client/client.home";
+import DetailsPage from "../pages/client/film.detail.fixed";
+import SingInPage from "../pages/auth/login.page";
+import RegisterPage from "../pages/auth/register.page";
+import AdminHome from "../pages/admin/admin.dashboard";
+import UserManage from "../pages/admin/user.table";
+import ProductManage from "../pages/admin/product.table";
+import MadContent from "../components/layout/admin/layout.admin";
+import "../assets/styles/mainClient.scss"
+import Layout from "../components/layout/client/layout";
+import Error404 from "../components/errors/404-page";
+import ClientHome from "../pages/client/client.home";
 
 import RolePage from "@/pages/admin/role.table";
-import ProtectedRoute from "../share/protected";
+import ProtectedRoute from "../components/share/protected";
 import PermissionPage from "@/pages/admin/permission.table";
 import FilmWatching from "@/pages/client/film.watching";
-import LayoutApp from "../share/layout.app";
+import LayoutApp from "../components/share/layout.app";
 
 const router = createBrowserRouter([
   {
@@ -29,13 +29,11 @@ const router = createBrowserRouter([
       },
       {
         path: "/detail/:slug",
-        element: <ProtectedRoute>
-          <DetailsPage />
-        </ProtectedRoute>
+        element: <ProtectedRoute><DetailsPage /></ProtectedRoute>
       },
       {
         path: "/watching/:slug",
-        element: <FilmWatching />
+        element: <ProtectedRoute><FilmWatching /></ProtectedRoute>
       },
     ]
   },

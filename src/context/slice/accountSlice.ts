@@ -58,13 +58,17 @@ export const accountSlice = createSlice({
             state.isAuthenticated = true;
             state.isLoading = false;
             state.user.id = action?.payload?.id;
-            state.user.email = action.payload.email;
-            state.user.name = action.payload.name;
-            state.user.role = action?.payload?.role;
+            state.user.email = action?.payload?.email;
+            state.user.name = action?.payload?.name;
             state.user.avatar = action?.payload?.avatar;
-
-            if (!action?.payload?.user?.role) state.user.role = {};
-            state.user.role.permissions = action?.payload?.role?.permissions ?? [];
+            state.user.role = action?.payload?.role ?? {
+                id: "",
+                name: "",
+                permissions: []
+            };
+            if (!state.user.role.permissions) {
+                state.user.role.permissions = [];
+            }
         },
         runLogoutAction: (state, action) => {
             state.isAuthenticated = false;
@@ -94,32 +98,36 @@ export const accountSlice = createSlice({
         }
     },
     extraReducers: (builder) => {
-        builder.addCase(fetchAccount.pending, (state, action) => {
-            if (action.payload) {
-                state.isAuthenticated = false;
-                state.isLoading = true;
-            }
+        builder.addCase(fetchAccount.pending, (state) => {
+            state.isLoading = true;
         })
 
         builder.addCase(fetchAccount.fulfilled, (state, action) => {
             if (action.payload) {
                 state.isAuthenticated = true;
-                state.isLoading = false;
                 state.user.id = action?.payload?.user?.id;
-                state.user.email = action.payload.user?.email;
-                state.user.name = action.payload.user?.name;
-                state.user.avatar = action.payload.user?.avatar;
-                state.user.role = action?.payload?.user?.role;
-                if (!action?.payload?.user?.role) state.user.role = {};
-                state.user.role.permissions = action?.payload?.user?.role?.permissions ?? [];
+                state.user.email = action?.payload?.user?.email;
+                state.user.name = action?.payload?.user?.name;
+                state.user.avatar = action?.payload?.user?.avatar;
+
+                // Gán role với default value là empty object nếu không có
+                state.user.role = action?.payload?.user?.role ?? {
+                    id: "",
+                    name: "",
+                    permissions: []
+                };
+
+                // Đảm bảo permissions luôn là array
+                if (!state.user.role.permissions) {
+                    state.user.role.permissions = [];
+                }
             }
+            state.isLoading = false;
         })
 
-        builder.addCase(fetchAccount.rejected, (state, action) => {
-            if (action.payload) {
-                state.isAuthenticated = false;
-                state.isLoading = false;
-            }
+        builder.addCase(fetchAccount.rejected, (state) => {
+            state.isAuthenticated = false;
+            state.isLoading = false;
         })
     },
 });

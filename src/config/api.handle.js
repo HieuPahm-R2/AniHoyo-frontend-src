@@ -99,6 +99,9 @@ export const fetchAllSeasons = (query) => {
 export const fetchSeasonById = (id) => {
     return instance.get(`/api/v1/season/${id}`)
 }
+export const fetchRelatedSeasonsAPI = (seasonId) => {
+    return instance.get(`/api/v1/seasons/related/${seasonId}`)
+}
 export const checkView = (videoId, sessionId) => {
     return instance.post(`/api/v1/${videoId}/view`, { sessionId })
 }

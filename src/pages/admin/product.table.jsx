@@ -82,18 +82,26 @@ const ProductManage = () => {
       dataIndex: "studio",
     },
     {
-      title: "Release Year",
-      dataIndex: "releaseYear",
-    },
-    {
-      title: "Updated Time",
+      title: "Uploaded Time",
       dataIndex: "uploadDate",
       sorter: true,
       render: (text, record, index) => {
         return (
-          <>{moment(record.updated).format(FORMAT_DATE_DISPLAY)}</>
+          <>{moment(record.uploadDate).format(FORMAT_DATE_DISPLAY)}</>
         )
-      }
+      },
+      hideInSearch: true,
+    },
+    {
+      title: "Updated Time",
+      dataIndex: "updatedTime",
+      sorter: true,
+      render: (text, record, index) => {
+        return (
+          <>{moment(record.updatedTime).format(FORMAT_DATE_DISPLAY)}</>
+        )
+      },
+      hideInSearch: true,
     },
     {
       title: "Actions",
