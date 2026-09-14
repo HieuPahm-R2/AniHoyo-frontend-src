@@ -170,7 +170,7 @@ const ModalEpisodeList = (props) => {
                         <MediaPlayer
                             viewType='video'
                             streamType='on-demand'
-                            src={`http://localhost:8083/api/v1/${videoId}/master.m3u8`}
+                            src={`${import.meta.env.VITE_BACKEND_URL ?? 'http://localhost:8083'}/api/v1/${videoId}/master.m3u8`}
                             onLoadStart={() => setIsLoading(true)}
                             onCanPlay={() => setIsLoading(false)}
                             onError={(e) => {

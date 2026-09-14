@@ -221,7 +221,7 @@ const FilmWatching = () => {
                                 ) : (
                                     <MediaPlayer
                                         ref={videoRef}
-                                        src={`http://localhost:8083/api/v1/${videoId}/master.m3u8`}
+                                        src={`${import.meta.env.VITE_BACKEND_URL ?? 'http://localhost:8083'}/api/v1/${videoId}/master.m3u8`}
                                         viewType='video'
                                         streamType='on-demand'
                                         onError={(e) => {
