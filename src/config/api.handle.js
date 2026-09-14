@@ -102,8 +102,8 @@ export const fetchSeasonById = (id) => {
 export const fetchRelatedSeasonsAPI = (seasonId) => {
     return instance.get(`/api/v1/seasons/related/${seasonId}`)
 }
-export const checkView = (videoId, sessionId) => {
-    return instance.post(`/api/v1/${videoId}/view`, { sessionId })
+export const checkView = (videoId) => {
+    return instance.post(`/api/v1/${videoId}/view`)
 }
 export const callDeleteSeasonAPI = (id) => {
     return instance.delete(`/api/v1/delete-season/${id}`)

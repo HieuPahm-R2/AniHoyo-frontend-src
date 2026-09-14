@@ -13,7 +13,6 @@ import { fetchAllEpisodeBySeason, fetchRelatedSeasonsAPI, fetchSeasonById, check
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import { convertSlug } from '@/config/utils';
-import { v4 as uuidv4 } from 'uuid';
 
 const { Title, Text, Paragraph } = Typography
 
@@ -52,9 +51,7 @@ const FilmWatching = () => {
             if (duration > 0) {
                 const percentageWatched = currentTime / duration;
                 if (!hasSentView && percentageWatched >= 0.1) {
-                    const sessionId = getSessionId();
-                    console.log("Sending view with sessionId:", sessionId, "videoId:", videoId);
-                    checkView(videoId, sessionId)
+                    checkView(videoId)
                         .then(() => setHasSentView(true))
                         .catch(err => console.error("Error updating view", err));
                 }
@@ -91,14 +88,6 @@ const FilmWatching = () => {
         }
     }, [selectedSeason]);
 
-    const getSessionId = () => {
-        let id = localStorage.getItem('movieSessionId');
-        if (!id) {
-            id = uuidv4();
-            localStorage.setItem('movieSessionId', id);
-        }
-        return id;
-    };
     const responsive = {
         superLargeDesktop: {
             breakpoint: { max: 4000, min: 3000 },
