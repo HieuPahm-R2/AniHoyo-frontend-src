@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { Col, Divider, message, Form, Input, InputNumber, Modal, notification, Row, Select, Upload } from "antd";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
-import { callCreateFilmAPI, callUploadImage, fetchFilmCategory, fetchFilmTags } from '@/config/api.handle';
+import { callCreateFilmAPI, callUploadImage } from '@/config/api.handle';
+import { useFilmCatalog } from '@/config/catalog';
 import { v4 as uuidv4 } from 'uuid';
 const ModalCreate = (props) => {
     const { openModalCreate, setOpenModalCreate, refetchData } = props;
@@ -18,32 +19,9 @@ const ModalCreate = (props) => {
 
     const [dataThumbnail, setDataThumbnail] = useState([]);
     const [dataSlider, setDataSlider] = useState([]);
-    const [listCategories, setListCategories] = useState([]);
-    const [listTags, setListTags] = useState([]);
-    useEffect(() => {
-        const fetchCategories = async () => {
-            const res = await fetchFilmCategory();
-            if (res && res.data) {
-                const accept = res.data.result.map((item) => ({
-                    label: item.name,
-                    value: item.id
-                }))
-                setListCategories(accept);
-            }
-        }
-        const fetchTags = async () => {
-            const res = await fetchFilmTags();
-            if (res && res.data) {
-                const accept = res.data.result.map((item) => ({
-                    label: item.tagName,
-                    value: item.id
-                }))
-                setListTags(accept)
-            }
-        }
-        fetchCategories();
-        fetchTags();
-    }, [])
+    // Thể loại + Highlight Tag là dữ liệu DB (FK theo id) nên vẫn lấy từ API,
+    // nhưng chỉ fetch 1 lần cho cả app thay vì mỗi lần mở modal.
+    const { categories: listCategories, tags: listTags } = useFilmCatalog();
 
     const onFinish = async (values) => {
         if (dataThumbnail.length === 0) {

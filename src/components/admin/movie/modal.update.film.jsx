@@ -1,7 +1,8 @@
 import { Col, Divider, Form, Input, InputNumber, Modal, notification, Row, Select, Upload } from "antd";
 import { useEffect, useState } from "react";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
-import { callUpdateFilmAPI, callUploadImage, fetchFilmCategory, fetchFilmTags } from '@/config/api.handle';
+import { callUpdateFilmAPI, callUploadImage } from '@/config/api.handle';
+import { useFilmCatalog } from '@/config/catalog';
 import { v4 as uuidv4 } from 'uuid';
 
 const ModalUpdate = (props) => {
@@ -20,33 +21,9 @@ const ModalUpdate = (props) => {
     const [initForm, setInitForm] = useState(null);
 
     const [isSubmit, setIsSubmit] = useState(false);
-    const [listCategories, setListCategories] = useState([]);
-    const [listTags, setListTags] = useState([]);
-
-    useEffect(() => {
-        const fetchCategories = async () => {
-            const res = await fetchFilmCategory();
-            if (res && res.data) {
-                const accept = res.data.result.map((item) => ({
-                    label: item.name,
-                    value: item.id
-                }))
-                setListCategories(accept);
-            }
-        }
-        const fetchTags = async () => {
-            const res = await fetchFilmTags();
-            if (res && res.data) {
-                const accept = res.data.result.map((item) => ({
-                    label: item.tagName,
-                    value: item.id
-                }))
-                setListTags(accept)
-            }
-        }
-        fetchCategories();
-        fetchTags();
-    }, [])
+    // Thể loại + Highlight Tag là dữ liệu DB (FK theo id) nên vẫn lấy từ API,
+    // nhưng chỉ fetch 1 lần cho cả app thay vì mỗi lần mở modal.
+    const { categories: listCategories, tags: listTags } = useFilmCatalog();
 
     useEffect(() => {
         console.log(dataUpdate)
@@ -63,14 +40,9 @@ const ModalUpdate = (props) => {
                 status: 'done',
                 url: `${import.meta.env.VITE_BACKEND_URL}/storage/slider/${dataUpdate.slider}`,
             }]
-            const nameTag = dataUpdate.tags.map((item) => ({
-                label: item.name,
-                value: item.id
-            }))
-            const nameCate = dataUpdate.categories.map((item) => ({
-                label: item.name,
-                value: item.id
-            }))
+            // Select mode="multiple" nhận mảng value (id), không nhận {label, value}
+            const nameTag = (dataUpdate.tags ?? []).map((item) => item.id)
+            const nameCate = (dataUpdate.categories ?? []).map((item) => item.id)
             const initialVal = {
                 id: dataUpdate.id,
                 name: dataUpdate.name,

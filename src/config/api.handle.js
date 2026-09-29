@@ -40,11 +40,13 @@ export const fetchAllEpisodeBySeason = (seasonId) => {
     return instance.get(`/api/v1/episodes/by-season/${seasonId}`)
 }
 // Film
-export const fetchFilmCategory = () => {
-    return instance.get("/api/v1/categories");
+// Reference data (genres + highlight tags): lấy 1 lần với size lớn để Select không
+// bị thiếu lựa chọn khi số thể loại/tag vượt quá page size mặc định (20).
+export const fetchFilmCategory = (query = 'page=0&size=200') => {
+    return instance.get(`/api/v1/categories?${query}`);
 }
-export const fetchFilmTags = () => {
-    return instance.get("/api/v1/tags");
+export const fetchFilmTags = (query = 'page=0&size=200') => {
+    return instance.get(`/api/v1/tags?${query}`);
 }
 export const callCreateFilmAPI = (thumbnail, slider, name, studio, tags, categories) => {
     return instance.post('/api/v1/add-film', { thumbnail, slider, name, studio, tags, categories })
