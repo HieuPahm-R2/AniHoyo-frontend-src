@@ -92,10 +92,25 @@ instance.interceptors.response.use(
             dispatch(setRefreshTokenAction({ status: true, message }));
         }
 
-        if (status === 403) {
+        // Hiển thị đúng thông điệp backend trả về cho MỌI lỗi 4xx/5xx, không chỉ
+        // 403 như trước: một lỗi dữ liệu (vd "Data too long for column 'trailer'")
+        // trước đây bị nuốt im lặng nên rất khó đoán nguyên nhân.
+        // 401 đã do luồng refresh phiên phía trên xử lý (retry hoặc dispatch
+        // setRefreshTokenAction), riêng lỗi đăng nhập thì vẫn báo để người dùng
+        // biết sai tài khoản/mật khẩu.
+        const handledBySessionFlow = status === 401
+            && (error.config?.url ?? '') !== '/api/v1/auth/login';
+        if (status >= 400 && !handledBySessionFlow) {
+            const body = error?.response?.data;
+            const title = typeof body?.message === 'string' && body.message
+                ? body.message
+                : `Lỗi HTTP ${status}`;
+            const description = typeof body?.error === 'string' && body.error
+                ? body.error
+                : (typeof body?.message === 'string' ? body.message : '');
             notification.error({
-                message: error?.response?.data?.message ?? "",
-                description: error?.response?.data?.error ?? ""
+                message: title,
+                description: description || undefined
             });
         }
 
