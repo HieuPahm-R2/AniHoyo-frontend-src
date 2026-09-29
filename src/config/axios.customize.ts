@@ -1,12 +1,19 @@
 
 import { setRefreshTokenAction } from "@/context/slice/accountSlice";
-import { IBackendRes } from "@/types/backend";
 import { notification } from "antd";
 import axios from "axios";
 
 interface AccessTokenResponse {
     access_token: string;
 }
+
+/** Envelope mà backend bọc quanh mọi response 2xx (FormatRestResponse). */
+interface BackendEnvelope<T> {
+    statusCode: number;
+    message: string;
+    data: T;
+}
+
 const NO_RETRY_HEADER = 'x-no-retry';
 
 const instance = axios.create({
@@ -14,18 +21,49 @@ const instance = axios.create({
     withCredentials: true
 });
 
+// Client riêng, CHỈ dùng để gọi /auth/refresh. Cố tình không có request
+// interceptor nên access token (đã hết hạn) không bao giờ bị gắn vào header.
+// BearerTokenAuthenticationFilter của Spring trả 401 cho mọi request mang bearer
+// token không hợp lệ *trước khi* xét rules phân quyền, nên nếu gửi kèm token hết
+// hạn thì /auth/refresh luôn 401 dù path nằm trong permitAll và cookie còn hạn.
+const refreshClient = axios.create({
+    baseURL: import.meta.env.VITE_BACKEND_URL as string,
+    withCredentials: true
+});
+
+// Cùng quy ước với `instance`: bóc sẵn body của backend để call-site làm việc
+// với envelope { statusCode, message, data }. (src/types/file.d.ts khai báo
+// `AxiosResponse<T> extends Promise<T>`, nên TS cũng coi `await ...get<T>()`
+// là trả về T — nhờ vậy code và type khớp nhau.)
+refreshClient.interceptors.response.use((res) => res.data);
+
 // Deduplicate concurrent refresh calls — all 401 handlers share one in-flight promise
 let refreshTokenPromise: Promise<string | null> | null = null;
 
-const handleRefreshToken = async (): Promise<string | null> => {
+/**
+ * Đổi cookie `refresh-token` (httpOnly) lấy access token mới.
+ *
+ * Dùng được cả khi app vừa khởi động và chưa có access token nào trong
+ * localStorage — nhờ vậy cookie còn hạn vẫn cứu được phiên.
+ *
+ * @returns access token mới, hoặc null nếu refresh token hết hạn/không gửi được.
+ */
+export const handleRefreshToken = async (): Promise<string | null> => {
     if (refreshTokenPromise) return refreshTokenPromise;
 
     refreshTokenPromise = (async () => {
         try {
-            const res = await instance.get('/api/v1/auth/refresh') as unknown as IBackendRes<AccessTokenResponse>;
-            if (res && res.data) return res.data.access_token;
-            return null;
+            const res = await refreshClient.get<BackendEnvelope<AccessTokenResponse>>('/api/v1/auth/refresh');
+            // Nhờ interceptor bóc body ở trên, `res` chính là envelope:
+            // { statusCode, message, data: { access_token, user } }
+            const access_token = res?.data?.access_token ?? null;
+            if (access_token) {
+                localStorage.setItem('access_token', access_token);
+            }
+            return access_token;
         } catch (error) {
+            // [debug auth] xoá được sau khi xác nhận luồng chạy
+            console.warn('[auth] gọi /api/v1/auth/refresh thất bại:', (error as any)?.message ?? error);
             return null;
         } finally {
             refreshTokenPromise = null;
