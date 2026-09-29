@@ -11,15 +11,17 @@ const { Header: AntHeader, Content, Sider } = Layout;
 const MadContent = (props) => {
   const [visible, setVisible] = useState(false);
   const [sidenavColor, setSideNavColor] = useState("#1890ff");
-  const isAdminRoute = window.location.pathname.startsWith('/admin')
+  // Derive everything from the router location: reading window.location during
+  // render (and assuming user.role is always present) crashes the layout.
   const user = useSelector(state => state.account.user)
-  const userRole = user.role.name
+  const userRole = user?.role?.name
 
   const openDrawer = () => setVisible(!visible);
   const handleSidenavColor = (color) => setSideNavColor(color);
   const handleFixedNavbar = (type) => setFixed(type);
 
   let { pathname } = useLocation();
+  const isAdminRoute = pathname.startsWith('/admin')
   pathname = pathname.replace("/", "");
   return (
     <Layout
