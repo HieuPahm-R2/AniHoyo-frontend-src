@@ -4,6 +4,7 @@ import "react-multi-carousel/lib/styles.css";
 import React, { useEffect, useState } from 'react'
 import { HistoryOutlined } from '@ant-design/icons';
 import { fetchAllSeasons } from '@/config/api.handle';
+import { SEASON_STATUS } from '@/config/constant.status';
 
 
 const responsive = {
@@ -33,7 +34,7 @@ const CommingSoon = () => {
     useEffect(() => {
         const fetchFilms = async () => {
 
-            let queryString = `page=${current}&size=${pageSize}&filter=status: 'COMMING_SOON'`;
+            let queryString = `page=${current}&size=${pageSize}&filter=status: '${SEASON_STATUS.COMMING_SOON}'`;
             if (sortQuery) {
                 queryString += `&${sortQuery}`;
             }

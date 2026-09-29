@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { AddSeasonAPI, callUploadImage } from '@/config/api.handle';
 import { Col, Divider, Form, Input, InputNumber, Modal, notification, Row, Select, Upload } from 'antd';
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
+import { SEASON_STATUS_OPTIONS, SEASON_TYPE_OPTIONS } from '@/config/constant.status';
 import { v4 as uuidv4 } from 'uuid';
 const ModalCreateSeason = (props) => {
     const { modalAddSeason, setModalAddSeason, refetchData, dataDetail } = props
@@ -149,12 +150,7 @@ const ModalCreateSeason = (props) => {
                                 defaultValue={null}
                                 showSearch
                                 allowClear
-                                options={[
-                                    { value: 'SERIES', label: 'SERIES' },
-                                    { value: 'MOVIE', label: 'MOVIE' },
-                                    { value: 'OVA', label: 'OVA' },
-                                    { value: 'SPECIAL', label: 'SPECIAL' },
-                                ]}
+                                options={SEASON_TYPE_OPTIONS}
                             />
                         </Form.Item>
                     </Col>
@@ -169,13 +165,7 @@ const ModalCreateSeason = (props) => {
                                 defaultValue={null}
                                 showSearch
                                 allowClear
-                                options={[
-                                    { value: 'ON_AIR', label: 'Đang Chiếu' },
-                                    { value: 'CANCEL', label: 'Bị Hủy' },
-                                    { value: 'COMMING_SOON', label: 'Sắp Chiếu' },
-                                    { value: 'DELAY', label: 'Bị Hoãn' },
-                                    { value: 'FINISHED', label: 'Hoàn thành' },
-                                ]}
+                                options={SEASON_STATUS_OPTIONS}
                             />
                         </Form.Item>
                     </Col>
