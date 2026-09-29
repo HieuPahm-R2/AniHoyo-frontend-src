@@ -1,4 +1,4 @@
-import { Col, Divider, Form, Input, InputNumber, Modal, notification, Row, Select, Upload } from "antd";
+import { Col, Divider, Form, Input, InputNumber, Modal, message, notification, Row, Select, Upload } from "antd";
 import { useEffect, useState } from "react";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 import { callUpdateFilmAPI, callUploadImage } from '@/config/api.handle';
