@@ -97,35 +97,36 @@ instance.interceptors.response.use(
         }
 
         const status = +error.response.status;
+        const url: string = error.config?.url ?? '';
 
         // 401 on a normal API call (not login/refresh, not already retried) → try refresh
         if (
             status === 401
             && error.config
-            && error.config.url !== '/api/v1/auth/login'
-            && error.config.url !== '/api/v1/auth/refresh'
+            && url !== '/api/v1/auth/login'
+            && url !== '/api/v1/auth/refresh'
             && !error.config.headers[NO_RETRY_HEADER]
         ) {
             const access_token = await handleRefreshToken();
+            // [debug auth] xoá được sau khi xác nhận luồng chạy
+            console.info('[auth] gặp 401 ở', url, '→ gọi /auth/refresh:', access_token ? 'OK' : 'THẤT BẠI');
+            // Đánh dấu trước khi retry: nếu request mới vẫn 401 thì không refresh vòng lặp.
             error.config.headers[NO_RETRY_HEADER] = 'true';
             if (access_token) {
                 error.config.headers['Authorization'] = `Bearer ${access_token}`;
-                localStorage.setItem('access_token', access_token);
                 return instance.request(error.config);
             }
-            // Refresh returned null — token could not be refreshed
-            // Let LayoutApp handle the redirect via Redux
+            // Refresh thất bại (cookie hết hạn / không gửi được) → để LayoutApp xoá
+            // token cũ và điều hướng về /login qua Redux.
             const message = error?.response?.data?.error ?? "Phiên đăng nhập hết hạn, vui lòng đăng nhập lại.";
             dispatch(setRefreshTokenAction({ status: true, message }));
-            return Promise.reject(error);
+            return error?.response?.data ?? Promise.reject(error);
         }
 
-        // 401 on the refresh endpoint itself — refresh token is expired
-        if (
-            status === 401
-            && error.config
-            && error.config.url === '/api/v1/auth/refresh'
-        ) {
+        // 401 on the refresh endpoint itself — refresh token is expired.
+        // (handleRefreshToken đi qua refreshClient nên không rơi vào đây; nhánh này
+        // giữ lại phòng khi có chỗ khác gọi refresh bằng `instance`.)
+        if (status === 401 && url === '/api/v1/auth/refresh') {
             const message = error?.response?.data?.error ?? "Có lỗi xảy ra, vui lòng login.";
             dispatch(setRefreshTokenAction({ status: true, message }));
         }
@@ -152,6 +153,10 @@ instance.interceptors.response.use(
             });
         }
 
+        // Giữ nguyên "hợp đồng" cũ của app: lỗi HTTP được resolve về body lỗi thay
+        // vì reject, vì mọi call-site đều kiểm tra `if (res && res.data)` và nhiều
+        // chỗ không có try/catch (vd: refetchData trong product.table.jsx sẽ kẹt
+        // loading nếu promise bị reject).
         return error?.response?.data ?? Promise.reject(error);
     }
 );
