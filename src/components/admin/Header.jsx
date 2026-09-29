@@ -205,7 +205,14 @@ const HeaderAdmin = (props) => {
 
   const showDrawer = () => setVisible(true);
   const hideDrawer = () => setVisible(false);
-  useEffect(() => window.scrollTo(0, 0));
+  // NOTE: keep the braces. Modern Chrome returns a Promise from
+  // window.scrollTo(), and `useEffect(() => window.scrollTo(0, 0))` would hand
+  // that Promise to React as the cleanup function. React calls it on the next
+  // effect run and throws "is not a function", which makes React Router replace
+  // the whole admin layout with the error page until the tab is reloaded.
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <>
