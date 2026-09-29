@@ -103,15 +103,20 @@ export const accountSlice = createSlice({
         })
 
         builder.addCase(fetchAccount.fulfilled, (state, action) => {
-            if (action.payload) {
+            // /api/v1/auth/account nằm trong whitelist permitAll của backend: khi
+            // request không kèm token nó vẫn trả 200 với `user: null` (không phải
+            // 401), nên phải kiểm tra payload.user chứ không chỉ payload — nếu
+            // không sẽ coi là đã đăng nhập với role rỗng và trả 403 oan.
+            const user = action.payload?.user;
+            if (user) {
                 state.isAuthenticated = true;
-                state.user.id = action?.payload?.user?.id;
-                state.user.email = action?.payload?.user?.email;
-                state.user.name = action?.payload?.user?.name;
-                state.user.avatar = action?.payload?.user?.avatar;
+                state.user.id = user.id;
+                state.user.email = user.email;
+                state.user.name = user.name;
+                state.user.avatar = user.avatar;
 
                 // Gán role với default value là empty object nếu không có
-                state.user.role = action?.payload?.user?.role ?? {
+                state.user.role = user.role ?? {
                     id: "",
                     name: "",
                     permissions: []
@@ -121,6 +126,19 @@ export const accountSlice = createSlice({
                 if (!state.user.role.permissions) {
                     state.user.role.permissions = [];
                 }
+            } else {
+                state.isAuthenticated = false;
+                state.user = {
+                    id: "",
+                    email: "",
+                    name: "",
+                    avatar: "",
+                    role: {
+                        id: "",
+                        name: "",
+                        permissions: [],
+                    },
+                };
             }
             state.isLoading = false;
         })
