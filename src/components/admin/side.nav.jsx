@@ -144,6 +144,32 @@ const SideNav = (props) => {
             <span className="label">Tables Authority</span>
           </NavLink>
         </Menu.Item>
+        <Menu.Item key="7">
+          <NavLink to="/admin/table-category" className={({ isActive }) => isActive ? 'active' : ''}>
+            <span
+              className="icon"
+              style={{
+                background: pathname.startsWith("/admin/table-category") ? color : "",
+              }}
+            >
+              {tables}
+            </span>
+            <span className="label">Tables Category</span>
+          </NavLink>
+        </Menu.Item>
+        <Menu.Item key="8">
+          <NavLink to="/admin/table-tag" className={({ isActive }) => isActive ? 'active' : ''}>
+            <span
+              className="icon"
+              style={{
+                background: pathname.startsWith("/admin/table-tag") ? color : "",
+              }}
+            >
+              {tables}
+            </span>
+            <span className="label">Tables Tag</span>
+          </NavLink>
+        </Menu.Item>
         <Menu.Item className="menu-item-header" key="6">
           Account Pages
         </Menu.Item>

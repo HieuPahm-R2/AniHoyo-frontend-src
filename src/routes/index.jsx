@@ -14,6 +14,8 @@ import ClientHome from "../pages/client/client.home";
 import RolePage from "@/pages/admin/role.table";
 import ProtectedRoute from "../components/share/protected";
 import PermissionPage from "@/pages/admin/permission.table";
+import CategoryPage from "@/pages/admin/category.table";
+import TagPage from "@/pages/admin/tag.table";
 import FilmWatching from "@/pages/client/film.watching";
 import LayoutApp from "../components/share/layout.app";
 
@@ -64,6 +66,18 @@ const router = createBrowserRouter([
         path: "table-permission",
         element: <ProtectedRoute>
           <PermissionPage />
+        </ProtectedRoute>
+      },
+      {
+        path: "table-category",
+        element: <ProtectedRoute>
+          <CategoryPage />
+        </ProtectedRoute>
+      },
+      {
+        path: "table-tag",
+        element: <ProtectedRoute>
+          <TagPage />
         </ProtectedRoute>
       },
       {

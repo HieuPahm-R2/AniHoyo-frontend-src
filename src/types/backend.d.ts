@@ -52,3 +52,15 @@ export interface IRole {
   createdTime?: string;
   updatedTime?: string;
 }
+
+/** Thể loại phim (bảng categories) — quan hệ nhiều-nhiều với Film theo id. */
+export interface ICategory {
+  id?: string;
+  name: string;
+}
+
+/** Highlight tag của phim (bảng tags) — quan hệ nhiều-nhiều với Film theo id. */
+export interface ITag {
+  id?: string;
+  name: string;
+}

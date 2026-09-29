@@ -1,5 +1,5 @@
 import instance from './axios.customize';
-import { IBackendRes, IModelPaginate, IPermission, IRole, IUser } from '@/types/backend';
+import { IBackendRes, ICategory, IModelPaginate, IPermission, IRole, ITag, IUser } from '@/types/backend';
 
 export const callCreateRole = (role: IRole): Promise<IBackendRes<IRole>> => {
     return instance.post('/api/v1/add-role', { ...role })
@@ -52,6 +52,42 @@ export const callDeleteUser = (id: string): Promise<IBackendRes<IUser>> => {
 
 export const callFetchUser = (query: string): Promise<IBackendRes<IModelPaginate<IUser>>> => {
     return instance.get(`/api/v1/users?${query}`);
+}
+
+/**
+ * Module Category (thể loại phim) và Tag (highlight tag)
+ * Lưu ý: update gửi kèm `id` trong body (controller nhận CategoryDTO/TagDTO).
+ */
+export const callCreateCategory = (category: ICategory): Promise<IBackendRes<ICategory>> => {
+    return instance.post('/api/v1/add-category', { ...category })
+}
+
+export const callUpdateCategory = (category: ICategory): Promise<IBackendRes<ICategory>> => {
+    return instance.put('/api/v1/update-category', { ...category })
+}
+
+export const callDeleteCategory = (id: string): Promise<IBackendRes<ICategory>> => {
+    return instance.delete(`/api/v1/delete-category/${id}`);
+}
+
+export const callFetchCategory = (query: string): Promise<IBackendRes<IModelPaginate<ICategory>>> => {
+    return instance.get(`/api/v1/categories?${query}`);
+}
+
+export const callCreateTag = (tag: ITag): Promise<IBackendRes<ITag>> => {
+    return instance.post('/api/v1/add-tag', { ...tag })
+}
+
+export const callUpdateTag = (tag: ITag): Promise<IBackendRes<ITag>> => {
+    return instance.put('/api/v1/update-tag', { ...tag })
+}
+
+export const callDeleteTag = (id: string): Promise<IBackendRes<ITag>> => {
+    return instance.delete(`/api/v1/delete-tag/${id}`);
+}
+
+export const callFetchTag = (query: string): Promise<IBackendRes<IModelPaginate<ITag>>> => {
+    return instance.get(`/api/v1/tags?${query}`);
 }
 
 
